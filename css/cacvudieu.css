@@ -185,3 +185,46 @@ body{
   .dance-title{ font-size: 18px; }
   .dance-qr{ width: 150px; height: 150px; }
 }
+/* ===== NÂNG CAO: link chữ ===== */
+.dance-title a{
+  color: #1f45a8;            /* giữ nguyên mặc định */
+  text-decoration: none;
+  font-weight: 900;
+  display: inline-block;
+  transition: color .15s ease, transform .08s ease, filter .15s ease;
+}
+
+.dance-title a:hover{
+  color: #c62522;            /* hover đỏ */
+  filter: drop-shadow(0 1px 0 rgba(0,0,0,.12));
+}
+
+.dance-title a:active{
+  color: #c62522;            /* click đỏ */
+  transform: translateY(1px);
+}
+
+/* ===== NÂNG CAO: hover cả card ===== */
+.dance-card{
+  transition: transform .12s ease, box-shadow .15s ease, border-color .15s ease;
+}
+
+.dance-card:hover{
+  transform: translateY(-2px);
+  border-color: rgba(198,37,34,0.55);
+  box-shadow: 0 10px 22px rgba(0,0,0,0.14);
+}
+
+/* click card nhún nhẹ */
+.dance-card:active{
+  transform: translateY(-1px);
+}
+
+/* QR: vẫn có cảm giác “bấm được” riêng */
+.dance-qr{
+  cursor: pointer;
+  transition: transform .08s ease;
+}
+.dance-qr:active{
+  transform: translateY(1px);
+}

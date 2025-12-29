@@ -20,30 +20,30 @@
     <section class="dance-wrap">
       <div class="dance-grid">
 
-        <article class="dance-card">
-          <h3 class="dance-title">1. Vũ điệu quân dân</h3>
-          <img class="dance-qr" src="./css/anh/ma1.png" alt="QR Vũ điệu quân dân">
-        </article>
+        <div class="dance-card" data-url="https://www.youtube.com/watch?v=30LlvhUagHs">
+        <h3 class="dance-title"><a href="https://www.youtube.com/watch?v=30LlvhUagHs" target="_blank" rel="noopener">1. Vũ điệu Quân dân</a></h3>
+        <img class="dance-qr" src="./css/anh/ma1.png" alt="QR Vũ điệu Quân dân">
+      </div>
+        
+      <div class="dance-card" data-url="https://www.youtube.com/watch?v=DiNxexiYfQ0&list=RDDiNxexiYfQ0&start_radio=1">
+        <h3 class="dance-title"><a href="https://www.youtube.com/watch?v=DiNxexiYfQ0&list=RDDiNxexiYfQ0&start_radio=1" target="_blank" rel="noopener">2. Vũ điệu Niềm tin</a></h3>
+        <img class="dance-qr" src="./css/anh/ma2.png" alt="QR Vũ điệu Niềm tin">
+      </div>
 
-        <article class="dance-card">
-          <h3 class="dance-title">2. Vũ điệu niềm tin</h3>
-          <img class="dance-qr" src="./css/anh/ma2.png" alt="QR Vũ điệu niềm tin">
-        </article>
+        <div class="dance-card" data-url="https://www.youtube.com/watch?v=BI606IUp5Wk&list=RDBI606IUp5Wk&start_radio=1">
+        <h3 class="dance-title"><a href="https://www.youtube.com/watch?v=BI606IUp5Wk&list=RDBI606IUp5Wk&start_radio=1" target="_blank" rel="noopener">3. Vũ điệu Lính trẻ</a></h3>
+        <img class="dance-qr" src="./css/anh/ma3.png" alt="QR Vũ điệu Lính trẻ">
+      </div>
 
-        <article class="dance-card">
-          <h3 class="dance-title">3. Vũ điệu lính trẻ</h3>
-          <img class="dance-qr" src="./css/anh/ma3.png" alt="QR Vũ điệu lính trẻ">
-        </article>
+        <div class="dance-card" data-url="https://www.youtube.com/watch?v=S-uUPLIWtHM&list=RDS-uUPLIWtHM&start_radio=1">
+        <h3 class="dance-title"><a href="https://www.youtube.com/watch?v=S-uUPLIWtHM&list=RDS-uUPLIWtHM&start_radio=1" target="_blank" rel="noopener">4. Vũ điệu Hành quân</a></h3>
+        <img class="dance-qr" src="./css/anh/ma4.png" alt="QR Vũ điệu Hành quân">
+      </div>
 
-        <article class="dance-card">
-          <h3 class="dance-title">4. Vũ điệu hành quân</h3>
-          <img class="dance-qr" src="./css/anh/ma4.png" alt="QR Vũ điệu hành quân">
-        </article>
-
-        <article class="dance-card">
-          <h3 class="dance-title">5. Vũ điệu hòa bình</h3>
-          <img class="dance-qr" src="./css/anh/ma5.png" alt="QR Vũ điệu hòa bình">
-        </article>
+        <div class="dance-card" data-url="https://www.youtube.com/watch?v=vzJPkvrSkFM&list=RDvzJPkvrSkFM&start_radio=1">
+        <h3 class="dance-title"><a href="https://www.youtube.com/watch?v=vzJPkvrSkFM&list=RDvzJPkvrSkFM&start_radio=1" target="_blank" rel="noopener">5. Vũ điệu Hòa bình</a></h3>
+        <img class="dance-qr" src="./css/anh/ma5.png" alt="QR Vũ điệu Hòa bình">
+      </div>
 
       </div>
 
@@ -52,5 +52,20 @@
       </div>
     </section>
   </main>
+  <script>
+  // Click cả khung card để mở link
+  document.querySelectorAll(".dance-card").forEach(card => {
+    card.style.cursor = "pointer";
+
+    card.addEventListener("click", (e) => {
+      // Nếu bấm vào link <a> hoặc bấm đúng ảnh QR thì để hành vi mặc định
+      if (e.target.closest("a") || e.target.closest(".dance-qr")) return;
+
+      const url = card.dataset.url;
+      if (url) window.open(url, "_blank", "noopener");
+    });
+  });
+</script>
+
 </body>
 </html>
