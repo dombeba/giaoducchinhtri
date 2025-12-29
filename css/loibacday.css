@@ -304,3 +304,52 @@ body{
     font-size: 18px;
   }
 }
+/* ===== Dropdown "Ngày này năm xưa" ===== */
+.dropdown{
+  position: relative;
+}
+
+.dropbtn{
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+}
+
+.caret{
+  margin-left: 6px;
+  font-weight: 900;
+}
+
+.dropdown-menu{
+  position: absolute;
+  top: 100%;
+  left: 0;
+  min-width: 340px;
+  background: #e6e6e6;
+  border: 1px solid rgba(0,0,0,.12);
+  box-shadow: 0 10px 22px rgba(0,0,0,.18);
+  display: none;
+  z-index: 999;
+}
+
+.dropdown.open .dropdown-menu{
+  display: block;
+}
+
+.dropdown-menu a{
+  display: block;
+  padding: 12px 14px;
+  color: #333;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(0,0,0,.08);
+  font-weight: 600;
+}
+
+.dropdown-menu a:last-child{
+  border-bottom: none;
+}
+
+.dropdown-menu a:hover{
+  background: #d7d7d7;
+}

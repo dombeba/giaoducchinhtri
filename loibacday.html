@@ -27,9 +27,27 @@
     <div class="nav-inner">
       <a class="nav-item home" href="#" title="Trang chủ">🏠</a>
 
-      <div class="nav-group">
-        <a class="nav-item" href="#">Ngày này năm xưa</a>
-      </div>
+      <div class="nav-group dropdown" id="monthDropdown">
+  <button class="nav-item dropbtn" type="button" id="monthBtn">
+    Ngày này năm xưa <span class="caret">▾</span>
+  </button>
+
+  <div class="dropdown-menu" id="monthMenu">
+    <a href="loibacday.html?m=1">Lời Bác dạy ngày này năm xưa tháng 1</a>
+    <a href="loibacday.html?m=2">Lời Bác dạy ngày này năm xưa tháng 2</a>
+    <a href="loibacday.html?m=3">Lời Bác dạy ngày này năm xưa tháng 3</a>
+    <a href="loibacday.html?m=4">Lời Bác dạy ngày này năm xưa tháng 4</a>
+    <a href="loibacday.html?m=5">Lời Bác dạy ngày này năm xưa tháng 5</a>
+    <a href="loibacday.html?m=6">Lời Bác dạy ngày này năm xưa tháng 6</a>
+    <a href="loibacday.html?m=7">Lời Bác dạy ngày này năm xưa tháng 7</a>
+    <a href="loibacday.html?m=8">Lời Bác dạy ngày này năm xưa tháng 8</a>
+    <a href="loibacday.html?m=9">Lời Bác dạy ngày này năm xưa tháng 9</a>
+    <a href="loibacday.html?m=10">Lời Bác dạy ngày này năm xưa tháng 10</a>
+    <a href="loibacday.html?m=11">Lời Bác dạy ngày này năm xưa tháng 11</a>
+    <a href="loibacday.html?m=12">Lời Bác dạy ngày này năm xưa tháng 12</a>
+  </div>
+</div>
+
 
       <a class="nav-item back" href="tonghop.html">⬅ Quay lại</a>
     </div>
@@ -63,7 +81,7 @@
           <!-- Post item -->
           <article class="post">
             <div class="thumb">
-              <img src="css/anh/thumb1.jpg" alt="Ảnh minh hoạ" />
+              <img src="./css/loibac/29-12.jpg" alt="Ảnh minh hoạ" />
             </div>
 
             <div class="post-body">
@@ -77,12 +95,13 @@
               </div>
 
               <div class="quote">
-                “Trong công tác… không sợ thiếu, chỉ sợ không công bằng…”
+                “Trong công tác lưu thông phân phối, có hai điều quan trọng phải luôn luôn nhớ:
+                - Không sợ thiếu, chỉ sợ không công bằng,
+                - Không sợ nghèo, chỉ sợ lòng dân không theo”.
               </div>
 
               <p class="excerpt">
-                Đây là đoạn mô tả ngắn (placeholder). Chủ tướng thay nội dung mô tả theo ý mình,
-                hoặc chỉ để link mở bài gốc.
+                Ngày 29 tháng 12 năm 1966, tại phiên họp cuối năm của Hội đồng chính phủ, khi đề cập đến khuyết điểm của công tác lưu thông phân phối Bác đã căn dặn những điều trên.
               </p>
             </div>
           </article>
@@ -90,7 +109,7 @@
           <!-- Post item 2 -->
           <article class="post">
             <div class="thumb">
-              <img src="css/anh/thumb2.jpg" alt="Ảnh minh hoạ" />
+              <img src="./css/loibac/28-12.jpg" alt="Ảnh minh hoạ" />
             </div>
 
             <div class="post-body">
@@ -103,36 +122,18 @@
                 <span>👁 816</span>
               </div>
 
+               <div class="quote">
+                “Gia đình là hạt nhân của xã hội”.
+              </div>
+
               <p class="excerpt">
-                Mô tả ngắn bài viết… (placeholder).
+                Trích trong bài viết “Phải thật sự bảo đảm quyền lợi của phụ nữ” Hồ Chí Minh viết, đăng trên Báo Nhân dân, số 3199, ngày 28 tháng 12 năm 1962.
               </p>
             </div>
           </article>
-
         </div>
       </div>
 
-      <!-- Right: sidebar -->
-      <aside class="sidecol">
-        <div class="panel">
-          <div class="panel-head">Bài viết mới nhất</div>
-
-          <a class="mini" href="https://loibacday.com/" target="_blank" rel="noopener">
-            <img src="css/anh/mini1.jpg" alt="mini" />
-            <span>Lời Bác dạy ngày 31 tháng 07</span>
-          </a>
-
-          <a class="mini" href="https://loibacday.com/" target="_blank" rel="noopener">
-            <img src="css/anh/mini2.jpg" alt="mini" />
-            <span>Lời Bác dạy ngày 30 tháng 07</span>
-          </a>
-
-          <a class="mini" href="https://loibacday.com/" target="_blank" rel="noopener">
-            <img src="css/anh/mini3.jpg" alt="mini" />
-            <span>Lời Bác dạy ngày 29 tháng 07</span>
-          </a>
-        </div>
-      </aside>
     </section>
   </main>
 
@@ -158,5 +159,50 @@
       alert("Đã chọn ngày: " + v);
     });
   </script>
+  <script>
+  // ===== Đồng hồ (giữ nguyên của chủ tướng) =====
+  const el = document.getElementById('todayText');
+  const pad = (n) => String(n).padStart(2, '0');
+
+  const formatVN = (d) => {
+    const days = ["Chủ nhật","Thứ hai","Thứ ba","Thứ tư","Thứ năm","Thứ sáu","Thứ bảy"];
+    return `${days[d.getDay()]}, ${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()}, ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  };
+
+  const tick = () => el.textContent = formatVN(new Date());
+  tick();
+  setInterval(tick, 1000 * 30);
+
+  // ===== Dropdown tháng =====
+  const dd = document.getElementById('monthDropdown');
+  const btn = document.getElementById('monthBtn');
+
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    dd.classList.toggle('open');
+  });
+
+  document.addEventListener('click', () => dd.classList.remove('open'));
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') dd.classList.remove('open');
+  });
+
+  // ===== Lọc bài theo tháng qua ?m= =====
+  const params = new URLSearchParams(window.location.search);
+  const m = Number(params.get('m') || '');
+
+  // Cách làm: mỗi bài <article class="post"> gắn data-month="12" ... để lọc
+  // Ví dụ: <article class="post" data-month="12">...</article>
+  if (m >= 1 && m <= 12) {
+    const head = document.querySelector('.panel-head');
+    if (head) head.textContent = `📁 Lời Bác dạy ngày này năm xưa (Tháng ${m})`;
+
+    document.querySelectorAll('.post').forEach(post => {
+      const pm = Number(post.dataset.month || '0');
+      post.style.display = (pm === m) ? '' : 'none';
+    });
+  }
+</script>
+
 </body>
 </html>

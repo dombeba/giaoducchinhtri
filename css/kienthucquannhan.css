@@ -1,0 +1,242 @@
+:root{
+  --bg:#0f4f6a;          /* nền xanh giống ảnh */
+  --card:#ffffff;
+  --shadow: rgba(0,0,0,.18);
+  --border: rgba(255,255,255,.18);
+
+  --title:#e40000;       /* đỏ chữ lớn */
+}
+
+*{ box-sizing:border-box; }
+html,body{ height:100%; }
+body{
+  margin:0;
+  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color:#111;
+}
+
+/* ===== HERO ===== */
+.hero{
+  height: 260px;
+  position: relative;
+
+  /* Chủ tướng đổi ảnh banner tại đây (nếu muốn) */
+  background:
+    linear-gradient(90deg, rgba(255,255,255,.55), rgba(255,255,255,.25)),
+    url("./anh/hero-kienthuc.jpg") center/cover no-repeat;
+
+  border-bottom: 1px solid rgba(255,255,255,.12);
+}
+
+.hero-inner{
+  height:100%;
+  max-width: 1250px;
+  margin: 0 auto;
+  padding: 18px 16px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+}
+
+.hero-title{
+  margin:0;
+  font-weight: 900;
+  font-size: 78px;
+  line-height: 0.92;
+  letter-spacing: 2px;
+  color: var(--title);
+  text-shadow: 0 4px 0 rgba(255,255,255,.55);
+}
+
+/* ===== WRAP ===== */
+.wrap{
+  max-width: 1250px;
+  margin: 0 auto;
+  padding: 18px 16px 30px;
+}
+
+/* ===== GRID ===== */
+.grid{
+  display:grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+  align-items:start;
+}
+
+/* ===== CARD ===== */
+.quiz-card{
+  background: rgba(255,255,255,.06);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 10px;
+}
+
+.quiz-frame{
+  width:100%;
+  height: 290px;          /* giống khung Google Sites */
+  border: 0;
+  border-radius: 10px;
+  background: var(--card);
+  box-shadow: 0 10px 18px var(--shadow);
+}
+
+/* Caption dưới mỗi khung */
+.quiz-caption{
+  margin-top: 10px;
+  text-align:center;
+  font-weight: 800;
+  color: #e7f4ff;
+  text-transform: uppercase;
+  font-size: 14px;
+  letter-spacing: .6px;
+}
+
+/* ===== FOOTER ===== */
+.footer{
+  margin-top: 18px;
+  display:flex;
+  justify-content:center;
+}
+
+.back{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding: 10px 14px;
+  border-radius: 999px;
+  text-decoration:none;
+  font-weight: 800;
+  color: #ffffff;
+  background: rgba(255,255,255,.14);
+  border: 1px solid rgba(255,255,255,.18);
+}
+
+.back:hover{
+  background: rgba(255,255,255,.22);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 1100px){
+  .grid{ grid-template-columns: repeat(2, 1fr); }
+  .hero-title{ font-size: 64px; }
+}
+@media (max-width: 640px){
+  .hero{ height: 190px; }
+  .hero-title{ font-size: 44px; }
+  .grid{ grid-template-columns: 1fr; }
+  .quiz-frame{ height: 520px; } /* mobile: form dài hơn cho dễ làm bài */
+}
+/* ===== HERO BANNER ===== */
+.hero {
+  position: relative;
+  height: 220px;
+  overflow: hidden;
+  background: #7fa6b4; /* nền dự phòng nếu chưa có ảnh */
+}
+
+/* Ảnh banner */
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  background-image: url("../css/loibac/banner.png"); /* ← ĐỔI ẢNH TẠI ĐÂY */
+  background-size: cover;        /* phủ đều */
+  background-position: center;   /* không lệch */
+  background-repeat: no-repeat;
+  filter: brightness(0.9);
+}
+
+/* Nội dung chữ */
+.hero-content {
+  position: relative;
+  z-index: 2;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Tiêu đề */
+.hero-content h1 {
+  margin: 0;
+  text-align: center;
+  font-size: 64px;
+  font-weight: 900;
+  color: #ff0000;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+
+  /* viền + bóng giống ảnh chủ tướng */
+  text-shadow:
+    -2px -2px 0 #ffffff,
+     2px -2px 0 #ffffff,
+    -2px  2px 0 #ffffff,
+     2px  2px 0 #ffffff,
+     0px  6px 10px rgba(0,0,0,0.35);
+}
+
+/* ===== MOBILE ===== */
+@media (max-width: 768px) {
+  .hero {
+    height: 160px;
+  }
+  .hero-content h1 {
+    font-size: 36px;
+    letter-spacing: 1px;
+  }
+}
+/* Nút mở link ngoài */
+.open-external {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 36px;
+  height: 36px;
+  background: rgba(255,255,255,0.9);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #333;
+  text-decoration: none;
+  box-shadow: 0 2px 6px rgba(0,0,0,.25);
+  z-index: 5;
+}
+
+.open-external:hover {
+  background: #ffffff;
+  color: #000;
+}
+/* để nút nổi đè lên iframe */
+.quiz-card{
+  position: relative;
+}
+
+/* nút mở liên kết nổi góc phải */
+.open-external{
+  position: absolute;
+  top: 10px;
+  right: 10px;
+
+  width: 44px;
+  height: 44px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  background: rgba(180, 180, 180, 0.55);
+  border-radius: 3px;
+
+  z-index: 50;               /* quan trọng: phải cao hơn iframe */
+  pointer-events: auto;
+  cursor: pointer;
+  text-decoration: none;
+  color: #fff;               /* icon trắng */
+  backdrop-filter: blur(1px);
+}
+
+.open-external:hover{
+  background: rgba(120, 120, 120, 0.75);
+}
