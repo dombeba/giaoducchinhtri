@@ -77,20 +77,14 @@ body{
 
 /* Layout */
 .content{
-  position:relative;
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:40px;
-  padding:34px 60px 40px;
+  position: relative;
+  display: flex;
+  flex-direction: column; /* xếp dọc */
+  gap: 40px;
+  padding: 40px 60px;
 }
 
-.panel{
-  background: rgba(255,255,255,0.65);
-  border: 2px solid rgba(198,37,34,0.22);
-  border-radius: 18px;
-  padding: 18px 18px 16px;
-  box-shadow: 0 10px 24px rgba(0,0,0,0.10);
-}
+
 
 .section-title{
   color:#b4322e;

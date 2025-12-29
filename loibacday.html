@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Lời Bác Hồ dạy ngày này năm xưa</title>
+  <link rel="stylesheet" href="css/loibacday.css" />
+</head>
+<body>
+
+  <!-- Header banner -->
+  <!-- BANNER -->
+<header class="banner">
+  <div class="banner-overlay"></div>
+
+  <div class="banner-inner">
+    <div class="banner-brand">
+      <img src="./css/anh/anhbac1.png" alt="Logo Lời Bác Hồ" class="banner-logo">
+      <h1 class="banner-title">Lời Bác Hồ dạy ngày này năm xưa</h1>
+    </div>
+  </div>
+</header>
+
+
+  <!-- Navbar -->
+  <nav class="nav">
+    <div class="nav-inner">
+      <a class="nav-item home" href="#" title="Trang chủ">🏠</a>
+
+      <div class="nav-group">
+        <a class="nav-item" href="#">Ngày này năm xưa</a>
+        <a class="nav-item" href="#">Tin tức</a>
+        <a class="nav-item" href="#">Giới thiệu</a>
+        <a class="nav-item" href="#">Liên hệ</a>
+        <a class="nav-item" href="#">Tải về</a>
+      </div>
+
+      <a class="nav-item back" href="tonghop.html">⬅ Quay lại</a>
+    </div>
+  </nav>
+
+  <!-- Wrapper -->
+  <main class="wrap">
+
+    <!-- Top info line -->
+    <div class="topline">
+      <span id="todayText">Thứ hai, 29/12/2025, 19:52</span>
+    </div>
+
+    <!-- Filter row -->
+    <section class="filter-row">
+      <label class="filter-label" for="pickDate">Chọn ngày</label>
+
+      <div class="datebox">
+        <input id="pickDate" type="date" />
+        <button class="datebtn" type="button" id="applyDate" title="Áp dụng ngày">📅</button>
+      </div>
+    </section>
+
+    <!-- Content -->
+    <section class="layout">
+      <!-- Left: posts -->
+      <div class="maincol">
+        <div class="panel">
+          <div class="panel-head">📁 Lời Bác dạy ngày này năm xưa</div>
+
+          <!-- Post item -->
+          <article class="post">
+            <div class="thumb">
+              <img src="css/anh/thumb1.jpg" alt="Ảnh minh hoạ" />
+            </div>
+
+            <div class="post-body">
+              <a class="post-title" href="https://loibacday.com/" target="_blank" rel="noopener">
+                Lời Bác dạy ngày 29 tháng 12
+              </a>
+
+              <div class="meta">
+                <span>🕒 23/12/2023 21:52</span>
+                <span>👁 899</span>
+              </div>
+
+              <div class="quote">
+                “Trong công tác… không sợ thiếu, chỉ sợ không công bằng…”
+              </div>
+
+              <p class="excerpt">
+                Đây là đoạn mô tả ngắn (placeholder). Chủ tướng thay nội dung mô tả theo ý mình,
+                hoặc chỉ để link mở bài gốc.
+              </p>
+            </div>
+          </article>
+
+          <!-- Post item 2 -->
+          <article class="post">
+            <div class="thumb">
+              <img src="css/anh/thumb2.jpg" alt="Ảnh minh hoạ" />
+            </div>
+
+            <div class="post-body">
+              <a class="post-title" href="https://loibacday.com/" target="_blank" rel="noopener">
+                Lời Bác dạy ngày 28 tháng 12
+              </a>
+
+              <div class="meta">
+                <span>🕒 23/12/2023 21:48</span>
+                <span>👁 816</span>
+              </div>
+
+              <p class="excerpt">
+                Mô tả ngắn bài viết… (placeholder).
+              </p>
+            </div>
+          </article>
+
+        </div>
+      </div>
+
+      <!-- Right: sidebar -->
+      <aside class="sidecol">
+        <div class="panel">
+          <div class="panel-head">Bài viết mới nhất</div>
+
+          <a class="mini" href="https://loibacday.com/" target="_blank" rel="noopener">
+            <img src="css/anh/mini1.jpg" alt="mini" />
+            <span>Lời Bác dạy ngày 31 tháng 07</span>
+          </a>
+
+          <a class="mini" href="https://loibacday.com/" target="_blank" rel="noopener">
+            <img src="css/anh/mini2.jpg" alt="mini" />
+            <span>Lời Bác dạy ngày 30 tháng 07</span>
+          </a>
+
+          <a class="mini" href="https://loibacday.com/" target="_blank" rel="noopener">
+            <img src="css/anh/mini3.jpg" alt="mini" />
+            <span>Lời Bác dạy ngày 29 tháng 07</span>
+          </a>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <script>
+    // Hiển thị thời gian hiện tại (cho giống kiểu trên web mẫu)
+    const el = document.getElementById('todayText');
+    const pad = (n) => String(n).padStart(2, '0');
+
+    const formatVN = (d) => {
+      const days = ["Chủ nhật","Thứ hai","Thứ ba","Thứ tư","Thứ năm","Thứ sáu","Thứ bảy"];
+      return `${days[d.getDay()]}, ${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()}, ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    };
+
+    const tick = () => el.textContent = formatVN(new Date());
+    tick();
+    setInterval(tick, 1000 * 30);
+
+    // Nút áp dụng ngày (demo)
+    document.getElementById('applyDate').addEventListener('click', () => {
+      const v = document.getElementById('pickDate').value;
+      if(!v) return alert("Chọn ngày trước đã, chủ tướng!");
+      // Sau này chủ tướng có dữ liệu thì lọc bài theo ngày ở đây
+      alert("Đã chọn ngày: " + v);
+    });
+  </script>
+</body>
+</html>
