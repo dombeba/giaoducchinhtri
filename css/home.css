@@ -1,3 +1,7 @@
+*{
+  font-family: "Times New Roman", Times, serif !important;
+}
+
 :root{
   --red:#c62522;
   --blue:#1f45a8;
@@ -23,7 +27,7 @@ body{
   position:relative;
 
   /* NỀN BANNER GIỐNG ẢNH */
-  background: url("../css/anh/baner.png") center/cover no-repeat;
+  background: url("../css/anh/123.png") center/cover no-repeat;
   border:8px solid var(--red);
   border-radius:16px;
   overflow:hidden;
@@ -112,7 +116,7 @@ body{
 .checks li{
   font-size:18px;
   font-weight:bold;
-  color:#a33a19;
+  color:#7b1fa2;
   margin:10px 0;
 }
 
