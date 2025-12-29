@@ -1,0 +1,221 @@
+:root{
+  --red:#c62522;
+  --blue:#1f45a8;
+  --green:#157a3a;
+  --paper:#f6e6a9;
+}
+
+*{ box-sizing:border-box; font-family:"Times New Roman", Times, serif; }
+
+html, body{ height:auto; }
+
+body{
+  margin:0;
+  background:#eee;
+  display:flex;
+  justify-content:center;
+  align-items:flex-start;
+  padding:20px;
+  overflow-y:auto;
+}
+
+/* Khung trang */
+.poster{
+  width:1100px;
+  max-width: calc(100vw - 40px);
+  position:relative;
+  border:8px solid var(--red);
+  border-radius:16px;
+  overflow:hidden;
+
+  /* NỀN: thay đường dẫn ảnh nền cho đúng dự án */
+  /* Nếu muốn “không cắt” + kéo dài ảnh: dùng 100% 100% */
+  background-image: url("../css/anh/bachraotrongdong.jpg");
+  background-repeat: no-repeat;
+  background-position: center top;
+  background-size: 100% 100%;
+  background-color: var(--paper);
+}
+
+/* lớp phủ nhẹ */
+.poster::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background: linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.18));
+  pointer-events:none;
+}
+
+.top{
+  position:relative;
+  padding: 26px 40px 8px;
+  text-align:left;
+}
+
+.title{
+  margin:0;
+  color: var(--red);
+  font-weight:900;
+  font-size: 40px;
+  text-shadow: 0 2px 0 rgba(0,0,0,0.08);
+}
+
+.grid{
+  position:relative;
+  display:grid;
+  grid-template-columns: 380px 1fr;
+  gap: 22px;
+  padding: 10px 40px 0;
+}
+
+.left{
+  display:flex;
+  align-items:flex-start;
+  justify-content:center;
+}
+
+.book{
+  width: 360px;
+  max-width: 100%;
+  border-radius: 10px;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.16);
+  background:#fff;
+  margin-top: 60px;   /* ⭐ đẩy sách xuống dưới */
+}
+}
+
+.right{ padding-top: 6px; }
+
+.subtitle{
+  margin: 0 0 10px;
+  color: #7b1fa2;
+  font-size: 30px;
+  font-weight: 900;
+}
+
+.song-list{
+  margin:0;
+  padding-left: 28px;
+  color: #157a3a;
+  font-weight: 800;
+  font-size: 22px;
+  line-height: 1.35;
+}
+
+.song-list li{ margin: 3px 0; }
+
+.chord{
+  color:#0a6b2f;
+  font-weight:900;
+}
+
+/* hàng dưới */
+.bottom{
+  position:relative;
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-end;
+  gap: 18px;
+  padding: 18px 40px 18px;
+}
+
+.qr-area{
+  display:flex;
+  align-items:flex-end;
+  gap: 14px;
+}
+
+.phone{
+  width: 110px;
+  height: auto;
+  filter: drop-shadow(0 6px 12px rgba(0,0,0,0.18));
+}
+
+.arrow{
+  font-size: 34px;
+  transform: translateY(-10px);
+}
+
+.qr{
+  width: 150px;
+  height: 150px;
+  background:#fff;
+  border-radius: 12px;
+  border: 4px solid rgba(0,0,0,0.12);
+}
+
+.sections{
+  display:flex;
+  flex-direction:column;
+  gap: 10px;
+  align-items:flex-start;
+  padding-bottom: 6px;
+}
+
+.sec{
+  text-decoration:none;
+  font-weight: 900;
+  font-size: 30px;
+  color:#7b1fa2;
+  text-shadow: 0 2px 0 rgba(0,0,0,0.10);
+  background: rgba(255,255,255,0.35);
+  padding: 6px 10px;
+  border-radius: 12px;
+  border: 2px solid rgba(123,31,162,0.18);
+}
+
+.sec:hover{ color: var(--red); background: rgba(255,255,255,0.55); }
+
+.backline{
+  position:relative;
+  padding: 0 40px 26px;
+  text-align:center;
+}
+
+.back{
+  color: #1f45a8;
+  text-decoration:none;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.65);
+  border: 2px solid rgba(31,69,168,0.25);
+  font-weight: 800;
+  display:inline-block;
+}
+
+.back:hover{ background: rgba(255,255,255,0.85); color:#c62522; }
+
+/* Responsive */
+@media (max-width: 900px){
+  body{ padding: 12px; }
+  .top{ padding: 18px 16px 6px; }
+  .title{ font-size: 28px; }
+  .grid{
+    grid-template-columns: 1fr;
+    padding: 6px 16px 0;
+  }
+  .book{ width: 260px; }
+  .subtitle{ font-size: 24px; }
+  .song-list{ font-size: 18px; }
+  .bottom{
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 14px 16px 16px;
+  }
+  .sec{ font-size: 24px; }
+  .backline{ padding: 0 16px 18px; }
+}
+
+@media (max-width: 420px){
+  .book{ width: 220px; }
+  .phone{ width: 92px; }
+  .qr{ width: 130px; height: 130px; }
+  .sec{ font-size: 22px; }
+}
+@media (max-width: 768px){
+  .book{
+    width: 260px;
+    margin-top: 20px;
+    transform: none;
+  }
+}
