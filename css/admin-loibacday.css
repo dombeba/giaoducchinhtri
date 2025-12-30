@@ -1,0 +1,136 @@
+*{ box-sizing:border-box; }
+body{
+  margin:0;
+  font-family: Arial, Helvetica, sans-serif;
+  background:#f2f2f2;
+  color:#222;
+}
+
+.wrap{ max-width: 980px; margin: 18px auto; padding: 0 14px; }
+
+.head{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:12px;
+  flex-wrap:wrap;
+}
+
+h1{ margin:0; font-size:22px; }
+.sub{ margin:6px 0 0; color:#666; font-size:13px; }
+
+.head-actions{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+
+.card{
+  background:#fff;
+  border:1px solid #e6e6e6;
+  border-radius:12px;
+  padding:14px;
+  margin-top:12px;
+}
+
+.row{ display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; }
+
+h2{ margin:0 0 12px; font-size:18px; }
+
+.grid{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap:10px;
+}
+
+label{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  font-weight:700;
+  font-size:13px;
+}
+
+label.full{ grid-column: 1 / -1; }
+
+.req{ color:#c62522; }
+
+input, textarea{
+  border:1px solid #ddd;
+  border-radius:10px;
+  padding:10px 12px;
+  font-size:14px;
+  outline:none;
+}
+
+textarea{ resize:vertical; }
+
+.hint{ color:#777; font-size:12px; margin-top:6px; font-weight:500; }
+
+.actions{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top:12px;
+}
+
+.btn{
+  border:1px solid #ddd;
+  background:#fafafa;
+  border-radius:10px;
+  padding:10px 12px;
+  cursor:pointer;
+  text-decoration:none;
+  color:#222;
+  font-weight:800;
+}
+
+.btn:hover{ background:#f0f0f0; }
+
+.btn.primary{
+  background:#2f77b7;
+  color:#fff;
+  border-color:#2f77b7;
+}
+.btn.primary:hover{ filter: brightness(.95); }
+
+.btn.danger{
+  background:#fff0f0;
+  border-color:#ffbdbd;
+}
+
+.status{ color:#666; font-size:13px; }
+
+.list{ display:flex; flex-direction:column; gap:10px; }
+
+.item{
+  border:1px solid #eee;
+  border-radius:12px;
+  padding:12px;
+  display:flex;
+  gap:12px;
+  align-items:flex-start;
+}
+
+.item img{
+  width:140px;
+  height:90px;
+  object-fit:cover;
+  border-radius:10px;
+  border:1px solid #eee;
+  background:#fff;
+}
+
+.item h3{ margin:0 0 6px; font-size:16px; }
+.item .meta{ color:#666; font-size:13px; margin-bottom:6px; }
+.item .quote{
+  color:#d02020;
+  font-style: italic;
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.item .actions{ margin-top:10px; }
+
+@media (max-width: 800px){
+  .grid{ grid-template-columns: 1fr; }
+  .item{ flex-direction:column; }
+  .item img{ width:100%; height:180px; }
+}

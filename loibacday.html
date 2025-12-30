@@ -8,201 +8,99 @@
 </head>
 <body>
 
-  <!-- Header banner -->
   <!-- BANNER -->
-<header class="banner">
-  <div class="banner-overlay"></div>
-
-  <div class="banner-inner">
-    <div class="banner-brand">
-      <img src="./css/anh/anhbac1.png" alt="Logo Lời Bác Hồ" class="banner-logo">
-      <h1 class="banner-title">Lời Bác Hồ dạy ngày này năm xưa</h1>
+  <header class="banner">
+    <div class="banner-overlay"></div>
+    <div class="banner-inner">
+      <div class="banner-brand">
+        <img src="./css/anh/anhbac1.png" alt="Logo Lời Bác Hồ" class="banner-logo">
+        <h1 class="banner-title">Lời Bác Hồ dạy ngày này năm xưa</h1>
+      </div>
     </div>
-  </div>
-</header>
+  </header>
 
-
-  <!-- Navbar -->
+  <!-- NAV -->
   <nav class="nav">
     <div class="nav-inner">
-      <a class="nav-item home" href="#" title="Trang chủ">🏠</a>
+      <a class="nav-item home" href="index.html" title="Trang chủ">🏠</a>
 
+      <!-- Dropdown tháng -->
       <div class="nav-group dropdown" id="monthDropdown">
-  <button class="nav-item dropbtn" type="button" id="monthBtn">
-    Ngày này năm xưa <span class="caret">▾</span>
-  </button>
+        <button class="nav-item dropbtn" type="button" id="monthBtn">
+          Ngày này năm xưa <span class="caret">▾</span>
+        </button>
 
-  <div class="dropdown-menu" id="monthMenu">
-    <a href="loibacday.html?m=1">Lời Bác dạy ngày này năm xưa tháng 1</a>
-    <a href="loibacday.html?m=2">Lời Bác dạy ngày này năm xưa tháng 2</a>
-    <a href="loibacday.html?m=3">Lời Bác dạy ngày này năm xưa tháng 3</a>
-    <a href="loibacday.html?m=4">Lời Bác dạy ngày này năm xưa tháng 4</a>
-    <a href="loibacday.html?m=5">Lời Bác dạy ngày này năm xưa tháng 5</a>
-    <a href="loibacday.html?m=6">Lời Bác dạy ngày này năm xưa tháng 6</a>
-    <a href="loibacday.html?m=7">Lời Bác dạy ngày này năm xưa tháng 7</a>
-    <a href="loibacday.html?m=8">Lời Bác dạy ngày này năm xưa tháng 8</a>
-    <a href="loibacday.html?m=9">Lời Bác dạy ngày này năm xưa tháng 9</a>
-    <a href="loibacday.html?m=10">Lời Bác dạy ngày này năm xưa tháng 10</a>
-    <a href="loibacday.html?m=11">Lời Bác dạy ngày này năm xưa tháng 11</a>
-    <a href="loibacday.html?m=12">Lời Bác dạy ngày này năm xưa tháng 12</a>
-  </div>
-</div>
+        <div class="dropdown-menu" id="monthMenu">
+          <a href="loibacday.html?m=1">Lời Bác dạy ngày này năm xưa tháng 1</a>
+          <a href="loibacday.html?m=2">Lời Bác dạy ngày này năm xưa tháng 2</a>
+          <a href="loibacday.html?m=3">Lời Bác dạy ngày này năm xưa tháng 3</a>
+          <a href="loibacday.html?m=4">Lời Bác dạy ngày này năm xưa tháng 4</a>
+          <a href="loibacday.html?m=5">Lời Bác dạy ngày này năm xưa tháng 5</a>
+          <a href="loibacday.html?m=6">Lời Bác dạy ngày này năm xưa tháng 6</a>
+          <a href="loibacday.html?m=7">Lời Bác dạy ngày này năm xưa tháng 7</a>
+          <a href="loibacday.html?m=8">Lời Bác dạy ngày này năm xưa tháng 8</a>
+          <a href="loibacday.html?m=9">Lời Bác dạy ngày này năm xưa tháng 9</a>
+          <a href="loibacday.html?m=10">Lời Bác dạy ngày này năm xưa tháng 10</a>
+          <a href="loibacday.html?m=11">Lời Bác dạy ngày này năm xưa tháng 11</a>
+          <a href="loibacday.html?m=12">Lời Bác dạy ngày này năm xưa tháng 12</a>
+        </div>
+      </div>
 
-
+      <a class="nav-item" href="admin-loibacday.html" title="Admin">🛠 Admin</a>
       <a class="nav-item back" href="tonghop.html">⬅ Quay lại</a>
     </div>
   </nav>
 
-  <!-- Wrapper -->
   <main class="wrap">
 
-    <!-- Top info line -->
     <div class="topline">
-      <span id="todayText">Thứ hai, 29/12/2025, 19:52</span>
+      <span id="todayText">Đang tải thời gian...</span>
+      <span class="sep">•</span>
+      <span id="monthHint" class="muted">Đang xem: ...</span>
     </div>
 
-    <!-- Filter row -->
     <section class="filter-row">
       <label class="filter-label" for="pickDate">Chọn ngày</label>
-
       <div class="datebox">
         <input id="pickDate" type="date" />
         <button class="datebtn" type="button" id="applyDate" title="Áp dụng ngày">📅</button>
       </div>
+      <div id="status" class="status" aria-live="polite"></div>
     </section>
 
-    <!-- Content -->
     <section class="layout">
-      <!-- Left: posts -->
       <div class="maincol">
         <div class="panel">
-          <div class="panel-head">📁 Lời Bác dạy ngày này năm xưa</div>
-
-          <!-- Post item -->
-          <article class="post">
-            <div class="thumb">
-              <img src="./css/loibac/29-12.jpg" alt="Ảnh minh hoạ" />
-            </div>
-
-            <div class="post-body">
-              <a class="post-title" href="https://loibacday.com/" target="_blank" rel="noopener">
-                Lời Bác dạy ngày 29 tháng 12
-              </a>
-
-              <div class="meta">
-                <span>🕒 23/12/2023 21:52</span>
-                <span>👁 899</span>
-              </div>
-
-              <div class="quote">
-                “Trong công tác lưu thông phân phối, có hai điều quan trọng phải luôn luôn nhớ:
-                - Không sợ thiếu, chỉ sợ không công bằng,
-                - Không sợ nghèo, chỉ sợ lòng dân không theo”.
-              </div>
-
-              <p class="excerpt">
-                Ngày 29 tháng 12 năm 1966, tại phiên họp cuối năm của Hội đồng chính phủ, khi đề cập đến khuyết điểm của công tác lưu thông phân phối Bác đã căn dặn những điều trên.
-              </p>
-            </div>
-          </article>
-
-          <!-- Post item 2 -->
-          <article class="post">
-            <div class="thumb">
-              <img src="./css/loibac/28-12.jpg" alt="Ảnh minh hoạ" />
-            </div>
-
-            <div class="post-body">
-              <a class="post-title" href="https://loibacday.com/" target="_blank" rel="noopener">
-                Lời Bác dạy ngày 28 tháng 12
-              </a>
-
-              <div class="meta">
-                <span>🕒 23/12/2023 21:48</span>
-                <span>👁 816</span>
-              </div>
-
-               <div class="quote">
-                “Gia đình là hạt nhân của xã hội”.
-              </div>
-
-              <p class="excerpt">
-                Trích trong bài viết “Phải thật sự bảo đảm quyền lợi của phụ nữ” Hồ Chí Minh viết, đăng trên Báo Nhân dân, số 3199, ngày 28 tháng 12 năm 1962.
-              </p>
-            </div>
-          </article>
+          <div class="panel-head" id="panelHead">📁 Lời Bác dạy ngày này năm xưa</div>
+          <div id="posts"></div>
         </div>
       </div>
 
+      <aside class="sidecol">
+        <div class="panel">
+          <div class="panel-head">📌 Gợi ý</div>
+
+          <a class="mini" href="loibacday.html">
+            <img src="./css/loibac/29-12.jpg" alt="Tất cả" />
+            <div>
+              <div class="mini-title">Xem tất cả</div>
+              <div class="mini-sub">Hiện mọi bài viết</div>
+            </div>
+          </a>
+
+          <a class="mini" href="loibacday.html?m=12">
+            <img src="./css/loibac/28-12.jpg" alt="Tháng 12" />
+            <div>
+              <div class="mini-title">Tháng 12</div>
+              <div class="mini-sub">Lọc bài theo tháng 12</div>
+            </div>
+          </a>
+        </div>
+      </aside>
     </section>
+
   </main>
 
-  <script>
-    // Hiển thị thời gian hiện tại (cho giống kiểu trên web mẫu)
-    const el = document.getElementById('todayText');
-    const pad = (n) => String(n).padStart(2, '0');
-
-    const formatVN = (d) => {
-      const days = ["Chủ nhật","Thứ hai","Thứ ba","Thứ tư","Thứ năm","Thứ sáu","Thứ bảy"];
-      return `${days[d.getDay()]}, ${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()}, ${pad(d.getHours())}:${pad(d.getMinutes())}`;
-    };
-
-    const tick = () => el.textContent = formatVN(new Date());
-    tick();
-    setInterval(tick, 1000 * 30);
-
-    // Nút áp dụng ngày (demo)
-    document.getElementById('applyDate').addEventListener('click', () => {
-      const v = document.getElementById('pickDate').value;
-      if(!v) return alert("Chọn ngày trước đã, chủ tướng!");
-      // Sau này chủ tướng có dữ liệu thì lọc bài theo ngày ở đây
-      alert("Đã chọn ngày: " + v);
-    });
-  </script>
-  <script>
-  // ===== Đồng hồ (giữ nguyên của chủ tướng) =====
-  const el = document.getElementById('todayText');
-  const pad = (n) => String(n).padStart(2, '0');
-
-  const formatVN = (d) => {
-    const days = ["Chủ nhật","Thứ hai","Thứ ba","Thứ tư","Thứ năm","Thứ sáu","Thứ bảy"];
-    return `${days[d.getDay()]}, ${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()}, ${pad(d.getHours())}:${pad(d.getMinutes())}`;
-  };
-
-  const tick = () => el.textContent = formatVN(new Date());
-  tick();
-  setInterval(tick, 1000 * 30);
-
-  // ===== Dropdown tháng =====
-  const dd = document.getElementById('monthDropdown');
-  const btn = document.getElementById('monthBtn');
-
-  btn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    dd.classList.toggle('open');
-  });
-
-  document.addEventListener('click', () => dd.classList.remove('open'));
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') dd.classList.remove('open');
-  });
-
-  // ===== Lọc bài theo tháng qua ?m= =====
-  const params = new URLSearchParams(window.location.search);
-  const m = Number(params.get('m') || '');
-
-  // Cách làm: mỗi bài <article class="post"> gắn data-month="12" ... để lọc
-  // Ví dụ: <article class="post" data-month="12">...</article>
-  if (m >= 1 && m <= 12) {
-    const head = document.querySelector('.panel-head');
-    if (head) head.textContent = `📁 Lời Bác dạy ngày này năm xưa (Tháng ${m})`;
-
-    document.querySelectorAll('.post').forEach(post => {
-      const pm = Number(post.dataset.month || '0');
-      post.style.display = (pm === m) ? '' : 'none';
-    });
-  }
-</script>
-
+  <script src="javascrip/loibacday.js"></script>
 </body>
 </html>

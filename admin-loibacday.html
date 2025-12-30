@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin - Lời Bác dạy</title>
+  <link rel="stylesheet" href="css/admin-loibacday.css" />
+</head>
+<body>
+
+  <main class="wrap">
+    <header class="head">
+      <div>
+        <h1>Admin đăng bài - Lời Bác dạy</h1>
+        <p class="sub">Có thể dán link ảnh hoặc tải ảnh từ máy lên (lưu base64).</p>
+      </div>
+
+      <div class="head-actions">
+        <a class="btn" href="loibacday.html">⬅ Về danh sách</a>
+        <button class="btn danger" id="clearAll" type="button">Xóa toàn bộ dữ liệu</button>
+      </div>
+    </header>
+
+    <section class="card">
+      <h2>Đăng / Sửa bài</h2>
+
+      <div class="grid">
+        <label>
+          Tiêu đề <span class="req">*</span>
+          <input id="title" type="text" placeholder="VD: Lời Bác dạy ngày 30 tháng 12" />
+        </label>
+
+        <label>
+          Ngày đăng <span class="req">*</span>
+          <input id="date" type="date" />
+        </label>
+
+        <label>
+          Link nguồn (tuỳ chọn)
+          <input id="link" type="url" placeholder="https://..." />
+        </label>
+
+        <label>
+          Ảnh danh sách (dán link) (tuỳ chọn)
+          <input id="imageUrl" type="url" placeholder="https://.../thumb.jpg" />
+        </label>
+
+        <label class="full">
+          Ảnh danh sách (tải từ máy) (tuỳ chọn)
+          <input id="imageFile" type="file" accept="image/*" />
+          <div class="hint">Nếu đã chọn file thì sẽ ưu tiên file hơn link.</div>
+        </label>
+
+        <label class="full">
+          Trích dẫn (màu đỏ)
+          <textarea id="quote" rows="3" placeholder="“...”"></textarea>
+        </label>
+
+        <label class="full">
+          Mô tả ngắn (hiển thị ở danh sách)
+          <textarea id="content" rows="4" placeholder="Mô tả ngắn..."></textarea>
+        </label>
+
+        <label class="full">
+          Ảnh bài viết chi tiết (dán link) (tuỳ chọn)
+          <input id="detailImageUrl" type="url" placeholder="https://.../anh-chi-tiet.jpg" />
+        </label>
+
+        <label class="full">
+          Ảnh bài viết chi tiết (tải từ máy) (tuỳ chọn)
+          <input id="detailImageFile" type="file" accept="image/*" />
+        </label>
+
+        <label class="full">
+          Nội dung chi tiết (bài viết chính)
+          <textarea id="detailContent" rows="12" placeholder="Nội dung dài của bài viết..."></textarea>
+        </label>
+
+        <label class="full">
+          Ảnh phụ (gallery) - dán link (mỗi dòng 1 link) (tuỳ chọn)
+          <textarea id="detailImagesUrl" rows="4" placeholder="https://.../1.jpg&#10;https://.../2.jpg"></textarea>
+        </label>
+
+        <label class="full">
+          Ảnh phụ (gallery) - tải từ máy (tuỳ chọn)
+          <input id="detailImagesFiles" type="file" accept="image/*" multiple />
+          <div class="hint">Có thể chọn nhiều ảnh một lần.</div>
+        </label>
+      </div>
+
+      <div class="actions">
+        <button class="btn primary" id="save" type="button">Lưu bài</button>
+        <button class="btn" id="cancelEdit" type="button">Hủy sửa</button>
+        <span id="status" class="status" aria-live="polite"></span>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Danh sách bài đã đăng</h2>
+      <div id="list" class="list"></div>
+    </section>
+
+  </main>
+
+  <script src="javascrip/admin-loibacday.js"></script>
+</body>
+</html>
