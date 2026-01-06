@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tin tức đơn vị</title>
+  <link rel="stylesheet" href="css/tintuc.css" />
+</head>
+<body>
+
+  <!-- BANNER -->
+  <header class="banner">
+    <div class="banner-overlay"></div>
+    <div class="banner-inner">
+      <div class="banner-brand">
+        <div class="logo">📰</div>
+        <div>
+          <h1 class="banner-title">TIN TỨC ĐƠN VỊ</h1>
+          <p class="banner-sub">Cập nhật hoạt động, thành tích, tuyên truyền</p>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- NAV -->
+  <nav class="nav">
+    <div class="nav-inner">
+      <a class="nav-item home" href="index.html" title="Trang chủ">🏠</a>
+      <a class="nav-item" href="tonghop.html">📁 Tổng hợp</a>
+      <a class="nav-item" href="admin-tintuc.html" title="Admin">🛠 Admin</a>
+      <a class="nav-item back" href="index.html">⬅ Quay lại</a>
+    </div>
+  </nav>
+
+  <main class="wrap">
+    <section class="tools">
+      <div class="left">
+        <label class="lbl">Tìm kiếm</label>
+        <input id="q" class="input" type="search" placeholder="Nhập tiêu đề / nội dung..." />
+      </div>
+
+      <div class="right">
+        <label class="lbl">Chuyên mục</label>
+        <select id="category" class="select">
+          <option value="">Tất cả</option>
+          <option value="Hoạt động">Hoạt động</option>
+          <option value="Thành tích">Thành tích</option>
+          <option value="Tuyên truyền">Tuyên truyền</option>
+          <option value="Thông báo">Thông báo</option>
+          <option value="Khác">Khác</option>
+        </select>
+      </div>
+
+      <div class="right">
+        <label class="lbl">Sắp xếp</label>
+        <select id="sort" class="select">
+          <option value="new">Mới nhất</option>
+          <option value="old">Cũ nhất</option>
+          <option value="views">Lượt xem</option>
+        </select>
+      </div>
+    </section>
+
+    <section class="layout">
+      <div class="maincol">
+        <div class="panel">
+          <div class="panel-head">
+            <span>🗞 Danh sách tin</span>
+            <span id="count" class="count">0</span>
+          </div>
+
+          <div id="news" class="list">
+            <noscript>Vui lòng bật JavaScript để hiển thị tin.</noscript>
+          </div>
+        </div>
+      </div>
+
+      <aside class="sidecol">
+        <div class="panel">
+          <div class="panel-head">📌 Ghim nhanh</div>
+
+          <!-- ✅ ĐÃ XÓA mục “Mở Admin đăng tin” theo yêu cầu -->
+
+          <div class="hintbox">
+            <div class="hint-title">🧠 Gợi ý bài viết đã đăng</div>
+            <div id="suggested" class="suggested">
+              <div class="suggest-empty">Chưa có bài nào.</div>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <script src="javascrip/tintuc.js"></script>
+</body>
+</html>

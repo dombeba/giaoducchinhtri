@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin - Quản lý 4 bài kiểm tra</title>
+  <link rel="stylesheet" href="css/css/admin-kienthucquannhan.css" />
+</head>
+<body>
+  <main class="wrap">
+    <header class="head">
+      <div>
+        <h1>🛠 Admin — Quản lý 4 bài kiểm tra</h1>
+        <p class="sub">Chọn bài 1–4 → dán <b>Embed</b> + <b>Link</b> → bấm <b>Lưu</b>.</p>
+      </div>
+      <div class="head-actions">
+        <a class="btn" href="kienthucquannhan.html">↩ Về Kiến thức quân nhân</a>
+        <button class="btn danger" id="resetDefault" type="button">Khôi phục 4 bài mặc định</button>
+      </div>
+    </header>
+
+    <section class="card">
+      <div class="row">
+        <h2>✍️ Sửa nội dung bài</h2>
+        <div class="status" id="status"></div>
+      </div>
+
+      <div class="grid">
+        <label>
+          Chọn bài <span class="req">*</span>
+          <select id="slot">
+            <option value="1">Bài 1</option>
+            <option value="2">Bài 2</option>
+            <option value="3">Bài 3</option>
+            <option value="4">Bài 4</option>
+          </select>
+        </label>
+
+        <label class="full">
+          Tiêu đề <span class="req">*</span>
+          <input id="title" type="text" placeholder="VD: BÀI KIỂM TRA CHÍNH TRỊ - TUẦN 1" />
+        </label>
+
+        <label class="full">
+          Embed (link nhúng) <span class="req">*</span>
+          <textarea id="embed" rows="3" placeholder="Dán link dạng: https://docs.google.com/forms/d/e/.../viewform?embedded=true"></textarea>
+          <div class="hint">Bắt buộc có <b>?embedded=true</b> để nhúng được.</div>
+        </label>
+
+        <label class="full">
+          Link mở ngoài (khuyến nghị)
+          <input id="link" type="text" placeholder="Dán forms.gle/... hoặc https://docs.google.com/forms/d/e/.../viewform" />
+          <div class="hint">Nếu để trống, hệ thống tự tạo từ embed (bỏ <b>?embedded=true</b>).</div>
+        </label>
+      </div>
+
+      <div class="actions">
+        <button class="btn primary" id="save" type="button">💾 Lưu bài đã chọn</button>
+        <button class="btn" id="reload" type="button">Tải dữ liệu bài đang chọn</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="row">
+        <h2>📋 Xem nhanh 4 bài hiện có</h2>
+        <div class="hint">Dùng để kiểm tra embed/link đã đúng chưa.</div>
+      </div>
+
+      <div class="list" id="list"></div>
+    </section>
+  </main>
+
+  <script src="javascrip/javascrip/admin-kienthucquannhan.js"></script>
+</body>
+</html>

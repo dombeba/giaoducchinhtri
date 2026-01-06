@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin - Tin tức</title>
+  <link rel="stylesheet" href="css/admin-tintuc.css" />
+</head>
+<body>
+
+  <main class="wrap">
+    <header class="head">
+      <div>
+        <h1>🛠 Admin đăng bài — Tin tức đơn vị</h1>
+        <p class="sub">Cho phép chèn ảnh vào giữa nội dung + chú thích ảnh (chữ nhỏ, nghiêng).</p>
+      </div>
+
+      <div class="head-actions">
+        <a class="btn" href="tintuc.html">⬅ Về trang tin</a>
+        <button class="btn danger" id="clearAll" type="button">Xóa toàn bộ dữ liệu</button>
+      </div>
+    </header>
+
+    <section class="card">
+      <h2>✍️ Đăng / Sửa bài</h2>
+
+      <div class="grid">
+        <label class="full">
+          Tiêu đề <span class="req">*</span>
+          <input id="title" type="text" placeholder="VD: Đơn vị tổ chức huấn luyện..." />
+        </label>
+
+        <label>
+          Ngày đăng <span class="req">*</span>
+          <input id="date" type="date" />
+        </label>
+
+        <label>
+          Chuyên mục
+          <select id="category">
+            <option value="Hoạt động">Hoạt động</option>
+            <option value="Thành tích">Thành tích</option>
+            <option value="Tuyên truyền">Tuyên truyền</option>
+            <option value="Thông báo">Thông báo</option>
+            <option value="Khác">Khác</option>
+          </select>
+        </label>
+
+        <label>
+          Tác giả (tuỳ chọn)
+          <input id="author" type="text" placeholder="Ban CT / Đội..." />
+        </label>
+
+        <label class="full">
+          Link nguồn (tuỳ chọn)
+          <input id="source" type="url" placeholder="https://..." />
+        </label>
+
+        <label class="full">
+          Ảnh đại diện (dán link) (tuỳ chọn)
+          <input id="thumbUrl" type="url" placeholder="https://.../thumb.jpg" />
+        </label>
+
+        <label class="full">
+          Ảnh đại diện (tải từ máy) (tuỳ chọn)
+          <input id="thumbFile" type="file" accept="image/*" />
+          <div class="hint">Nếu đã chọn file thì sẽ ưu tiên file hơn link.</div>
+        </label>
+
+        <label class="full">
+          Tóm tắt (hiển thị ở danh sách)
+          <textarea id="excerpt" rows="4" placeholder="Tóm tắt ngắn 2–4 dòng..."></textarea>
+        </label>
+
+        <label class="full">
+          Ảnh bài viết (ảnh đầu bài) (dán link) (tuỳ chọn)
+          <input id="heroUrl" type="url" placeholder="https://.../anh-lon.jpg" />
+        </label>
+
+        <label class="full">
+          Ảnh bài viết (ảnh đầu bài) (tải từ máy) (tuỳ chọn)
+          <input id="heroFile" type="file" accept="image/*" />
+        </label>
+
+        <label class="full">
+          Nội dung chi tiết <span class="req">*</span>
+          <textarea id="content" rows="12" placeholder="Nội dung dài của bài viết..."></textarea>
+          <div class="hint">Mẹo: có thể chèn ảnh vào giữa nội dung ở khung bên dưới rồi bấm “Chèn vào nội dung”.</div>
+        </label>
+
+        <!-- ✅ KHUNG CHÈN ẢNH GIỮA NỘI DUNG -->
+        <div class="full" style="margin-top:6px; padding:10px; border:1px dashed #ddd; border-radius:12px;">
+          <div style="font-weight:900; margin-bottom:8px;">🖼 Chèn ảnh vào giữa nội dung</div>
+
+          <label class="full">
+            Link ảnh (tuỳ chọn)
+            <input id="inlineImgUrl" type="url" placeholder="https://.../anh.jpg" />
+          </label>
+
+          <label class="full">
+            Hoặc tải ảnh từ máy (tuỳ chọn)
+            <input id="inlineImgFile" type="file" accept="image/*" />
+            <div class="hint">Nếu chọn file thì sẽ ưu tiên file hơn link.</div>
+          </label>
+
+          <label class="full">
+            Chú thích ảnh (sẽ hiện chữ nhỏ + nghiêng dưới ảnh)
+            <input id="inlineImgCaption" type="text" placeholder="VD: CSB 9002 thực hiện nhiệm vụ trên biển..." />
+          </label>
+
+          <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;">
+            <button class="btn primary" id="insertInlineImage" type="button">Chèn vào nội dung</button>
+            <div class="hint" style="margin:0;">
+              Ảnh sẽ được chèn tại vị trí con trỏ trong ô “Nội dung”.
+            </div>
+          </div>
+        </div>
+
+        <label class="full">
+          Ảnh phụ (gallery) — dán link (mỗi dòng 1 link) (tuỳ chọn)
+          <textarea id="galleryUrls" rows="4" placeholder="https://.../1.jpg&#10;https://.../2.jpg"></textarea>
+        </label>
+
+        <label class="full">
+          Ảnh phụ (gallery) — tải từ máy (tuỳ chọn)
+          <input id="galleryFiles" type="file" accept="image/*" multiple />
+          <div class="hint">Có thể chọn nhiều ảnh một lần.</div>
+        </label>
+      </div>
+
+      <div class="actions">
+        <button class="btn primary" id="save" type="button">Lưu bài</button>
+        <button class="btn" id="cancelEdit" type="button">Hủy sửa</button>
+        <span id="status" class="status" aria-live="polite"></span>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>📋 Danh sách bài đã đăng</h2>
+      <div id="list" class="list"></div>
+    </section>
+
+  </main>
+
+  <script src="javascrip/admin-tintuc.js"></script>
+</body>
+</html>

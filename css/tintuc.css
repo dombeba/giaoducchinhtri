@@ -1,0 +1,376 @@
+:root{
+  --blue:#2f77b7;
+  --blue2:#25679f;
+  --green:#1f7a3a;
+  --red:#c62522;
+
+  --bg:#f2f2f2;
+  --card:#ffffff;
+  --line:#e6e6e6;
+  --text:#222;
+  --muted:#666;
+}
+
+*{ box-sizing:border-box; }
+body{
+  margin:0;
+  font-family: "Times New Roman", Times, serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+
+/* ===== BANNER ===== */
+.banner{
+  position:relative;
+  width:100%;
+  height:190px;
+  background:
+    linear-gradient(90deg, rgba(255,255,255,.85), rgba(255,255,255,.55), rgba(255,255,255,.25)),
+    url("../css/loibac/banner.png") center/cover no-repeat;
+}
+.banner.small{ height:140px; }
+
+.banner-overlay{ position:absolute; inset:0; }
+.banner-inner{
+  position:relative;
+  max-width:1200px;
+  height:100%;
+  margin:0 auto;
+  padding:0 16px;
+  display:flex;
+  align-items:center;
+}
+.banner-brand{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.logo{
+  width:64px; height:64px;
+  border-radius:16px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:28px;
+  background: rgba(255,255,255,.7);
+  border:1px solid rgba(0,0,0,.08);
+  box-shadow: 0 6px 14px rgba(0,0,0,.12);
+}
+.banner-title{
+  margin:0;
+  font-size:28px;
+  font-weight:900;
+  color: var(--green);
+  letter-spacing: .6px;
+}
+.banner-sub{
+  margin:6px 0 0;
+  color:#2b2b2b;
+  font-weight:700;
+  opacity:.85;
+}
+
+/* ===== NAV ===== */
+.nav{
+  background: var(--blue);
+  border-bottom:1px solid rgba(0,0,0,.08);
+}
+.nav-inner{
+  max-width:1200px;
+  margin:0 auto;
+  padding:0 8px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.nav-item{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:12px 14px;
+  color:#fff;
+  text-decoration:none;
+  font-weight:800;
+  border-left:1px solid rgba(255,255,255,.18);
+}
+.nav-item:first-child{ border-left:none; }
+.nav-item:hover{ background: var(--blue2); }
+.nav-item.home{ width:44px; padding:12px 0; }
+.nav-item.back{
+  margin-left:auto;
+  background:rgba(255,255,255,.14);
+  border-radius:10px;
+  border-left:none;
+}
+
+/* ===== WRAP ===== */
+.wrap{
+  max-width:1200px;
+  margin:14px auto 30px;
+  padding:0 14px;
+}
+
+/* ===== TOOLBAR ===== */
+.tools{
+  display:grid;
+  grid-template-columns: 1fr 220px 220px;
+  gap:10px;
+  background:#fff;
+  border:1px solid var(--line);
+  padding:12px;
+}
+.lbl{ display:block; font-size:12px; font-weight:800; color:var(--muted); margin-bottom:6px; }
+.input,.select{
+  width:100%;
+  padding:10px 12px;
+  border:1px solid var(--line);
+  border-radius:10px;
+  outline:none;
+  font-size:14px;
+}
+.input:focus,.select:focus{ border-color: rgba(47,119,183,.55); }
+
+/* ===== LAYOUT ===== */
+.layout{
+  margin-top:10px;
+  display:grid;
+  grid-template-columns: 1fr 320px;
+  gap:14px;
+}
+.panel{
+  background:var(--card);
+  border:1px solid var(--line);
+}
+.panel-head{
+  padding:10px 12px;
+  font-weight:900;
+  background:#fafafa;
+  border-bottom:1px solid var(--line);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+.count{
+  font-size:12px;
+  color:var(--muted);
+  font-weight:800;
+  background:#fff;
+  border:1px solid var(--line);
+  padding:4px 8px;
+  border-radius:999px;
+}
+
+/* ===== LIST ===== */
+.list{ display:flex; flex-direction:column; }
+.item{
+  display:grid;
+  grid-template-columns: 240px 1fr;
+  gap:12px;
+  padding:12px;
+  border-bottom:1px solid var(--line);
+}
+.item:last-child{ border-bottom:none; }
+
+.thumb img{
+  width:100%;
+  height:140px;
+  object-fit:cover;
+  border:1px solid var(--line);
+  border-radius:10px;
+  background:#fff;
+}
+
+.title{
+  display:inline-block;
+  font-size:18px;
+  font-weight:900;
+  color:#1b5fa8;
+  text-decoration:none;
+  margin-bottom:8px;
+}
+.detail-title{
+  font-family: "Times New Roman", Times, serif;
+  letter-spacing: .2px;
+}
+
+.excerpt,
+.rich-text,
+.detail-content,
+.suggest-title,
+.suggest-meta,
+.meta,
+.detail-meta,
+.inline-figure figcaption{
+  font-family: "Times New Roman", Times, serif;
+}
+.title:hover{ color: var(--red); text-decoration: underline; }
+
+.meta{
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+  font-size:13px;
+  color:var(--muted);
+  margin-bottom:8px;
+}
+.badge{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  font-weight:900;
+  font-size:12px;
+  padding:4px 8px;
+  border-radius:999px;
+  border:1px solid rgba(0,0,0,.10);
+  background: rgba(255,255,255,.8);
+}
+.excerpt{ margin:0; line-height:1.5; color:#333; }
+
+/* ===== SIDEBAR (chỉ còn gợi ý bài viết) ===== */
+.hintbox{
+  padding:10px 12px 12px;
+}
+.hint-title{
+  font-weight:900;
+  margin-bottom:6px;
+}
+
+/* ===== Suggested posts ===== */
+.suggested{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  margin-top:10px;
+}
+
+.suggest-item{
+  display:block;
+  padding:10px 10px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  text-decoration:none;
+  color:var(--text);
+  background:#fff;
+}
+
+.suggest-item:hover{
+  background:#fafafa;
+  border-color: rgba(47,119,183,.25);
+}
+
+.suggest-title{
+  font-weight:900;
+  line-height:1.35;
+}
+
+.suggest-meta{
+  margin-top:6px;
+  color:var(--muted);
+  font-size:12px;
+  font-weight:700;
+}
+
+.suggest-empty{
+  color:var(--muted);
+  font-weight:700;
+}
+
+/* ===== DETAIL ===== */
+.detail{ padding:14px 12px 18px; }
+
+.detail-title{
+  margin:0 0 10px;
+  font-size:28px;
+  font-weight:900;
+  color:#1b5fa8;
+}
+.detail-meta{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  color:var(--muted);
+  font-size:13px;
+  margin-bottom:12px;
+}
+.detail-link{
+  color:#1b5fa8;
+  font-weight:900;
+  text-decoration:none;
+}
+.detail-link:hover{ color:var(--red); text-decoration:underline; }
+
+.detail-hero img{
+  width:100%;
+  max-height: 560px;
+  object-fit: contain;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:#fff;
+}
+
+.detail-content{
+  margin-top:12px;
+  line-height:1.8;
+  color:#222;
+}
+
+.detail-gallery{
+  margin-top:14px;
+  display:grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap:10px;
+}
+.detail-gallery img{
+  width:100%;
+  height: 170px;
+  object-fit: cover;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:#fff;
+}
+
+.empty{
+  padding:14px 12px;
+  color:#666;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 980px){
+  .layout{ grid-template-columns: 1fr; }
+  .tools{ grid-template-columns: 1fr; }
+  .nav-item.back{ margin-left:0; }
+}
+@media (max-width: 900px){
+  .item{ grid-template-columns: 1fr; }
+  .thumb img{ height:200px; }
+  .detail-gallery{ grid-template-columns: 1fr; }
+}
+@media (max-width: 520px){
+  .banner-title{ font-size:20px; }
+  .logo{ width:54px; height:54px; }
+}
+/* ===== Nội dung rich (chèn ảnh giữa bài) ===== */
+.rich-text{
+  line-height: 1.8;
+  color:#222;
+  margin: 10px 0;
+}
+
+.inline-figure{
+  margin: 14px 0;
+  text-align: center;
+}
+
+.inline-figure img{
+  max-width: 100%;
+  height: auto;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:#fff;
+}
+
+.inline-figure figcaption{
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--muted);
+  font-style: italic;
+}

@@ -1,118 +1,117 @@
 /**
- * KIẾN THỨC QUÂN NHÂN - Danh sách bài thi
- * - embed: link nhúng Google Form (bắt buộc có ?embedded=true)
- * - link : link mở ngoài (tab mới). Nếu không khai báo, hệ thống tự tạo từ embed.
+ * KIẾN THỨC QUÂN NHÂN - 4 bài kiểm tra cố định
+ * Quản lý tại: admin-kienthucquannhan.html
  */
+const KEY = "KIENTHUC_QUIZZES_V1";
 
-const QUIZZES = [
-  {
-    title: "KIỂM TRA CHÍNH TRỊ CSM",
-    embed:
-      "https://docs.google.com/forms/d/e/1FAIpQLSeXK2tEJiW1gJ_pzEbpFpsZvSp4UHCPtFyD3qWRT3rBMhhUug/viewform?embedded=true",
-     link: "https://forms.gle/HV3tyx6HCKPsy33Z9",
-  },
-  {
-    title: "KIỂM TRA NHẬN THỨC QUÂN SỰ",
-    embed: "", // dán link nhúng vào đây
-  },
-  {
-    title: "KIỂM TRA NHẬN THỨC HC-KT",
-    embed: "", // dán link nhúng vào đây
-  },
-  {
-    title: "KIỂM TRA CHÍNH TRỊ HSQ-BS",
-    embed: "", // dán link nhúng vào đây
-  },
-];
-
-/** chấp nhận cả dạng /forms/d/e/... và /forms/d/... */
+/** chấp nhận cả /forms/d/e/... và /forms/d/... */
 function isEmbedUrl(url = "") {
-  return /docs\.google\.com\/forms\/d(\/e)?\/.+\/viewform\?embedded=true/i.test(
-    url
-  );
+  return /docs\.google\.com\/forms\/d(\/e)?\/.+\/viewform\?embedded=true/i.test(url.trim());
 }
-
-/** tạo link mở ngoài từ link nhúng */
 function toOpenLink(embedUrl = "") {
-  // bỏ ?embedded=true để mở full trang form
-  return embedUrl.replace(/\?embedded=true\b/i, "");
+  return embedUrl.trim().replace(/\?embedded=true\b/i, "");
 }
 
-function makeMissingEmbedHtml() {
+function default4(){
+  return [1,2,3,4].map(i => ({
+    slot: i,
+    title: `BÀI KIỂM TRA ${i}`,
+    embed: "",
+    link: ""
+  }));
+}
+
+function loadQuizzes(){
+  try{
+    const raw = localStorage.getItem(KEY);
+    if(!raw) return default4();
+    const parsed = JSON.parse(raw);
+    if(!Array.isArray(parsed)) return default4();
+
+    const map = new Map(parsed.map(x => [x.slot, x]));
+    return [1,2,3,4].map(i => {
+      const q = map.get(i) || {};
+      return {
+        slot: i,
+        title: q.title || `BÀI KIỂM TRA ${i}`,
+        embed: q.embed || "",
+        link: q.link || ""
+      };
+    });
+  } catch {
+    return default4();
+  }
+}
+
+function emptyHtml(slot){
   return `
     <div style="font-family:Arial;padding:16px;">
-      <h3 style="margin:0 0 10px;">Chưa gắn link bài thi</h3>
+      <h3 style="margin:0 0 10px;">Bài ${slot} chưa có nội dung</h3>
       <p style="margin:0 0 8px;line-height:1.4;">
-        Hãy thay <b>embed</b> bằng link nhúng Google Form dạng:
+        Vào trang <b>Admin</b> để dán embed & link.
       </p>
-      <code style="display:block;background:#f2f2f2;padding:10px;border-radius:8px;overflow:auto;">
-        https://docs.google.com/forms/d/e/&lt;FORM_ID&gt;/viewform?embedded=true
-      </code>
+      <a href="admin-kienthucquannhan.html">Mở trang quản lý bài kiểm tra</a>
     </div>
   `;
 }
 
-function renderQuizzes() {
+function badEmbedHtml(){
+  return `
+    <div style="font-family:Arial;padding:16px;">
+      <h3 style="margin:0 0 10px;">Embed chưa đúng</h3>
+      <p style="margin:0 0 8px;line-height:1.4;">
+        Embed phải là link Google Form có <b>?embedded=true</b>.
+      </p>
+      <a href="admin-kienthucquannhan.html">Mở trang quản lý bài kiểm tra</a>
+    </div>
+  `;
+}
+
+function renderQuizzes(){
   const grid = document.getElementById("quizGrid");
-  if (!grid) return;
+  if(!grid) return;
 
+  const quizzes = loadQuizzes();
+
+  // đảm bảo có đúng 4 card (nếu HTML thiếu thì tự tạo)
   grid.innerHTML = "";
-
-  QUIZZES.forEach((q) => {
+  quizzes.forEach(q => {
     const card = document.createElement("article");
     card.className = "quiz-card";
-    // đảm bảo nút nổi định vị đúng (CSS cũng nên có quiz-card{position:relative})
-    card.style.position = "relative";
 
-    // ===== NÚT MỞ LINK NGOÀI (đè lên góc phải) =====
-    const embed = (q.embed || "").trim();
-    const canEmbed = embed !== "" && isEmbedUrl(embed);
+    const embedOk = q.embed && isEmbedUrl(q.embed);
+    const openLink = (q.link || "").trim() || (embedOk ? toOpenLink(q.embed) : "");
 
-    const openLink = (q.link || "").trim() || (canEmbed ? toOpenLink(embed) : "");
-
-    if (openLink) {
+    if(openLink){
       const openBtn = document.createElement("a");
+      openBtn.className = "open-external";
       openBtn.href = openLink;
       openBtn.target = "_blank";
       openBtn.rel = "noopener noreferrer";
-      openBtn.className = "open-external";
       openBtn.title = "Mở bài thi";
 
-      // icon kiểu "mở ra ngoài"
-      openBtn.innerHTML = `
-        <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
-          <path fill="currentColor"
-            d="M14 3h7v7h-2V6.41l-9.29 9.3-1.42-1.42
-               9.3-9.29H14V3z"/>
-          <path fill="currentColor"
-            d="M5 5h6V3H5c-1.1 0-2 .9-2 2v14
-               c0 1.1.9 2 2 2h14c1.1 0
-               2-.9 2-2v-6h-2v6H5V5z"/>
-        </svg>
-      `;
-
-      // append trước iframe để nằm “trên bài”
+      openBtn.textContent = "Mở bài";
       card.appendChild(openBtn);
     }
 
-    // ===== IFRAME =====
     const iframe = document.createElement("iframe");
     iframe.className = "quiz-frame";
     iframe.loading = "lazy";
     iframe.referrerPolicy = "no-referrer-when-downgrade";
     iframe.allow = "clipboard-read; clipboard-write";
-    iframe.title = q.title;
+    iframe.title = q.title || `Bài ${q.slot}`;
 
-    if (canEmbed) {
-      iframe.src = embed;
+    if(!q.embed){
+      iframe.srcdoc = emptyHtml(q.slot);
+    } else if(!embedOk){
+      iframe.srcdoc = badEmbedHtml();
     } else {
-      iframe.srcdoc = makeMissingEmbedHtml();
+      iframe.src = q.embed;
     }
 
-    // ===== CAPTION =====
     const caption = document.createElement("div");
     caption.className = "quiz-caption";
-    caption.textContent = q.title;
+    caption.textContent = q.title || `BÀI KIỂM TRA ${q.slot}`;
 
     card.appendChild(iframe);
     card.appendChild(caption);

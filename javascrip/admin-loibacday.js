@@ -1,3 +1,13 @@
+// ===== BẢO VỆ TRANG ADMIN (CÁCH 1) =====
+const ADMIN_PASSWORD = "123321"; // 🔴 ĐỔI MẬT KHẨU TẠI ĐÂY
+
+const input = prompt("🔐 Nhập mật khẩu quản trị:");
+if (input !== ADMIN_PASSWORD) {
+  alert("❌ Sai mật khẩu. Không có quyền truy cập.");
+  window.location.href = "index.html";
+}
+
+// ===== PHẦN CODE CŨ (GIỮ NGUYÊN) =====
 const KEY = "LOIBACDAY_POSTS_V1";
 
 // ===== DOM =====
