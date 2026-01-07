@@ -151,4 +151,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   $("loginUser")?.addEventListener("keydown", (e) => e.key === "Enter" && login());
   $("loginPass")?.addEventListener("keydown", (e) => e.key === "Enter" && login());
+  $("btnLogout")?.addEventListener("click", () => {
+  localStorage.removeItem(SESSION_KEY);
+  setText("loginStatus", "Đã đăng xuất.");
+});
+
 });
