@@ -2,9 +2,9 @@
 const APPROVED_CSV_URL =
   "https://docs.google.com/spreadsheets/d/e/2PACX-1vQutwuXk3RybTMjkp3qqZ_jomt3gnMqDhQkaLF0Xd2ggq-0is6uNkMWJA6_ihSJT9mmT8tedbbWifZf/pub?gid=112761703&single=true&output=csv";
 
-// (tuỳ chọn) link Google Form đăng ký – để nút Đăng ký mở form
-// Nếu chưa có nút đăng ký thì bỏ qua
-const REGISTER_FORM_URL = ""; // dán link form nếu muốn
+// 🔴 LINK GOOGLE FORM ĐĂNG KÝ (ĐÃ GẮN)
+const REGISTER_FORM_URL =
+  "https://docs.google.com/forms/d/e/1FAIpQLSe5f3B8pUm4pzfbOUfexSokGGUMrRoAey2Z2eEtQyfBDDWBKg/viewform";
 
 // ====== KEY ======
 const SESSION_KEY = "KTQN_SESSION_V1";
@@ -47,7 +47,7 @@ function normalizeUsername(s) {
     .replace(/[^a-z0-9]/g, "");
 }
 
-// Parse CSV (có hỗ trợ dấu phẩy trong ngoặc kép)
+// ====== CSV ======
 function parseCSV(text) {
   const rows = [];
   let row = [];
@@ -85,109 +85,70 @@ function parseCSV(text) {
     cur += ch;
   }
 
-  // last cell
   if (cur.length || row.length) {
     row.push(cur);
     rows.push(row);
   }
 
-  // drop empty last line
-  const cleaned = rows.filter((r) => r.some((c) => String(c).trim() !== ""));
-  return cleaned;
+  return rows.filter((r) => r.some((c) => String(c).trim() !== ""));
 }
 
 function toObjects(csvText) {
   const rows = parseCSV(csvText);
   if (!rows.length) return [];
-
   const headers = rows[0].map((h) => String(h).trim());
-  const items = [];
-
-  for (let i = 1; i < rows.length; i++) {
-    const r = rows[i];
-    const obj = {};
-    headers.forEach((h, idx) => (obj[h] = r[idx] ?? ""));
-    items.push(obj);
-  }
-  return items;
+  return rows.slice(1).map((r) => {
+    const o = {};
+    headers.forEach((h, i) => (o[h] = r[i] ?? ""));
+    return o;
+  });
 }
 
 async function fetchApprovedUsers() {
-  // cache-bust để GitHub pages không bị cache
   const url = `${APPROVED_CSV_URL}&_=${Date.now()}`;
-  const res = await fetch(url, { method: "GET" });
+  const res = await fetch(url);
   if (!res.ok) throw new Error("FETCH_FAILED");
-  const text = await res.text();
-  return toObjects(text);
+  return toObjects(await res.text());
 }
 
 // ====== LOGIN ======
 async function login() {
-  // ⚠️ các id input này phải đúng với dangnhapktqn.html của chủ tướng
   const rawU = ($("loginUser")?.value || "").trim();
   const rawP = ($("loginPass")?.value || "").trim();
-
-  if (!rawU || !rawP) return setText("loginStatus", "Cần nhập tên đăng nhập và mật khẩu.");
+  if (!rawU || !rawP) return setText("loginStatus", "Cần nhập đủ thông tin.");
 
   const u = normalizeUsername(rawU);
-  const p = String(rawP).trim(); // giữ nguyên số 0
+  const p = String(rawP).trim();
 
-  setText("loginStatus", "Đang kiểm tra tài khoản...");
+  setText("loginStatus", "Đang kiểm tra...");
 
   try {
     const users = await fetchApprovedUsers();
-
-    // tìm user theo username (đã normalize)
     const found = users.find((x) => normalizeUsername(x.username) === u);
+    if (!found) return setText("loginStatus", "❌ Tài khoản chưa được duyệt.");
 
-    if (!found) {
-      return setText("loginStatus", "❌ Tài khoản chưa được duyệt hoặc không tồn tại.");
-    }
-
-    // password phải so sánh chuỗi (giữ số 0)
-    const pw = String(found.password ?? "").trim();
-    if (pw !== p) {
+    if (String(found.password).trim() !== p)
       return setText("loginStatus", "❌ Sai mật khẩu.");
-    }
 
-    saveSession({
-      username: String(found.username || u).trim(),
-      fullName: String(found.fullName || "").trim(),
-      rank: String(found.rank || "").trim(),
-      position: String(found.position || "").trim(),
-      unit: String(found.unit || "").trim(),
-      phone: String(found.phone || "").trim(),
-    });
-
-    setText("loginStatus", "✅ Đăng nhập thành công. Đang chuyển...");
+    saveSession(found);
+    setText("loginStatus", "✅ Thành công. Đang chuyển...");
     setTimeout(() => (window.location.href = getReturnUrl()), 400);
-  } catch (e) {
-    setText("loginStatus", "❌ Không đọc được danh sách duyệt (CSV). Kiểm tra lại Publish.");
+  } catch {
+    setText("loginStatus", "❌ Không đọc được danh sách duyệt.");
   }
 }
 
 // ====== REGISTER ======
 function openRegisterForm() {
-  if (!REGISTER_FORM_URL) {
-    alert("Chưa cấu hình link Google Form đăng ký.");
-    return;
-  }
-  window.open(REGISTER_FORM_URL, "_blank");
+  const w = window.open(REGISTER_FORM_URL, "_blank", "noopener,noreferrer");
+  if (!w) window.location.href = REGISTER_FORM_URL;
 }
 
 // ====== INIT ======
 document.addEventListener("DOMContentLoaded", () => {
-  // nút đăng nhập
   $("btnLogin")?.addEventListener("click", login);
-
-  // Enter để đăng nhập
-  $("loginUser")?.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") login();
-  });
-  $("loginPass")?.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") login();
-  });
-
-  // nút đăng ký (nếu có)
   $("btnRegister")?.addEventListener("click", openRegisterForm);
+
+  $("loginUser")?.addEventListener("keydown", (e) => e.key === "Enter" && login());
+  $("loginPass")?.addEventListener("keydown", (e) => e.key === "Enter" && login());
 });
