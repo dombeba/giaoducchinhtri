@@ -3,85 +3,124 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Đăng nhập/Đăng ký - Kiến thức Quân nhân</title>
+  <title>Đăng nhập KTQN</title>
+
+  <!-- CSS riêng cho trang đăng nhập -->
   <link rel="stylesheet" href="css/css/dangnhapktqn.css" />
 </head>
 <body>
+
+  <!-- Top bar -->
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <div class="logo">KTQN</div>
+        <div class="brand-text">
+          <h1>ĐĂNG NHẬP HỆ THỐNG</h1>
+          <p>Kiến thức Quân nhân — Đơn vị</p>
+        </div>
+      </div>
+
+      <nav class="top-actions">
+        <a class="btn ghost" href="index.html">🏠 Trang chủ</a>
+        <a class="btn ghost" href="kienthucquannhan.html">📘 Vào KTQN</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main -->
   <main class="wrap">
-    <header class="head">
-      <div>
-        <h1>🔐 KIẾN THỨC QUÂN NHÂN</h1>
-        <p class="sub">Đăng nhập để vào phần thi trắc nghiệm. Nếu chưa có tài khoản, đăng ký ở bên dưới.</p>
-      </div>
-      <div class="head-actions">
-        <a class="btn" href="index.html">🏠 Trang chủ</a>
-        <a class="btn" href="kienthucquannhan.html">↩ Vào trang thi</a>
-      </div>
-    </header>
+    <section class="hero">
+      <h2>Chào mừng quay trở lại</h2>
+      <p>
+        Dùng <b>tên đăng nhập</b> và <b>mật khẩu</b> do Admin cấp để vào hệ thống.
+        Nếu chưa có tài khoản, bấm <b>Đăng ký tài khoản</b>.
+      </p>
+    </section>
 
-    <section class="grid2">
-      <!-- ĐĂNG NHẬP -->
+    <section class="grid">
+      <!-- Login card -->
       <section class="card">
-        <h2>Đăng nhập</h2>
+        <div class="card-head">
+          <h3>🔐 Đăng nhập</h3>
+          <span class="pill">Tài khoản đã duyệt</span>
+        </div>
 
-        <label>
-          Tên đăng nhập
-          <input id="loginUser" type="text" placeholder="VD: nguyenvana" autocomplete="username" />
-          <div class="hint">Tên đăng nhập = Họ và tên viết liền không dấu (do Admin cấp khi xác nhận).</div>
-        </label>
+        <div class="form">
+          <label class="field">
+            <span class="label">Tên đăng nhập</span>
+            <input
+              id="loginUser"
+              type="text"
+              placeholder="VD: hoangkimsang"
+              autocomplete="username"
+              spellcheck="false"
+            />
+            <span class="hint">Họ tên viết liền, không dấu (do Admin cấp).</span>
+          </label>
 
-        <label>
-          Mật khẩu
-          <input id="loginPass" type="password" placeholder="VD: 098xxxxxxx" autocomplete="current-password" />
-        </label>
+          <label class="field">
+            <span class="label">Mật khẩu</span>
+            <input
+              id="loginPass"
+              type="password"
+              placeholder="Số điện thoại đã đăng ký"
+              autocomplete="current-password"
+            />
 
-        <div class="actions">
-          <button class="btn primary" id="btnLogin" type="button">Đăng nhập</button>
-          <button class="btn" id="btnLogout" type="button">Đăng xuất</button>
-          <span class="status" id="loginStatus" aria-live="polite"></span>
+          </label>
+
+          <div class="actions">
+            <button class="btn primary" id="btnLogin" type="button">Đăng nhập</button>
+            <span class="status" id="loginStatus" aria-live="polite"></span>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="small-note">
+            * Nếu đăng nhập xong mà vẫn ở lại trang này, hãy <b>Ctrl + F5</b> để tải lại.
+          </div>
         </div>
       </section>
 
-      <!-- ĐĂNG KÝ -->
-      <section class="card">
-        <h2>Đăng ký tài khoản</h2>
-
-        <div class="grid">
-          <label class="full">
-            Họ và tên <span class="req">*</span>
-            <input id="fullName" type="text" placeholder="VD: Nguyễn Văn A" />
-          </label>
-
-          <label>
-            Cấp bậc <span class="req">*</span>
-            <input id="rank" type="text" placeholder="VD: Thượng úy" />
-          </label>
-
-          <label>
-            Chức vụ <span class="req">*</span>
-            <input id="position" type="text" placeholder="VD: Chính trị viên" />
-          </label>
-
-          <label class="full">
-            Đơn vị <span class="req">*</span>
-            <input id="unit" type="text" placeholder="VD: Tàu 9002" />
-          </label>
-
-          <label class="full">
-            Số điện thoại <span class="req">*</span>
-            <input id="phone" type="tel" placeholder="VD: 0981234567" />
-          </label>
+      <!-- Register card -->
+      <section class="card highlight">
+        <div class="card-head">
+          <h3>📝 Đăng ký tài khoản</h3>
+          <span class="pill warn">Chưa có tài khoản?</span>
         </div>
 
-        <div class="actions">
-          <button class="btn primary" id="btnRegister" type="button">Gửi đăng ký</button>
-          <button class="btn" id="btnClear" type="button">Xóa nhập</button>
-          <span class="status" id="regStatus" aria-live="polite"></span>
+        <div class="register">
+          <p class="desc">
+            Đăng ký qua biểu mẫu chính thức. Admin sẽ xét duyệt và cấp tài khoản.
+          </p>
+
+          <ul class="checklist">
+            <li>✔ Đăng ký trực tuyến (Google Form)</li>
+            <li>✔ Admin duyệt theo danh sách</li>
+            <li>✔ Tên đăng nhập: <em>họ tên viết liền, không dấu</em></li>
+            <li>✔ Mật khẩu: <em>số điện thoại đăng ký</em></li>
+          </ul>
+
+          <button class="btn primary big" id="btnRegister" type="button">
+            ➕ Đăng ký tài khoản
+          </button>
+
+          <p class="small-note">
+            Lưu ý: Khi bấm đăng ký sẽ mở tab mới. Nếu trình duyệt chặn pop-up, hệ thống sẽ tự mở cùng tab.
+          </p>
         </div>
       </section>
     </section>
+
+    <footer class="footer">
+      <span>© Kiến thức Quân nhân</span>
+      <span class="dot">•</span>
+      <span>Phiên bản nội bộ</span>
+    </footer>
   </main>
 
+  <!-- JS -->
   <script src="javascrip/dangnhapktqn.js?v=3"></script>
 </body>
 </html>
