@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Đăng nhập/Đăng ký - Kiến thức Quân nhân</title>
+  <link rel="stylesheet" href="css/css/dangnhapktqn.css" />
+</head>
+<body>
+  <main class="wrap">
+    <header class="head">
+      <div>
+        <h1>🔐 KIẾN THỨC QUÂN NHÂN</h1>
+        <p class="sub">Đăng nhập để vào phần thi trắc nghiệm. Nếu chưa có tài khoản, đăng ký ở bên dưới.</p>
+      </div>
+      <div class="head-actions">
+        <a class="btn" href="index.html">🏠 Trang chủ</a>
+        <a class="btn" href="kienthucquannhan.html">↩ Vào trang thi</a>
+      </div>
+    </header>
+
+    <section class="grid2">
+      <!-- ĐĂNG NHẬP -->
+      <section class="card">
+        <h2>Đăng nhập</h2>
+
+        <label>
+          Tên đăng nhập
+          <input id="loginUser" type="text" placeholder="VD: nguyenvana" autocomplete="username" />
+          <div class="hint">Tên đăng nhập = Họ và tên viết liền không dấu (do Admin cấp khi xác nhận).</div>
+        </label>
+
+        <label>
+          Mật khẩu
+          <input id="loginPass" type="password" placeholder="VD: 098xxxxxxx" autocomplete="current-password" />
+        </label>
+
+        <div class="actions">
+          <button class="btn primary" id="btnLogin" type="button">Đăng nhập</button>
+          <button class="btn" id="btnLogout" type="button">Đăng xuất</button>
+          <span class="status" id="loginStatus" aria-live="polite"></span>
+        </div>
+      </section>
+
+      <!-- ĐĂNG KÝ -->
+      <section class="card">
+        <h2>Đăng ký tài khoản</h2>
+
+        <div class="grid">
+          <label class="full">
+            Họ và tên <span class="req">*</span>
+            <input id="fullName" type="text" placeholder="VD: Nguyễn Văn A" />
+          </label>
+
+          <label>
+            Cấp bậc <span class="req">*</span>
+            <input id="rank" type="text" placeholder="VD: Thượng úy" />
+          </label>
+
+          <label>
+            Chức vụ <span class="req">*</span>
+            <input id="position" type="text" placeholder="VD: Chính trị viên" />
+          </label>
+
+          <label class="full">
+            Đơn vị <span class="req">*</span>
+            <input id="unit" type="text" placeholder="VD: Tàu 9002" />
+          </label>
+
+          <label class="full">
+            Số điện thoại <span class="req">*</span>
+            <input id="phone" type="tel" placeholder="VD: 0981234567" />
+          </label>
+        </div>
+
+        <div class="actions">
+          <button class="btn primary" id="btnRegister" type="button">Gửi đăng ký</button>
+          <button class="btn" id="btnClear" type="button">Xóa nhập</button>
+          <span class="status" id="regStatus" aria-live="polite"></span>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <script src="javascrip/dangnhapktqn.js"></script>
+</body>
+</html>

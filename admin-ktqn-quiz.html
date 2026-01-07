@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin - Tạo bài thi KTQN</title>
+  <link rel="stylesheet" href="css/admin-ktqn.css" />
+</head>
+<body>
+  <main class="wrap">
+    <header class="head">
+      <div>
+        <h1>🛠 Admin — Tạo bài thi (KTQN)</h1>
+        <p class="sub">Tạo bài theo <b>4 mục</b> và theo <b>tuần</b>. Nộp bài sẽ tính điểm và lưu kết quả.</p>
+      </div>
+      <div class="head-actions">
+        <a class="btn" href="kienthucquannhan.html">↩ Về trang KTQN</a>
+        <a class="btn" href="admin-ktqn-ketqua.html">📊 Xem kết quả</a>
+      </div>
+    </header>
+
+    <section class="card">
+      <div class="row">
+        <h2>✍️ Tạo / Sửa bài</h2>
+        <span class="status" id="status" aria-live="polite"></span>
+      </div>
+
+      <div class="grid">
+        <label>
+          Chọn mục <span class="req">*</span>
+          <select id="cat">
+            <option value="chiensi">Bài thi cho chiến sĩ</option>
+            <option value="qncn">Bài thi cho QNCN</option>
+            <option value="syquan">Bài thi cho sỹ quan</option>
+            <option value="nhanthuc">Bài thi nhận thức chính trị</option>
+          </select>
+        </label>
+
+        <label>
+          Tuần <span class="req">*</span>
+          <input id="week" type="number" min="1" max="60" placeholder="VD: 1" />
+        </label>
+
+        <label class="full">
+          Tiêu đề bài thi <span class="req">*</span>
+          <input id="title" type="text" placeholder="VD: Tuần 1 - Nhận thức chính trị" />
+        </label>
+      </div>
+
+      <div class="hint">
+        Mỗi câu hỏi: nhập câu + 4 đáp án + chọn đáp án đúng + điểm.  
+        (Mặc định 1 điểm/câu nếu bỏ trống điểm)
+      </div>
+
+      <div class="actions">
+        <button class="btn" id="addQ" type="button">➕ Thêm câu</button>
+        <button class="btn primary" id="save" type="button">💾 Lưu bài</button>
+      </div>
+
+      <div id="qWrap" class="qwrap"></div>
+    </section>
+
+    <section class="card">
+      <h2>📋 Danh sách bài đã tạo</h2>
+      <div id="list" class="list"></div>
+    </section>
+  </main>
+
+  <script src="javascrip/admin-ktqn-quiz.js"></script>
+</body>
+</html>

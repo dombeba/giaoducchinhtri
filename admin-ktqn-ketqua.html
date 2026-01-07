@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin - Kết quả KTQN</title>
+  <link rel="stylesheet" href="css/admin-ktqn.css" />
+</head>
+<body>
+  <main class="wrap">
+    <header class="head">
+      <div>
+        <h1>📊 Admin — Kết quả bài thi (KTQN)</h1>
+        <p class="sub">Danh sách nộp bài: kèm thông tin tài khoản đăng nhập + số điểm.</p>
+      </div>
+      <div class="head-actions">
+        <a class="btn" href="admin-ktqn-quiz.html">🛠 Tạo bài thi</a>
+        <a class="btn" href="kienthucquannhan.html">↩ Về KTQN</a>
+        <button class="btn primary" id="exportCsv" type="button">⬇ Xuất CSV</button>
+        <button class="btn danger" id="clearAll" type="button">Xóa toàn bộ kết quả</button>
+      </div>
+    </header>
+
+    <section class="card">
+      <div class="row">
+        <h2>🔎 Lọc nhanh</h2>
+        <span class="status" id="status"></span>
+      </div>
+
+      <div class="grid">
+        <label>
+          Mục
+          <select id="cat">
+            <option value="">Tất cả</option>
+            <option value="chiensi">Chiến sĩ</option>
+            <option value="qncn">QNCN</option>
+            <option value="syquan">Sỹ quan</option>
+            <option value="nhanthuc">Nhận thức</option>
+          </select>
+        </label>
+
+        <label>
+          Tuần
+          <input id="week" type="number" min="1" max="60" placeholder="VD: 1" />
+        </label>
+
+        <label class="full">
+          Tìm theo họ tên / đơn vị / SĐT
+          <input id="q" type="search" placeholder="Nhập từ khóa..." />
+        </label>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>📋 Danh sách nộp bài</h2>
+      <div class="table-wrap">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Thời gian</th>
+              <th>Mục</th>
+              <th>Tuần</th>
+              <th>Bài</th>
+              <th>Họ và tên</th>
+              <th>Cấp bậc</th>
+              <th>Chức vụ</th>
+              <th>Đơn vị</th>
+              <th>SĐT</th>
+              <th>Điểm</th>
+              <th>Xóa</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script src="javascrip/admin-ktqn-ketqua.js"></script>
+</body>
+</html>

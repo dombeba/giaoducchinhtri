@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Làm bài thi</title>
+  <link rel="stylesheet" href="css/ktqn-thi.css" />
+</head>
+<body>
+  <header class="top">
+    <div class="top-inner">
+      <a class="btn" id="backBtn" href="ktqn-bai-thi.html">⬅ Quay lại</a>
+      <div class="title">
+        <div class="h1" id="quizTitle">Bài thi</div>
+        <div class="sub" id="quizMeta"></div>
+      </div>
+      <div class="user" id="userBox"></div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="panel">
+      <div class="panel-head">
+        <span>📝 Câu hỏi</span>
+        <span class="pill" id="qCount">0</span>
+      </div>
+
+      <form id="form" class="form"></form>
+
+      <div class="actions">
+        <button class="btn primary" id="submitBtn" type="button">📨 Nộp bài</button>
+        <span class="status" id="status" aria-live="polite"></span>
+      </div>
+
+      <div class="result" id="resultBox" style="display:none;"></div>
+    </div>
+  </main>
+
+  <script src="javascrip/ktqn-lam-bai.js"></script>
+</body>
+</html>

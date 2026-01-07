@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin - Duyệt đăng ký KTQN</title>
+  <link rel="stylesheet" href="css/css/admindangkytkqn.css" />
+</head>
+<body>
+  <main class="wrap">
+    <header class="head">
+      <div>
+        <h1>🛠 Admin — Duyệt đăng ký tài khoản (KTQN)</h1>
+        <p class="sub">Danh sách đăng ký sẽ xuất hiện ở đây. Bấm <b>Xác nhận</b> để kích hoạt tài khoản.</p>
+      </div>
+      <div class="head-actions">
+        <a class="btn" href="dangnhapktqn.html">↩ Trang đăng nhập</a>
+        <a class="btn" href="kienthucquannhan.html">📘 Trang thi</a>
+      </div>
+    </header>
+
+    <section class="card">
+      <div class="row">
+        <h2>📋 Danh sách đăng ký</h2>
+        <span class="status" id="status" aria-live="polite"></span>
+      </div>
+
+      <div class="table-wrap">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Họ và tên</th>
+              <th>Cấp bậc</th>
+              <th>Chức vụ</th>
+              <th>Đơn vị</th>
+              <th>SĐT</th>
+              <th>Username</th>
+              <th>Mật khẩu</th>
+              <th>Trạng thái</th>
+              <th>Hành động</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+
+      <div class="hint">
+        Quy tắc khi xác nhận: <b>username</b> = họ tên viết liền không dấu • <b>password</b> = SĐT.
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="row">
+        <h2>👤 Tài khoản đã kích hoạt</h2>
+        <span class="status" id="userCount"></span>
+      </div>
+      <div id="users" class="users"></div>
+    </section>
+  </main>
+
+  <script src="javascrip/admindangkytkqn.js"></script>
+</body>
+</html>

@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kết quả của tôi</title>
+  <link rel="stylesheet" href="css/ktqn-thi.css" />
+</head>
+<body>
+  <header class="top">
+    <div class="top-inner">
+      <a class="btn" href="kienthucquannhan.html">⬅ Về KTQN</a>
+
+      <div class="title">
+        <div class="h1">KẾT QUẢ CỦA TÔI</div>
+        <div class="sub" id="sub">Tổng hợp kết quả theo tài khoản đang đăng nhập</div>
+      </div>
+
+      <div class="user" id="userBox"></div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="panel">
+      <div class="panel-head">
+        <span>📌 Tổng quan</span>
+        <span class="pill" id="sumPill">0 bài</span>
+      </div>
+
+      <div class="result" id="summaryBox"></div>
+    </section>
+
+    <section class="panel" style="margin-top:12px;">
+      <div class="panel-head">
+        <span>📋 Danh sách kết quả</span>
+        <span class="pill" id="countPill">0</span>
+      </div>
+
+      <div class="result" style="border-top:none;">
+        <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+          <input id="q" class="input" type="search" placeholder="Tìm theo tên bài / tuần / mục..." style="flex:1; min-width:220px; padding:10px 12px; border:1px solid #e6e6e6; border-radius:10px;" />
+          <select id="cat" style="padding:10px 12px; border:1px solid #e6e6e6; border-radius:10px;">
+            <option value="">Tất cả mục</option>
+            <option value="chiensi">Chiến sĩ</option>
+            <option value="qncn">QNCN</option>
+            <option value="syquan">Sỹ quan</option>
+            <option value="nhanthuc">Nhận thức</option>
+          </select>
+          <button class="btn" id="exportMine" type="button">⬇ Xuất CSV</button>
+        </div>
+      </div>
+
+      <div class="result" style="padding-top:0;">
+        <div class="table-wrap" style="overflow:auto; border:1px solid #eee; border-radius:12px;">
+          <table class="tbl" style="width:100%; border-collapse:collapse; min-width: 980px;">
+            <thead>
+              <tr style="background:#fafafa;">
+                <th style="text-align:left; padding:10px; border-bottom:1px solid #eee;">Thời gian nộp</th>
+                <th style="text-align:left; padding:10px; border-bottom:1px solid #eee;">Mục</th>
+                <th style="text-align:left; padding:10px; border-bottom:1px solid #eee;">Tuần</th>
+                <th style="text-align:left; padding:10px; border-bottom:1px solid #eee;">Bài</th>
+                <th style="text-align:left; padding:10px; border-bottom:1px solid #eee;">Thi lần</th>
+                <th style="text-align:left; padding:10px; border-bottom:1px solid #eee;">Điểm</th>
+                <th style="text-align:left; padding:10px; border-bottom:1px solid #eee;">Xem</th>
+              </tr>
+            </thead>
+            <tbody id="tbody"></tbody>
+          </table>
+        </div>
+
+        <div id="empty" style="color:#666; padding:12px; display:none;">
+          Bạn chưa có kết quả nào.
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="javascrip/ktqn-ketqua-cua-toi.js"></script>
+</body>
+</html>

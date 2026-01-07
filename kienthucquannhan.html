@@ -4,27 +4,55 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Kiến thức Quân nhân</title>
-
   <link rel="stylesheet" href="css/kienthucquannhan.css" />
 </head>
 <body>
 
-  <!-- HERO / BANNER -->
+  <!-- HERO -->
   <header class="hero">
-  <!-- Ảnh banner -->
-  <div class="hero-bg"></div>
+    <div class="hero-bg"></div>
+    <div class="hero-content">
+      <h1>KIẾN THỨC<br>QUÂN NHÂN</h1>
+    </div>
+  </header>
 
-  <!-- Chữ -->
-  <div class="hero-content">
-    <h1>KIẾN THỨC<br>QUÂN NHÂN</h1>
+  <!-- TOP BAR USER -->
+  <div class="userbar">
+    <div class="user-left">
+      <span class="pill" id="userPill">Chưa đăng nhập</span>
+      <span class="muted" id="userInfo"></span>
+    </div>
+    <div class="user-right">
+      <a class="btn" href="ktqn-ketqua-cua-toi.html" title="Kết quả của tôi">📊 Kết quả</a>
+      <button class="btn danger" id="logoutBtn" type="button">Đăng xuất</button>
+    </div>
   </div>
-</header>
 
-  <!-- MAIN -->
   <main class="wrap" role="main">
-    <section class="grid" id="quizGrid" aria-label="Danh sách bài kiểm tra">
-      <!-- JS sẽ render các thẻ bài thi ở đây -->
-      <noscript>Vui lòng bật JavaScript để hiển thị danh sách bài thi.</noscript>
+    <section class="grid4" aria-label="Danh mục bài thi">
+      <article class="cat-card">
+        <h2>🪖 Bài thi cho chiến sĩ</h2>
+        <p>Dành cho chiến sĩ. Mỗi tuần 1 bài hoặc theo kế hoạch.</p>
+        <a class="go" href="ktqn-bai-thi.html?cat=chiensi">Vào danh sách bài thi</a>
+      </article>
+
+      <article class="cat-card">
+        <h2>🧰 Bài thi cho QNCN</h2>
+        <p>Dành cho quân nhân chuyên nghiệp.</p>
+        <a class="go" href="ktqn-bai-thi.html?cat=qncn">Vào danh sách bài thi</a>
+      </article>
+
+      <article class="cat-card">
+        <h2>⭐ Bài thi cho sỹ quan</h2>
+        <p>Dành cho cán bộ, sĩ quan.</p>
+        <a class="go" href="ktqn-bai-thi.html?cat=syquan">Vào danh sách bài thi</a>
+      </article>
+
+      <article class="cat-card">
+        <h2>🧠 Nhận thức chính trị</h2>
+        <p>Bài thi nâng cao nhận thức chính trị - xã hội.</p>
+        <a class="go" href="ktqn-bai-thi.html?cat=nhanthuc">Vào danh sách bài thi</a>
+      </article>
     </section>
 
     <footer class="footer">
