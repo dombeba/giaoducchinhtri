@@ -1,19 +1,22 @@
 /**************************************************
- * KTQN - Làm bài thi
- * - Quiz lấy từ Apps Script => đồng bộ mọi thiết bị
- * - Kết quả: lưu local + gửi Apps Script RESULT_API_URL (giữ logic cũ)
+ * KTQN - Làm bài thi (CORS-safe)
+ * ✅ Quiz: đọc từ Google Sheet (Publish CSV) => đồng bộ mọi thiết bị
+ * ✅ Result: lưu local + gửi Apps Script bằng no-cors => ghi vào tab RESULTS
  **************************************************/
 
 // ====== STORAGE KEYS ======
 const SESSION_KEY = "KTQN_SESSION_V1";
 const RESULT_KEY = "KTQN_RESULTS_V1";
 
-// ====== QUIZ API (SYNC) ======
-const QUIZ_API_URL =
-  "https://script.google.com/macros/s/AKfycbwSvIMUxw7NWwQ4dB-9cLIfAfyT9QRv21ukPHEaBO9ZweNzS4PbXRNhOmVdUePPvfvW/exec";
+// ====== QUIZZES CSV (Publish to web -> CSV) ======
+// 🔴 DÁN LINK CSV TAB QUIZZES Ở ĐÂY (phải có output=csv)
+const QUIZZES_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRll8YoIR4meYyIMQ4zscJfwj6hc4FBXKYBr6al7BGXGFR8bIHBKJvi2ATlTgBlT2nQUPNtbUb-DZcS/pub?gid=1443146912&single=true&output=csv";
+
+// cache quiz (phòng khi CSV lỗi)
 const QUIZ_CACHE_KEY = "KTQN_QUIZZES_CACHE_V1";
 
-// ====== RESULT API (GIỮ NGUYÊN CỦA CHỦ TƯỚNG - nếu muốn đổi thì thay ở đây) ======
+// ====== RESULT API (Apps Script /exec) ======
+// ✅ Dùng để ghi vào tab RESULTS
 const RESULT_API_URL =
   "https://script.google.com/macros/s/AKfycbwSvIMUxw7NWwQ4dB-9cLIfAfyT9QRv21ukPHEaBO9ZweNzS4PbXRNhOmVdUePPvfvW/exec";
 
@@ -37,7 +40,9 @@ function loadSession() {
 function requireLogin() {
   const s = loadSession();
   if (!s?.username) {
-    window.location.href = `dangnhapktqn.html?return=${encodeURIComponent("kienthucquannhan.html")}`;
+    window.location.href = `dangnhapktqn.html?return=${encodeURIComponent(
+      "kienthucquannhan.html"
+    )}`;
     return null;
   }
   return s;
@@ -66,7 +71,9 @@ function esc(s) {
 }
 
 function countAttempts(results, quizId, username) {
-  return results.filter((r) => r.quizId === quizId && (r.user?.username || "") === username).length;
+  return results.filter(
+    (r) => r.quizId === quizId && (r.user?.username || "") === username
+  ).length;
 }
 
 function makeUUID() {
@@ -77,79 +84,171 @@ function makeUUID() {
   }
 }
 
-function cacheLoad() {
+function cacheSave(key, arr) {
   try {
-    const arr = JSON.parse(localStorage.getItem(QUIZ_CACHE_KEY) || "[]");
+    localStorage.setItem(key, JSON.stringify(arr || []));
+  } catch {}
+}
+function cacheLoad(key) {
+  try {
+    const arr = JSON.parse(localStorage.getItem(key) || "[]");
     return Array.isArray(arr) ? arr : [];
   } catch {
     return [];
   }
 }
-function cacheSave(arr) {
-  try {
-    localStorage.setItem(QUIZ_CACHE_KEY, JSON.stringify(arr || []));
-  } catch {}
+
+function sleep(ms) {
+  return new Promise((r) => setTimeout(r, ms));
 }
 
-async function fetchQuizzes() {
-  const url = `${QUIZ_API_URL}?action=listQuizzes&_=${Date.now()}`;
+function safeNum(v, fallback = 0) {
+  const n = Number(v);
+  return Number.isFinite(n) ? n : fallback;
+}
+
+// ====== CSV PARSER ======
+function parseCSV(text) {
+  const rows = [];
+  let row = [];
+  let cur = "";
+  let inQuotes = false;
+
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    const next = text[i + 1];
+
+    if (ch === '"' && inQuotes && next === '"') {
+      cur += '"';
+      i++;
+      continue;
+    }
+    if (ch === '"') {
+      inQuotes = !inQuotes;
+      continue;
+    }
+
+    if (!inQuotes && ch === ",") {
+      row.push(cur);
+      cur = "";
+      continue;
+    }
+    if (!inQuotes && (ch === "\n" || ch === "\r")) {
+      if (ch === "\r" && next === "\n") i++;
+      row.push(cur);
+      rows.push(row);
+      row = [];
+      cur = "";
+      continue;
+    }
+    cur += ch;
+  }
+
+  if (cur.length || row.length) {
+    row.push(cur);
+    rows.push(row);
+  }
+
+  return rows.filter((r) => r.some((c) => String(c).trim() !== ""));
+}
+
+function toObjects(csvText) {
+  const rows = parseCSV(csvText);
+  if (!rows.length) return [];
+  const headers = rows[0].map((h) => String(h).trim());
+  return rows.slice(1).map((r) => {
+    const o = {};
+    headers.forEach((h, i) => (o[h] = r[i] ?? ""));
+    return o;
+  });
+}
+
+function normalizeQuizRow(x) {
+  // Header khuyến nghị của QUIZZES:
+  // id,cat,week,title,maxAttempts,timeLimitMin,questionsJson,createdAt,updatedAt
+  // hỗ trợ trường hợp lỡ dùng category thay cat
+  const cat = String(x.cat || x.category || "").trim();
+
+  let questions = [];
+  try {
+    questions = JSON.parse(x.questionsJson || "[]");
+  } catch {
+    questions = [];
+  }
+
+  return {
+    id: String(x.id || "").trim(),
+    cat,
+    week: safeNum(x.week, 0),
+    title: String(x.title || "").trim(),
+    maxAttempts: safeNum(x.maxAttempts ?? 3, 3),
+    timeLimitMin: safeNum(x.timeLimitMin ?? 0, 0),
+    questions: Array.isArray(questions) ? questions : [],
+    createdAt: String(x.createdAt || ""),
+    updatedAt: String(x.updatedAt || ""),
+  };
+}
+
+async function fetchQuizzesFromCSV() {
+  if (!QUIZZES_CSV_URL || QUIZZES_CSV_URL.includes("DAN_LINK_CSV")) {
+    throw new Error("CHUA_DAN_LINK_CSV_QUIZZES");
+  }
+  const url = `${QUIZZES_CSV_URL}${
+    QUIZZES_CSV_URL.includes("?") ? "&" : "?"
+  }_=${Date.now()}`;
+
   const res = await fetch(url);
-  const data = await res.json();
-  if (!data?.ok) throw new Error(data?.error || "API_ERROR");
-  const quizzes = Array.isArray(data.quizzes) ? data.quizzes : [];
-  cacheSave(quizzes);
+  if (!res.ok) throw new Error("FETCH_CSV_FAILED");
+
+  const csv = await res.text();
+  const raw = toObjects(csv);
+  const quizzes = raw.map(normalizeQuizRow).filter((q) => q.id);
+
+  cacheSave(QUIZ_CACHE_KEY, quizzes);
   return quizzes;
 }
 
-/**
- * Gửi kết quả lên Apps Script (best-effort)
- * - Ưu tiên sendBeacon để không bị mất khi chuyển trang
- * - Fallback fetch keepalive
- */
+// ====== SEND RESULT (no-cors) ======
 function pushResultToSheetNonBlocking(record) {
   if (!RESULT_API_URL) return;
 
+  // ✅ payload PHẲNG đúng header tab RESULTS của chủ tướng:
+  // submittedAt, cat, week, quizTitle, attemptNo, maxAttempts, autoSubmitted,
+  // timeLimitMin, durationSec, fullName, rank, position, unit, phone, username
   const payload = {
-    // user
-    username: record.user?.username || "",
+    action: "submitResult",
+
+    submittedAt: record.submittedAt || "",
+    cat: record.cat || "",
+    week: record.week ?? "",
+    quizTitle: record.quizTitle || "",
+
+    attemptNo: record.attemptNo ?? "",
+    maxAttempts: record.maxAttempts ?? "",
+    autoSubmitted: record.autoSubmitted ? 1 : 0,
+
+    timeLimitMin: record.timeLimitMin ?? "",
+    durationSec: record.durationSec ?? 0,
+
     fullName: record.user?.fullName || "",
     rank: record.user?.rank || "",
     position: record.user?.position || "",
     unit: record.user?.unit || "",
     phone: record.user?.phone || "",
+    username: record.user?.username || "",
 
-    // quiz
-    quizId: record.quizId || "",
-    quizTitle: record.quizTitle || "",
-    cat: record.cat || "",
-    week: record.week ?? "",
-
-    // result
-    attemptNo: record.attemptNo ?? "",
-    maxAttempts: record.maxAttempts ?? "",
-    timeLimitMin: record.timeLimitMin ?? "",
-    duration: record.durationSec ?? 0,
-    autoSubmitted: record.autoSubmitted ? 1 : 0,
+    // thêm để tiện về sau (nếu script có dùng)
     score: record.score ?? 0,
     maxScore: record.maxScore ?? 0,
-    submittedAt: record.submittedAt || "",
+    quizId: record.quizId || "",
   };
-
-  const body = JSON.stringify(payload);
-
-  try {
-    if (navigator.sendBeacon) {
-      const blob = new Blob([body], { type: "application/json" });
-      const ok = navigator.sendBeacon(RESULT_API_URL, blob);
-      if (ok) return;
-    }
-  } catch {}
 
   try {
     fetch(RESULT_API_URL, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body,
+      mode: "no-cors",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(payload),
       keepalive: true,
     }).catch(() => {});
   } catch {}
@@ -169,12 +268,15 @@ document.addEventListener("DOMContentLoaded", async () => {
   const userBox = document.getElementById("userBox");
   if (userBox) userBox.textContent = `${sess.fullName || ""} • ${sess.unit || ""}`;
 
-  // ✅ tải quiz từ API (sync), fallback cache
+  // ✅ tải quiz từ CSV (sync), fallback cache
   let quizzes = [];
   try {
-    quizzes = await fetchQuizzes();
+    quizzes = await fetchQuizzesFromCSV();
   } catch (e) {
-    quizzes = cacheLoad();
+    quizzes = cacheLoad(QUIZ_CACHE_KEY);
+    if (statusEl && String(e?.message || "").includes("CHUA_DAN_LINK_CSV_QUIZZES")) {
+      statusEl.textContent = "❌ Chưa dán link CSV QUIZZES (Publish to web).";
+    }
   }
 
   const quiz = quizzes.find((q) => String(q.id) === String(id));
@@ -182,14 +284,16 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (!quiz) {
     const quizTitleEl = document.getElementById("quizTitle");
     if (quizTitleEl) quizTitleEl.textContent = "❌ Không tìm thấy bài thi";
-    if (statusEl) statusEl.textContent = "Bài thi không tồn tại hoặc đã bị xóa (hoặc bạn đang offline và chưa có cache).";
+    if (statusEl)
+      statusEl.textContent =
+        "Bài thi không tồn tại hoặc chưa tải được danh sách (offline/chưa publish CSV).";
     return;
   }
 
   const maxAttempts = Number(quiz.maxAttempts ?? 3);
   const timeLimitMin = Number(quiz.timeLimitMin ?? 0);
 
-  // ✅ chặn nếu đã hết lượt thi (lưu ý: lượt thi đang tính theo local máy hiện tại)
+  // ✅ chặn nếu đã hết lượt thi (hiện tính theo local trên máy)
   const resultsNow = loadResults();
   const used = countAttempts(resultsNow, quiz.id, sess.username);
   if (used >= maxAttempts) {
@@ -294,7 +398,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   function submit(autoSubmitted = false) {
     if (!autoSubmitted) {
-      const unanswered = qs.findIndex((q, idx) => !formEl.querySelector(`input[name="q_${idx}"]:checked`));
+      const unanswered = qs.findIndex(
+        (q, idx) => !formEl.querySelector(`input[name="q_${idx}"]:checked`)
+      );
       if (unanswered >= 0) {
         if (statusEl) statusEl.textContent = `⚠️ Chưa trả lời Câu ${unanswered + 1}.`;
         return;
@@ -355,7 +461,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     results.push(record);
     saveResults(results);
 
-    // 2) push to sheet best-effort
+    // 2) push to sheet (no-cors)
     pushResultToSheetNonBlocking(record);
 
     // 3) go result page
