@@ -10,12 +10,12 @@ const RESULT_KEY = "KTQN_RESULTS_V1";
 
 // ====== QUIZ API (SYNC) ======
 const QUIZ_API_URL =
-  "https://script.google.com/macros/s/AKfycbxbiU_-gN0VoPEPJ6p3vdZlPHuIh6KkhK7ngT27aCzAQFAVliVw5E-t8ON6TRowPEFUdg/exec";
+  "https://script.google.com/macros/s/AKfycbwSvIMUxw7NWwQ4dB-9cLIfAfyT9QRv21ukPHEaBO9ZweNzS4PbXRNhOmVdUePPvfvW/exec";
 const QUIZ_CACHE_KEY = "KTQN_QUIZZES_CACHE_V1";
 
 // ====== RESULT API (GIỮ NGUYÊN CỦA CHỦ TƯỚNG - nếu muốn đổi thì thay ở đây) ======
 const RESULT_API_URL =
-  "https://script.google.com/macros/s/AKfycbxbiU_-gN0VoPEPJ6p3vdZlPHuIh6KkhK7ngT27aCzAQFAVliVw5E-t8ON6TRowPEFUdg/exec";
+  "https://script.google.com/macros/s/AKfycbwSvIMUxw7NWwQ4dB-9cLIfAfyT9QRv21ukPHEaBO9ZweNzS4PbXRNhOmVdUePPvfvW/exec";
 
 // ====== LABELS ======
 const CAT_LABEL = {

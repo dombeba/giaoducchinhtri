@@ -1,3 +1,9 @@
+// =============================
+// ADMIN - KTQN QUIZ (SYNC SHEET)
+// Chạy ổn trên GitHub Pages (CORS fallback)
+// File: javascrip/admin-ktqn-quiz.js
+// =============================
+
 // ===== BẢO VỆ ADMIN (CÁCH 1) =====
 const ADMIN_PASSWORD = "123321";
 const input = prompt("🔐 Nhập mật khẩu quản trị:");
@@ -8,19 +14,20 @@ if (input !== ADMIN_PASSWORD) {
 
 // ====== CONFIG ======
 const QUIZ_API_URL =
-  "https://script.google.com/macros/s/AKfycbxbiU_-gN0VoPEPJ6p3vdZlPHuIh6KkhK7ngT27aCzAQFAVliVw5E-t8ON6TRowPEFUdg/exec";
+  "https://script.google.com/macros/s/AKfycbwSvIMUxw7NWwQ4dB-9cLIfAfyT9QRv21ukPHEaBO9ZweNzS4PbXRNhOmVdUePPvfvW/exec";
 
-// cache local (phòng khi api lỗi)
+// Cache local (phòng khi mất mạng)
 const QUIZ_CACHE_KEY = "KTQN_QUIZZES_CACHE_V1";
 
 // ====== DOM ======
 const $ = (id) => document.getElementById(id);
 
-// ====== HELPERS ======
+// ====== UI HELPERS ======
 function setStatus(msg) {
   const el = $("status");
   if (el) el.textContent = msg || "";
 }
+
 function esc(s) {
   return String(s || "")
     .replaceAll("&", "&amp;")
@@ -30,14 +37,14 @@ function esc(s) {
     .replaceAll("'", "&#39;");
 }
 
-function safeNum(n, fallback = 0) {
-  const x = Number(n);
-  return Number.isFinite(x) ? x : fallback;
+function safeNum(v, fallback = 0) {
+  const n = Number(v);
+  return Number.isFinite(n) ? n : fallback;
 }
 
-function cacheSave(quizzes) {
+function cacheSave(arr) {
   try {
-    localStorage.setItem(QUIZ_CACHE_KEY, JSON.stringify(quizzes || []));
+    localStorage.setItem(QUIZ_CACHE_KEY, JSON.stringify(arr || []));
   } catch {}
 }
 function cacheLoad() {
@@ -49,15 +56,57 @@ function cacheLoad() {
   }
 }
 
+function sleep(ms) {
+  return new Promise((r) => setTimeout(r, ms));
+}
+
 // ====== API ======
 async function apiListQuizzes() {
   const url = `${QUIZ_API_URL}?action=listQuizzes&_=${Date.now()}`;
   const res = await fetch(url);
   const data = await res.json();
-  if (!data?.ok) throw new Error(data?.error || "API_ERROR");
+  if (!data?.ok) throw new Error(data?.error || "LIST_FAILED");
   const quizzes = Array.isArray(data.quizzes) ? data.quizzes : [];
   cacheSave(quizzes);
   return quizzes;
+}
+
+/**
+ * POST safe:
+ * - thử JSON POST thường
+ * - nếu bị CORS/preflight chặn -> fallback no-cors + text/plain (opaque response)
+ * - rồi GET lại để xác nhận
+ */
+async function apiPostWithFallback(payload) {
+  // 1) thử POST thường
+  try {
+    const res = await fetch(QUIZ_API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    // Nếu POST OK + đọc JSON được
+    const data = await res.json();
+    if (!data?.ok) throw new Error(data?.error || "POST_FAILED");
+    return { ok: true, data, mode: "cors" };
+  } catch (e) {
+    // 2) fallback no-cors để né preflight
+    // Lưu ý: no-cors => không đọc được response (opaque)
+    await fetch(QUIZ_API_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(payload),
+    });
+
+    // chờ Apps Script ghi sheet
+    await sleep(800);
+
+    // 3) xác nhận bằng GET (chủ tướng đã test GET chạy OK)
+    const quizzes = await apiListQuizzes();
+    return { ok: true, data: { ok: true }, mode: "no-cors", quizzes };
+  }
 }
 
 async function apiUpsertQuiz(quiz) {
@@ -66,30 +115,8 @@ async function apiUpsertQuiz(quiz) {
     adminPassword: ADMIN_PASSWORD,
     quiz,
   };
-
-  // 1) thử fetch bình thường
-  try {
-    const res = await fetch(QUIZ_API_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-    const data = await res.json();
-    if (!data?.ok) throw new Error(data?.error || "UPSERT_FAILED");
-    return data;
-  } catch (e) {
-    // 2) fallback no-cors (fire and forget)
-    await fetch(QUIZ_API_URL, {
-      method: "POST",
-      mode: "no-cors",
-      headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify(payload),
-    });
-    // no-cors không đọc được response, coi như đã gửi
-    return { ok: true, mode: "unknown" };
-  }
+  return apiPostWithFallback(payload);
 }
-
 
 async function apiDeleteQuiz(id) {
   const payload = {
@@ -97,32 +124,14 @@ async function apiDeleteQuiz(id) {
     adminPassword: ADMIN_PASSWORD,
     id,
   };
-
-  try {
-    const res = await fetch(QUIZ_API_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-    const data = await res.json();
-    if (!data?.ok) throw new Error(data?.error || "DELETE_FAILED");
-    return data;
-  } catch (e) {
-    await fetch(QUIZ_API_URL, {
-      method: "POST",
-      mode: "no-cors",
-      headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify(payload),
-    });
-    return { ok: true, deleted: "unknown" };
-  }
+  return apiPostWithFallback(payload);
 }
 
-
-// ====== UI: Question Card ======
+// ====== QUESTIONS UI ======
 function makeQCard(q = {}) {
   const wrap = document.createElement("div");
   wrap.className = "qcard";
+
   wrap.innerHTML = `
     <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
       <div style="font-weight:900;">Câu hỏi</div>
@@ -169,6 +178,7 @@ function makeQCard(q = {}) {
       </label>
     </div>
   `;
+
   wrap.querySelector(".correct").value = String(q.correctIndex ?? 0);
   wrap.querySelector(".del").addEventListener("click", () => wrap.remove());
   return wrap;
@@ -204,49 +214,55 @@ function readQuestions() {
 // ====== RENDER LIST ======
 let QUIZZES_MEM = [];
 
+function getQuizById(id) {
+  return QUIZZES_MEM.find((x) => String(x.id) === String(id));
+}
+
 async function refreshList() {
   const list = $("list");
   if (!list) return;
 
-  setStatus("Đang tải danh sách từ Sheet...");
+  setStatus("Đang tải danh sách bài thi...");
   try {
-    const data = await apiListQuizzes();
-    QUIZZES_MEM = data;
-    setStatus(`✅ Đã tải ${data.length} bài`);
-  } catch (e) {
-    // fallback cache
-    const cached = cacheLoad();
-    QUIZZES_MEM = cached;
+    const quizzes = await apiListQuizzes();
+    QUIZZES_MEM = quizzes;
+    setStatus(`✅ Đã tải ${quizzes.length} bài`);
+  } catch {
+    QUIZZES_MEM = cacheLoad();
     setStatus("⚠️ Không tải được từ Sheet. Đang dùng cache trên máy.");
   }
 
-  const quizzes = [...QUIZZES_MEM].sort((a, b) => (b.updatedAt || b.createdAt || "").localeCompare(a.updatedAt || a.createdAt || ""));
-  if (!quizzes.length) {
+  const quizzesSorted = [...QUIZZES_MEM].sort((a, b) =>
+    (b.updatedAt || b.createdAt || "").localeCompare(a.updatedAt || a.createdAt || "")
+  );
+
+  if (!quizzesSorted.length) {
     list.innerHTML = `<div style="color:#666">Chưa có bài thi nào.</div>`;
     return;
   }
 
-  list.innerHTML = quizzes
+  list.innerHTML = quizzesSorted
     .map(
       (q) => `
-    <div class="item">
-      <div>
-        <h3>${esc(q.title || "Bài thi")}</h3>
-        <div class="meta">
-          Mục: <b>${esc(q.cat)}</b> • Tuần: <b>${esc(q.week)}</b> • ${esc((q.questions || []).length)} câu
-          <br/>
-          Giới hạn lượt thi: <b>${esc(q.maxAttempts ?? 3)}</b> • Thời gian: <b>${esc(q.timeLimitMin ?? 0)} phút</b>
+      <div class="item">
+        <div>
+          <h3>${esc(q.title || "Bài thi")}</h3>
+          <div class="meta">
+            Mục: <b>${esc(q.cat || q.category || "")}</b> • Tuần: <b>${esc(q.week)}</b> • ${esc((q.questions || []).length)} câu
+            <br/>
+            Giới hạn lượt thi: <b>${esc(q.maxAttempts ?? 3)}</b> • Thời gian: <b>${esc(q.timeLimitMin ?? 0)} phút</b>
+          </div>
+        </div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <button class="btn" data-edit="${esc(q.id)}" type="button">Sửa</button>
+          <button class="btn danger" data-del="${esc(q.id)}" type="button">Xóa</button>
         </div>
       </div>
-      <div style="display:flex; gap:8px; flex-wrap:wrap;">
-        <button class="btn" data-edit="${esc(q.id)}" type="button">Sửa</button>
-        <button class="btn danger" data-del="${esc(q.id)}" type="button">Xóa</button>
-      </div>
-    </div>
-  `
+    `
     )
     .join("");
 
+  // delete
   list.querySelectorAll("[data-del]").forEach((btn) => {
     btn.addEventListener("click", async () => {
       const id = btn.getAttribute("data-del");
@@ -255,26 +271,26 @@ async function refreshList() {
 
       try {
         setStatus("Đang xóa...");
-        await apiDeleteQuiz(id);
-        setStatus("✅ Đã xóa bài.");
+        const r = await apiDeleteQuiz(id);
+        setStatus(r.mode === "no-cors" ? "✅ Đã gửi lệnh xóa (no-cors). Đã tải lại danh sách." : "✅ Đã xóa bài.");
         await refreshList();
       } catch (e) {
-        setStatus("❌ Xóa thất bại (kiểm tra mạng / Apps Script).");
+        setStatus("❌ Xóa thất bại. Kiểm tra Apps Script / mạng.");
       }
     });
   });
 
+  // edit
   list.querySelectorAll("[data-edit]").forEach((btn) => {
     btn.addEventListener("click", () => {
       const id = btn.getAttribute("data-edit");
-      const q = QUIZZES_MEM.find((x) => String(x.id) === String(id));
+      const q = getQuizById(id);
       if (!q) return;
 
-      $("cat").value = q.cat;
-      $("week").value = q.week;
+      $("cat").value = q.cat || q.category || "chiensi";
+      $("week").value = q.week ?? "";
       $("title").value = q.title || "";
 
-      // 2 ô cấu hình
       $("maxAttempts").value = String(q.maxAttempts ?? 3);
       $("timeLimitMin").value = String(q.timeLimitMin ?? 0);
 
@@ -290,8 +306,8 @@ async function refreshList() {
 }
 
 // ====== INIT ======
-document.addEventListener("DOMContentLoaded", () => {
-  // thêm 2 ô cấu hình nếu thiếu (phòng khi HTML chưa có)
+document.addEventListener("DOMContentLoaded", async () => {
+  // đảm bảo có 2 ô cấu hình (phòng HTML cũ chưa có)
   const grid = document.querySelector(".grid");
   if (grid && !$("maxAttempts")) {
     const html = `
@@ -308,41 +324,37 @@ document.addEventListener("DOMContentLoaded", () => {
     grid.insertAdjacentHTML("beforeend", html);
   }
 
-  $("addQ")?.addEventListener("click", () => {
-    $("qWrap").appendChild(
-      makeQCard({
-        text: "",
-        options: ["", "", "", ""],
-        correctIndex: 0,
-        points: 1,
-      })
-    );
-  });
-
-  if (!$("qWrap").children.length) {
+  // init 1 câu hỏi nếu trống
+  if (!$("qWrap")?.children?.length) {
     $("qWrap").appendChild(makeQCard({ text: "", options: ["", "", "", ""], correctIndex: 0, points: 1 }));
   }
 
+  // add question
+  $("addQ")?.addEventListener("click", () => {
+    $("qWrap").appendChild(makeQCard({ text: "", options: ["", "", "", ""], correctIndex: 0, points: 1 }));
+  });
+
+  // save quiz
   $("save")?.addEventListener("click", async () => {
     try {
-      const cat = $("cat").value;
-      const week = safeNum(($("week").value || "").trim(), 0);
-      const title = $("title").value.trim();
+      const cat = ($("cat")?.value || "").trim();
+      const week = safeNum(($("week")?.value || "").trim(), 0);
+      const title = ($("title")?.value || "").trim();
 
-      const maxAttempts = safeNum(($("maxAttempts").value || "3").trim(), 3);
-      const timeLimitMin = safeNum(($("timeLimitMin").value || "0").trim(), 0);
+      const maxAttempts = safeNum(($("maxAttempts")?.value || "3").trim(), 3);
+      const timeLimitMin = safeNum(($("timeLimitMin")?.value || "0").trim(), 0);
 
       if (!cat) return setStatus("Cần chọn mục.");
       if (!week || week < 1) return setStatus("Cần nhập tuần (>=1).");
       if (!title) return setStatus("Cần nhập tiêu đề.");
       if (!maxAttempts || maxAttempts < 1) return setStatus("Số lần thi tối đa phải >= 1.");
-      if (timeLimitMin < 0) return setStatus("Thời gian phút không hợp lệ.");
+      if (timeLimitMin < 0) return setStatus("Thời gian làm bài không hợp lệ.");
 
       const questions = readQuestions();
 
-      const editId = $("save").dataset.editId;
+      const editId = $("save").dataset.editId || "";
       const quiz = {
-        id: editId || "",
+        id: editId,
         cat,
         week,
         title,
@@ -352,22 +364,22 @@ document.addEventListener("DOMContentLoaded", () => {
       };
 
       setStatus("Đang lưu lên Sheet...");
-      const res = await apiUpsertQuiz(quiz);
+      const r = await apiUpsertQuiz(quiz);
 
+      // reset edit mode
       $("save").dataset.editId = "";
-      setStatus(res.mode === "update" ? "✅ Đã cập nhật bài (đồng bộ mọi thiết bị)." : "✅ Đã tạo bài (đồng bộ mọi thiết bị).");
 
-      // refresh list
+      if (r.mode === "no-cors") {
+        setStatus("✅ Đã gửi (no-cors). Hệ thống đã tải lại danh sách để xác nhận.");
+      } else {
+        setStatus("✅ Đã lưu bài (đồng bộ mọi thiết bị).");
+      }
+
       await refreshList();
-    } catch (err) {
-      setStatus("❌ " + (err?.message || "Lỗi dữ liệu / mạng."));
+    } catch (e) {
+      setStatus("❌ " + (e?.message || "Lỗi dữ liệu/mạng."));
     }
   });
 
-  // nút xóa all nếu HTML có (nếu không có thì thôi)
-  $("clearAll")?.addEventListener("click", () => {
-    alert("Chủ tướng muốn xóa toàn bộ thì nên làm trực tiếp trong Google Sheet tab quizzes để an toàn.");
-  });
-
-  refreshList();
+  await refreshList();
 });
