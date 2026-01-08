@@ -19,7 +19,7 @@ const QUIZ_CACHE_KEY = "KTQN_QUIZZES_CACHE_V1";
 // ====== RESULT API (Apps Script /exec) ======
 // ✅ Dùng để ghi vào tab RESULTS
 const RESULT_API_URL =
-  "https://script.google.com/macros/s/AKfycbztEgDObhu3Z-0EwXXuVO-i_1P22H81acMsP8DHI9nrb6rYdyYKr0cy4nMe8qNdmfzxlw/exec";
+  "https://script.google.com/macros/s/AKfycbzPp69bMvr5BEYp4lzup4hAo4qVswFH_lYjYiAZ3pVVCfqNuM1a_Vq_A6erYpZ6V5yxug/exec";
 
 // ====== LABELS ======
 const CAT_LABEL = {
