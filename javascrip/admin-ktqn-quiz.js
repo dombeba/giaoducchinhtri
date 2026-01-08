@@ -1,37 +1,97 @@
 // ===== BẢO VỆ ADMIN (CÁCH 1) =====
 const ADMIN_PASSWORD = "123321";
 const input = prompt("🔐 Nhập mật khẩu quản trị:");
-if(input !== ADMIN_PASSWORD){
+if (input !== ADMIN_PASSWORD) {
   alert("❌ Sai mật khẩu. Không có quyền truy cập.");
   window.location.href = "index.html";
 }
 
-const QUIZ_KEY = "KTQN_QUIZZES_V2";
-const $ = (id)=>document.getElementById(id);
+// ====== CONFIG ======
+const QUIZ_API_URL =
+  "https://script.google.com/macros/s/AKfycbxbiU_-gN0VoPEPJ6p3vdZlPHuIh6KkhK7ngT27aCzAQFAVliVw5E-t8ON6TRowPEFUdg/exec";
 
-function loadQuizzes(){
-  try{
-    const arr = JSON.parse(localStorage.getItem(QUIZ_KEY) || "[]");
-    return Array.isArray(arr) ? arr : [];
-  } catch { return []; }
-}
-function saveQuizzes(arr){
-  localStorage.setItem(QUIZ_KEY, JSON.stringify(arr));
-}
-function setStatus(msg){
+// cache local (phòng khi api lỗi)
+const QUIZ_CACHE_KEY = "KTQN_QUIZZES_CACHE_V1";
+
+// ====== DOM ======
+const $ = (id) => document.getElementById(id);
+
+// ====== HELPERS ======
+function setStatus(msg) {
   const el = $("status");
-  if(el) el.textContent = msg || "";
+  if (el) el.textContent = msg || "";
 }
-function esc(s){
-  return String(s||"")
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#39;");
+function esc(s) {
+  return String(s || "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
 }
 
-function makeQCard(q = {}){
+function safeNum(n, fallback = 0) {
+  const x = Number(n);
+  return Number.isFinite(x) ? x : fallback;
+}
+
+function cacheSave(quizzes) {
+  try {
+    localStorage.setItem(QUIZ_CACHE_KEY, JSON.stringify(quizzes || []));
+  } catch {}
+}
+function cacheLoad() {
+  try {
+    const arr = JSON.parse(localStorage.getItem(QUIZ_CACHE_KEY) || "[]");
+    return Array.isArray(arr) ? arr : [];
+  } catch {
+    return [];
+  }
+}
+
+// ====== API ======
+async function apiListQuizzes() {
+  const url = `${QUIZ_API_URL}?action=listQuizzes&_=${Date.now()}`;
+  const res = await fetch(url);
+  const data = await res.json();
+  if (!data?.ok) throw new Error(data?.error || "API_ERROR");
+  const quizzes = Array.isArray(data.quizzes) ? data.quizzes : [];
+  cacheSave(quizzes);
+  return quizzes;
+}
+
+async function apiUpsertQuiz(quiz) {
+  const res = await fetch(QUIZ_API_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      action: "upsertQuiz",
+      adminPassword: ADMIN_PASSWORD,
+      quiz,
+    }),
+  });
+  const data = await res.json();
+  if (!data?.ok) throw new Error(data?.error || "UPSERT_FAILED");
+  return data;
+}
+
+async function apiDeleteQuiz(id) {
+  const res = await fetch(QUIZ_API_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      action: "deleteQuiz",
+      adminPassword: ADMIN_PASSWORD,
+      id,
+    }),
+  });
+  const data = await res.json();
+  if (!data?.ok) throw new Error(data?.error || "DELETE_FAILED");
+  return data;
+}
+
+// ====== UI: Question Card ======
+function makeQCard(q = {}) {
   const wrap = document.createElement("div");
   wrap.className = "qcard";
   wrap.innerHTML = `
@@ -43,24 +103,24 @@ function makeQCard(q = {}){
     <div class="qrow">
       <label class="full">
         Nội dung câu <span class="req">*</span>
-        <input class="qText" type="text" placeholder="Nhập câu hỏi..." value="${esc(q.text||"")}"/>
+        <input class="qText" type="text" placeholder="Nhập câu hỏi..." value="${esc(q.text || "")}"/>
       </label>
 
       <label>
         Đáp án A <span class="req">*</span>
-        <input class="opt" data-i="0" type="text" value="${esc(q.options?.[0]||"")}"/>
+        <input class="opt" data-i="0" type="text" value="${esc(q.options?.[0] || "")}"/>
       </label>
       <label>
         Đáp án B <span class="req">*</span>
-        <input class="opt" data-i="1" type="text" value="${esc(q.options?.[1]||"")}"/>
+        <input class="opt" data-i="1" type="text" value="${esc(q.options?.[1] || "")}"/>
       </label>
       <label>
         Đáp án C <span class="req">*</span>
-        <input class="opt" data-i="2" type="text" value="${esc(q.options?.[2]||"")}"/>
+        <input class="opt" data-i="2" type="text" value="${esc(q.options?.[2] || "")}"/>
       </label>
       <label>
         Đáp án D <span class="req">*</span>
-        <input class="opt" data-i="3" type="text" value="${esc(q.options?.[3]||"")}"/>
+        <input class="opt" data-i="3" type="text" value="${esc(q.options?.[3] || "")}"/>
       </label>
 
       <label>
@@ -76,52 +136,75 @@ function makeQCard(q = {}){
 
       <label>
         Điểm (mặc định 1)
-        <input class="points" type="number" min="1" max="10" value="${esc(q.points||"1")}"/>
+        <input class="points" type="number" min="1" max="10" value="${esc(q.points || "1")}"/>
       </label>
     </div>
   `;
   wrap.querySelector(".correct").value = String(q.correctIndex ?? 0);
-  wrap.querySelector(".del").addEventListener("click", ()=> wrap.remove());
+  wrap.querySelector(".del").addEventListener("click", () => wrap.remove());
   return wrap;
 }
 
-function readQuestions(){
+function readQuestions() {
   const qWrap = $("qWrap");
   const cards = Array.from(qWrap.querySelectorAll(".qcard"));
   const questions = [];
 
-  for(const card of cards){
+  for (const card of cards) {
     const text = card.querySelector(".qText")?.value?.trim();
-    const opts = Array.from(card.querySelectorAll(".opt")).map(i=> i.value.trim());
+    const opts = Array.from(card.querySelectorAll(".opt")).map((i) => i.value.trim());
     const correctIndex = Number(card.querySelector(".correct")?.value ?? 0);
     const points = Number(card.querySelector(".points")?.value ?? 1);
 
-    if(!text) throw new Error("Có câu hỏi chưa có nội dung.");
-    if(opts.some(x=>!x)) throw new Error("Có câu hỏi chưa đủ 4 đáp án.");
-    if(!(correctIndex>=0 && correctIndex<=3)) throw new Error("Có câu hỏi chưa chọn đáp án đúng.");
+    if (!text) throw new Error("Có câu hỏi chưa có nội dung.");
+    if (opts.some((x) => !x)) throw new Error("Có câu hỏi chưa đủ 4 đáp án.");
+    if (!(correctIndex >= 0 && correctIndex <= 3)) throw new Error("Có câu hỏi chưa chọn đáp án đúng.");
 
-    questions.push({ text, options: opts, correctIndex, points: points>0?points:1 });
+    questions.push({
+      text,
+      options: opts,
+      correctIndex,
+      points: points > 0 ? points : 1,
+    });
   }
-  if(!questions.length) throw new Error("Chưa có câu hỏi nào.");
 
+  if (!questions.length) throw new Error("Chưa có câu hỏi nào.");
   return questions;
 }
 
-function renderList(){
-  const list = $("list");
-  const quizzes = loadQuizzes().sort((a,b)=> (b.createdAt||"").localeCompare(a.createdAt||""));
+// ====== RENDER LIST ======
+let QUIZZES_MEM = [];
 
-  if(!quizzes.length){
+async function refreshList() {
+  const list = $("list");
+  if (!list) return;
+
+  setStatus("Đang tải danh sách từ Sheet...");
+  try {
+    const data = await apiListQuizzes();
+    QUIZZES_MEM = data;
+    setStatus(`✅ Đã tải ${data.length} bài`);
+  } catch (e) {
+    // fallback cache
+    const cached = cacheLoad();
+    QUIZZES_MEM = cached;
+    setStatus("⚠️ Không tải được từ Sheet. Đang dùng cache trên máy.");
+  }
+
+  const quizzes = [...QUIZZES_MEM].sort((a, b) => (b.updatedAt || b.createdAt || "").localeCompare(a.updatedAt || a.createdAt || ""));
+  if (!quizzes.length) {
     list.innerHTML = `<div style="color:#666">Chưa có bài thi nào.</div>`;
     return;
   }
 
-  list.innerHTML = quizzes.map(q => `
+  list.innerHTML = quizzes
+    .map(
+      (q) => `
     <div class="item">
       <div>
         <h3>${esc(q.title || "Bài thi")}</h3>
         <div class="meta">
-          Mục: <b>${esc(q.cat)}</b> • Tuần: <b>${esc(q.week)}</b> • ${esc((q.questions||[]).length)} câu
+          Mục: <b>${esc(q.cat)}</b> • Tuần: <b>${esc(q.week)}</b> • ${esc((q.questions || []).length)} câu
           <br/>
           Giới hạn lượt thi: <b>${esc(q.maxAttempts ?? 3)}</b> • Thời gian: <b>${esc(q.timeLimitMin ?? 0)} phút</b>
         </div>
@@ -131,48 +214,57 @@ function renderList(){
         <button class="btn danger" data-del="${esc(q.id)}" type="button">Xóa</button>
       </div>
     </div>
-  `).join("");
+  `
+    )
+    .join("");
 
-  list.querySelectorAll("[data-del]").forEach(btn=>{
-    btn.addEventListener("click", ()=>{
+  list.querySelectorAll("[data-del]").forEach((btn) => {
+    btn.addEventListener("click", async () => {
       const id = btn.getAttribute("data-del");
-      if(!confirm("Xóa bài thi này?")) return;
-      const next = loadQuizzes().filter(x=> x.id !== id);
-      saveQuizzes(next);
-      setStatus("Đã xóa bài.");
-      renderList();
+      if (!id) return;
+      if (!confirm("Xóa bài thi này?")) return;
+
+      try {
+        setStatus("Đang xóa...");
+        await apiDeleteQuiz(id);
+        setStatus("✅ Đã xóa bài.");
+        await refreshList();
+      } catch (e) {
+        setStatus("❌ Xóa thất bại (kiểm tra mạng / Apps Script).");
+      }
     });
   });
 
-  list.querySelectorAll("[data-edit]").forEach(btn=>{
-    btn.addEventListener("click", ()=>{
+  list.querySelectorAll("[data-edit]").forEach((btn) => {
+    btn.addEventListener("click", () => {
       const id = btn.getAttribute("data-edit");
-      const q = loadQuizzes().find(x=> x.id === id);
-      if(!q) return;
+      const q = QUIZZES_MEM.find((x) => String(x.id) === String(id));
+      if (!q) return;
 
       $("cat").value = q.cat;
       $("week").value = q.week;
       $("title").value = q.title || "";
 
-      // ✅ mới
+      // 2 ô cấu hình
       $("maxAttempts").value = String(q.maxAttempts ?? 3);
       $("timeLimitMin").value = String(q.timeLimitMin ?? 0);
 
       $("save").dataset.editId = q.id;
 
       $("qWrap").innerHTML = "";
-      (q.questions||[]).forEach(qq => $("qWrap").appendChild(makeQCard(qq)));
+      (q.questions || []).forEach((qq) => $("qWrap").appendChild(makeQCard(qq)));
 
-      setStatus("Đang sửa bài: " + (q.title||""));
-      window.scrollTo({ top: 0, behavior:"smooth" });
+      setStatus("Đang sửa bài: " + (q.title || ""));
+      window.scrollTo({ top: 0, behavior: "smooth" });
     });
   });
 }
 
-document.addEventListener("DOMContentLoaded", ()=>{
-  // ✅ thêm 2 ô cấu hình
+// ====== INIT ======
+document.addEventListener("DOMContentLoaded", () => {
+  // thêm 2 ô cấu hình nếu thiếu (phòng khi HTML chưa có)
   const grid = document.querySelector(".grid");
-  if(grid && !$("maxAttempts")){
+  if (grid && !$("maxAttempts")) {
     const html = `
       <label>
         Số lần thi tối đa (mặc định 3)
@@ -187,84 +279,66 @@ document.addEventListener("DOMContentLoaded", ()=>{
     grid.insertAdjacentHTML("beforeend", html);
   }
 
-  $("addQ").addEventListener("click", ()=>{
-    $("qWrap").appendChild(makeQCard({
-      text:"",
-      options:["","","",""],
-      correctIndex:0,
-      points:1
-    }));
+  $("addQ")?.addEventListener("click", () => {
+    $("qWrap").appendChild(
+      makeQCard({
+        text: "",
+        options: ["", "", "", ""],
+        correctIndex: 0,
+        points: 1,
+      })
+    );
   });
 
-  if(!$("qWrap").children.length){
-    $("qWrap").appendChild(makeQCard({ text:"", options:["","","",""], correctIndex:0, points:1 }));
+  if (!$("qWrap").children.length) {
+    $("qWrap").appendChild(makeQCard({ text: "", options: ["", "", "", ""], correctIndex: 0, points: 1 }));
   }
 
-  $("save").addEventListener("click", ()=>{
-    try{
+  $("save")?.addEventListener("click", async () => {
+    try {
       const cat = $("cat").value;
-      const week = Number(($("week").value||"").trim());
+      const week = safeNum(($("week").value || "").trim(), 0);
       const title = $("title").value.trim();
 
-      // ✅ mới
-      const maxAttempts = Number(($("maxAttempts").value||"3").trim());
-      const timeLimitMin = Number(($("timeLimitMin").value||"0").trim());
+      const maxAttempts = safeNum(($("maxAttempts").value || "3").trim(), 3);
+      const timeLimitMin = safeNum(($("timeLimitMin").value || "0").trim(), 0);
 
-      if(!cat) return setStatus("Cần chọn mục.");
-      if(!week || week < 1) return setStatus("Cần nhập tuần (>=1).");
-      if(!title) return setStatus("Cần nhập tiêu đề.");
-      if(!maxAttempts || maxAttempts < 1) return setStatus("Số lần thi tối đa phải >= 1.");
-      if(timeLimitMin < 0) return setStatus("Thời gian phút không hợp lệ.");
+      if (!cat) return setStatus("Cần chọn mục.");
+      if (!week || week < 1) return setStatus("Cần nhập tuần (>=1).");
+      if (!title) return setStatus("Cần nhập tiêu đề.");
+      if (!maxAttempts || maxAttempts < 1) return setStatus("Số lần thi tối đa phải >= 1.");
+      if (timeLimitMin < 0) return setStatus("Thời gian phút không hợp lệ.");
 
       const questions = readQuestions();
 
-      const quizzes = loadQuizzes();
       const editId = $("save").dataset.editId;
-
-      if(editId){
-        const idx = quizzes.findIndex(x=> x.id === editId);
-        if(idx >= 0){
-          quizzes[idx] = {
-            ...quizzes[idx],
-            cat, week, title,
-            maxAttempts,
-            timeLimitMin,
-            questions,
-            updatedAt: new Date().toISOString()
-          };
-          saveQuizzes(quizzes);
-          $("save").dataset.editId = "";
-          setStatus("✅ Đã cập nhật bài.");
-          renderList();
-          return;
-        }
-      }
-
-      const id = (crypto?.randomUUID ? crypto.randomUUID() : String(Date.now()));
-      quizzes.push({
-        id, cat, week, title,
+      const quiz = {
+        id: editId || "",
+        cat,
+        week,
+        title,
         maxAttempts,
         timeLimitMin,
         questions,
-        createdAt: new Date().toISOString()
-      });
-      saveQuizzes(quizzes);
+      };
 
-      setStatus("✅ Đã lưu bài.");
+      setStatus("Đang lưu lên Sheet...");
+      const res = await apiUpsertQuiz(quiz);
+
       $("save").dataset.editId = "";
-      renderList();
-    } catch(err){
-      setStatus("❌ " + (err?.message || "Lỗi dữ liệu."));
+      setStatus(res.mode === "update" ? "✅ Đã cập nhật bài (đồng bộ mọi thiết bị)." : "✅ Đã tạo bài (đồng bộ mọi thiết bị).");
+
+      // refresh list
+      await refreshList();
+    } catch (err) {
+      setStatus("❌ " + (err?.message || "Lỗi dữ liệu / mạng."));
     }
   });
 
-  $("clearAll").addEventListener("click", ()=>{
-    if(confirm("Xóa toàn bộ bài thi?")){
-      localStorage.removeItem(QUIZ_KEY);
-      setStatus("Đã xóa toàn bộ bài thi.");
-      renderList();
-    }
+  // nút xóa all nếu HTML có (nếu không có thì thôi)
+  $("clearAll")?.addEventListener("click", () => {
+    alert("Chủ tướng muốn xóa toàn bộ thì nên làm trực tiếp trong Google Sheet tab quizzes để an toàn.");
   });
 
-  renderList();
+  refreshList();
 });

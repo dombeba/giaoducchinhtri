@@ -1,15 +1,21 @@
 /**************************************************
- * KTQN - Làm bài thi (Local + Gửi kết quả lên Apps Script)
- * File: ktqn-lam-bai.js
+ * KTQN - Làm bài thi
+ * - Quiz lấy từ Apps Script => đồng bộ mọi thiết bị
+ * - Kết quả: lưu local + gửi Apps Script RESULT_API_URL (giữ logic cũ)
  **************************************************/
 
 // ====== STORAGE KEYS ======
 const SESSION_KEY = "KTQN_SESSION_V1";
-const QUIZ_KEY = "KTQN_QUIZZES_V2";
 const RESULT_KEY = "KTQN_RESULTS_V1";
 
-// ====== APPS SCRIPT WEB APP (DÁN LINK /exec Ở ĐÂY) ======
-const RESULT_API_URL = "https://script.google.com/macros/s/AKfycbzVFJN1UZWB4jUyjxgTlm4_ohl9pq7uszuG-uopkZOeCXfWAHeD5GIXIkyq8-AMRp_MxQ/exec";
+// ====== QUIZ API (SYNC) ======
+const QUIZ_API_URL =
+  "https://script.google.com/macros/s/AKfycbxbiU_-gN0VoPEPJ6p3vdZlPHuIh6KkhK7ngT27aCzAQFAVliVw5E-t8ON6TRowPEFUdg/exec";
+const QUIZ_CACHE_KEY = "KTQN_QUIZZES_CACHE_V1";
+
+// ====== RESULT API (GIỮ NGUYÊN CỦA CHỦ TƯỚNG - nếu muốn đổi thì thay ở đây) ======
+const RESULT_API_URL =
+  "https://script.google.com/macros/s/AKfycbxbiU_-gN0VoPEPJ6p3vdZlPHuIh6KkhK7ngT27aCzAQFAVliVw5E-t8ON6TRowPEFUdg/exec";
 
 // ====== LABELS ======
 const CAT_LABEL = {
@@ -21,8 +27,11 @@ const CAT_LABEL = {
 
 // ====== HELPERS ======
 function loadSession() {
-  try { return JSON.parse(localStorage.getItem(SESSION_KEY) || "null"); }
-  catch { return null; }
+  try {
+    return JSON.parse(localStorage.getItem(SESSION_KEY) || "null");
+  } catch {
+    return null;
+  }
 }
 
 function requireLogin() {
@@ -34,18 +43,13 @@ function requireLogin() {
   return s;
 }
 
-function loadQuizzes() {
-  try {
-    const arr = JSON.parse(localStorage.getItem(QUIZ_KEY) || "[]");
-    return Array.isArray(arr) ? arr : [];
-  } catch { return []; }
-}
-
 function loadResults() {
   try {
     const arr = JSON.parse(localStorage.getItem(RESULT_KEY) || "[]");
     return Array.isArray(arr) ? arr : [];
-  } catch { return []; }
+  } catch {
+    return [];
+  }
 }
 
 function saveResults(arr) {
@@ -62,7 +66,7 @@ function esc(s) {
 }
 
 function countAttempts(results, quizId, username) {
-  return results.filter(r => r.quizId === quizId && (r.user?.username || "") === username).length;
+  return results.filter((r) => r.quizId === quizId && (r.user?.username || "") === username).length;
 }
 
 function makeUUID() {
@@ -73,13 +77,37 @@ function makeUUID() {
   }
 }
 
+function cacheLoad() {
+  try {
+    const arr = JSON.parse(localStorage.getItem(QUIZ_CACHE_KEY) || "[]");
+    return Array.isArray(arr) ? arr : [];
+  } catch {
+    return [];
+  }
+}
+function cacheSave(arr) {
+  try {
+    localStorage.setItem(QUIZ_CACHE_KEY, JSON.stringify(arr || []));
+  } catch {}
+}
+
+async function fetchQuizzes() {
+  const url = `${QUIZ_API_URL}?action=listQuizzes&_=${Date.now()}`;
+  const res = await fetch(url);
+  const data = await res.json();
+  if (!data?.ok) throw new Error(data?.error || "API_ERROR");
+  const quizzes = Array.isArray(data.quizzes) ? data.quizzes : [];
+  cacheSave(quizzes);
+  return quizzes;
+}
+
 /**
- * Gửi kết quả lên Apps Script
+ * Gửi kết quả lên Apps Script (best-effort)
  * - Ưu tiên sendBeacon để không bị mất khi chuyển trang
  * - Fallback fetch keepalive
  */
 function pushResultToSheetNonBlocking(record) {
-  if (!RESULT_API_URL || RESULT_API_URL.includes("DAN_LINK")) return;
+  if (!RESULT_API_URL) return;
 
   const payload = {
     // user
@@ -104,45 +132,36 @@ function pushResultToSheetNonBlocking(record) {
     autoSubmitted: record.autoSubmitted ? 1 : 0,
     score: record.score ?? 0,
     maxScore: record.maxScore ?? 0,
-    submittedAt: record.submittedAt || ""
+    submittedAt: record.submittedAt || "",
   };
 
   const body = JSON.stringify(payload);
 
-  // 1) sendBeacon (best-effort)
   try {
     if (navigator.sendBeacon) {
       const blob = new Blob([body], { type: "application/json" });
       const ok = navigator.sendBeacon(RESULT_API_URL, blob);
-      if (ok) return; // đã gửi
+      if (ok) return;
     }
-  } catch (e) {
-    // ignore, fallback fetch
-  }
+  } catch {}
 
-  // 2) fetch keepalive (best-effort)
   try {
     fetch(RESULT_API_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body,
-      keepalive: true
+      keepalive: true,
     }).catch(() => {});
-  } catch (e) {
-    // ignore
-  }
+  } catch {}
 }
 
 // ====== MAIN ======
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
   const sess = requireLogin();
   if (!sess) return;
 
   const params = new URLSearchParams(window.location.search);
   const id = params.get("id");
-
-  const quizzes = loadQuizzes();
-  const quiz = quizzes.find(q => q.id === id);
 
   const statusEl = document.getElementById("status");
   const formEl = document.getElementById("form");
@@ -150,17 +169,27 @@ document.addEventListener("DOMContentLoaded", () => {
   const userBox = document.getElementById("userBox");
   if (userBox) userBox.textContent = `${sess.fullName || ""} • ${sess.unit || ""}`;
 
+  // ✅ tải quiz từ API (sync), fallback cache
+  let quizzes = [];
+  try {
+    quizzes = await fetchQuizzes();
+  } catch (e) {
+    quizzes = cacheLoad();
+  }
+
+  const quiz = quizzes.find((q) => String(q.id) === String(id));
+
   if (!quiz) {
     const quizTitleEl = document.getElementById("quizTitle");
     if (quizTitleEl) quizTitleEl.textContent = "❌ Không tìm thấy bài thi";
-    if (statusEl) statusEl.textContent = "Bài thi không tồn tại hoặc đã bị xóa.";
+    if (statusEl) statusEl.textContent = "Bài thi không tồn tại hoặc đã bị xóa (hoặc bạn đang offline và chưa có cache).";
     return;
   }
 
   const maxAttempts = Number(quiz.maxAttempts ?? 3);
   const timeLimitMin = Number(quiz.timeLimitMin ?? 0);
 
-  // ✅ chặn nếu đã hết lượt thi
+  // ✅ chặn nếu đã hết lượt thi (lưu ý: lượt thi đang tính theo local máy hiện tại)
   const resultsNow = loadResults();
   const used = countAttempts(resultsNow, quiz.id, sess.username);
   if (used >= maxAttempts) {
@@ -188,31 +217,36 @@ document.addEventListener("DOMContentLoaded", () => {
   if (qCountEl) qCountEl.textContent = qs.length;
 
   // render questions
-  formEl.innerHTML = qs.map((q, idx) => {
-    const name = `q_${idx}`;
-    const opts = Array.isArray(q.options) ? q.options : [];
-    return `
+  formEl.innerHTML = qs
+    .map((q, idx) => {
+      const name = `q_${idx}`;
+      const opts = Array.isArray(q.options) ? q.options : [];
+      return `
       <div class="q">
         <div class="q-title">Câu ${idx + 1}: ${esc(q.text || "")}</div>
         <div class="opts">
-          ${opts.map((op, j) => `
+          ${opts
+            .map(
+              (op, j) => `
             <label class="opt">
               <input type="radio" name="${name}" value="${j}" />
               <span>${esc(op)}</span>
             </label>
-          `).join("")}
+          `
+            )
+            .join("")}
         </div>
       </div>
     `;
-  }).join("");
+    })
+    .join("");
 
-  // ✅ đồng hồ đếm ngược (nếu có)
+  // ✅ timer
   let timerId = null;
   let remainingSec = timeLimitMin > 0 ? timeLimitMin * 60 : 0;
   const startAt = Date.now();
 
   if (timeLimitMin > 0) {
-    // tạo pill hiển thị thời gian ở panel-head
     const head = document.querySelector(".panel-head");
     if (head) {
       const t = document.createElement("span");
@@ -232,7 +266,7 @@ document.addEventListener("DOMContentLoaded", () => {
         clearInterval(timerId);
         timerId = null;
         if (statusEl) statusEl.textContent = "⏰ Hết giờ. Hệ thống đang tự động nộp bài...";
-        submit(true); // auto submit
+        submit(true);
         return;
       }
       remainingSec -= 1;
@@ -258,9 +292,7 @@ document.addEventListener("DOMContentLoaded", () => {
     return { score, maxScore };
   }
 
-  // ✅ submit (giữ hành vi cũ, chỉ thêm gửi Apps Script)
   function submit(autoSubmitted = false) {
-    // nếu bấm nộp thủ công: bắt buộc trả lời hết
     if (!autoSubmitted) {
       const unanswered = qs.findIndex((q, idx) => !formEl.querySelector(`input[name="q_${idx}"]:checked`));
       if (unanswered >= 0) {
@@ -269,24 +301,19 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    // chặn double submit
     const btn = document.getElementById("submitBtn");
     if (btn) btn.disabled = true;
 
-    // dừng timer
     if (timerId) {
       clearInterval(timerId);
       timerId = null;
     }
 
-    // tính điểm
     const { score, maxScore } = calcScore();
 
-    // attemptNo tính theo results mới nhất tại thời điểm submit
     const results = loadResults();
     const attemptNo = countAttempts(results, quiz.id, sess.username) + 1;
 
-    // nếu trong lúc làm có ai đó đã nộp thêm (hiếm), vẫn chặn vượt maxAttempts
     if (attemptNo > maxAttempts) {
       alert(`Bạn đã thi đủ ${maxAttempts} lần cho bài này.`);
       window.location.href = `ktqn-bai-thi.html?cat=${encodeURIComponent(quiz.cat)}`;
@@ -296,7 +323,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const durationSec = Math.round((Date.now() - startAt) / 1000);
     const rid = makeUUID();
 
-    // record giống logic cũ (để ktqn-ketqua.html đọc theo rid)
     const record = {
       id: rid,
       submittedAt: new Date().toISOString(),
@@ -322,22 +348,20 @@ document.addEventListener("DOMContentLoaded", () => {
       },
 
       score,
-      maxScore
+      maxScore,
     };
 
-    // 1) lưu local (giữ nguyên)
+    // 1) local
     results.push(record);
     saveResults(results);
 
-    // 2) gửi lên Apps Script (best-effort, không làm chậm chuyển trang)
+    // 2) push to sheet best-effort
     pushResultToSheetNonBlocking(record);
 
-    // 3) chuyển sang trang kết quả
+    // 3) go result page
     window.location.href = `ktqn-ketqua.html?rid=${encodeURIComponent(rid)}`;
   }
 
   const submitBtn = document.getElementById("submitBtn");
-  if (submitBtn) {
-    submitBtn.addEventListener("click", () => submit(false));
-  }
+  if (submitBtn) submitBtn.addEventListener("click", () => submit(false));
 });
