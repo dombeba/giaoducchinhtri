@@ -16,7 +16,7 @@ if (input !== ADMIN_PASSWORD) {
 
 // ====== CONFIG ======
 // 🔴 DÁN LINK CSV TAB RESULTS (Publish to web -> CSV) VÀO ĐÂY
-const RESULTS_CSV_URL = "gid=1443146912";
+const RESULTS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRll8YoIR4meYyIMQ4zscJfwj6hc4FBXKYBr6al7BGXGFR8bIHBKJvi2ATlTgBlT2nQUPNtbUb-DZcS/pub?gid=1443146912&single=true&output=csv";
 
 // cache local phòng khi CSV lỗi
 const CACHE_KEY = "KTQN_RESULTS_CSV_CACHE_V1";
