@@ -17,7 +17,7 @@ if (input !== ADMIN_PASSWORD) {
 
 // ✅ 1) LINK CSV QUIZZES (Publish to web -> CSV)
 // DÁN LINK CSV Ở ĐÂY (phải có output=csv)
-const QUIZ_CSV_URL = "gid=1035670183";
+const QUIZ_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRll8YoIR4meYyIMQ4zscJfwj6hc4FBXKYBr6al7BGXGFR8bIHBKJvi2ATlTgBlT2nQUPNtbUb-DZcS/pub?gid=1035670183&single=true&output=csv";
 
 // ✅ 2) LINK APPS SCRIPT (ghi/xóa)
 // (CORS chặn đọc response, nhưng gửi no-cors vẫn đi)
