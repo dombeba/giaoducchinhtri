@@ -22,7 +22,7 @@ const QUIZ_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRll8YoIR4
 // ✅ 2) LINK APPS SCRIPT (ghi/xóa)
 // (CORS chặn đọc response, nhưng gửi no-cors vẫn đi)
 const QUIZ_API_URL =
-  "https://script.google.com/macros/s/AKfycbwSvIMUxw7NWwQ4dB-9cLIfAfyT9QRv21ukPHEaBO9ZweNzS4PbXRNhOmVdUePPvfvW/exec";
+  "https://script.google.com/macros/s/AKfycbwYk8NZK4q88kWHlvSG9Ehb8zHf-04CaYnYprSMV_dj73LS2banBP7ceEqEx6cn2fWbDA/exec";
 
 // Cache local (phòng khi CSV lỗi)
 const QUIZ_CACHE_KEY = "KTQN_QUIZZES_CACHE_V1";

@@ -10,7 +10,7 @@ const RESULT_KEY = "KTQN_RESULTS_V1";
 
 // ====== QUIZZES CSV (Publish to web -> CSV) ======
 // 🔴 DÁN LINK CSV TAB QUIZZES Ở ĐÂY (phải có output=csv)
-const QUIZZES_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRll8YoIR4meYyIMQ4zscJfwj6hc4FBXKYBr6al7BGXGFR8bIHBKJvi2ATlTgBlT2nQUPNtbUb-DZcS/pub?gid=1035670183&single=true&output=csv";
+const QUIZZES_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRll8YoIR4meYyIMQ4zscJfwj6hc4FBXKYBr6al7BGXGFR8bIHBKJvi2ATlTgBlT2nQUPNtbUb-DZcS/pub?gid=1443146912&single=true&output=csv";
 
 
 // cache quiz (phòng khi CSV lỗi)
@@ -19,7 +19,7 @@ const QUIZ_CACHE_KEY = "KTQN_QUIZZES_CACHE_V1";
 // ====== RESULT API (Apps Script /exec) ======
 // ✅ Dùng để ghi vào tab RESULTS
 const RESULT_API_URL =
-  "https://script.google.com/macros/s/AKfycbwSvIMUxw7NWwQ4dB-9cLIfAfyT9QRv21ukPHEaBO9ZweNzS4PbXRNhOmVdUePPvfvW/exec";
+  "https://script.google.com/macros/s/AKfycbwYk8NZK4q88kWHlvSG9Ehb8zHf-04CaYnYprSMV_dj73LS2banBP7ceEqEx6cn2fWbDA/exec";
 
 // ====== LABELS ======
 const CAT_LABEL = {
