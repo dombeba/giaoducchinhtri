@@ -1,15 +1,17 @@
-/***************** ADMIN PROTECT *****************/
-const ADMIN_PASSWORD = "123321";
-const input = prompt("🔐 Nhập mật khẩu quản trị:");
-if (input !== ADMIN_PASSWORD) {
-  alert("❌ Sai mật khẩu. Không có quyền truy cập.");
-  window.location.href = "index.html";
-}
-
 /***************** CONFIG *****************/
-// ✅ DÁN ĐÚNG LINK /exec MỚI (link chủ tướng đã tạo container-bound)
 const API_URL =
-  "https://script.google.com/macros/s/AKfycbyLDBHqICMGY4GY-ITdiUMEDSU_69cFTmJiFp7bg3obR81hNrw2PiTVe4XisO8A1UuwwQ/exec";
+  "https://script.google.com/macros/s/AKfycbxY7818jgoFttC7rl4HdhFy4RM84dPTIvAmLWo7kNr4Cw-62TAikiHaV-3iudhLpcwJ5Q/exec";
+
+const ADMIN_PASSWORD = "123321";
+
+/***************** ADMIN LOCK *****************/
+(() => {
+  const input = prompt("🔐 Nhập mật khẩu quản trị:");
+  if (input !== ADMIN_PASSWORD) {
+    alert("❌ Sai mật khẩu.");
+    window.location.href = "kienthucquannhan.html";
+  }
+})();
 
 /***************** DOM *****************/
 const $ = (id) => document.getElementById(id);
@@ -28,7 +30,10 @@ function esc(s) {
     .replaceAll("'", "&#39;");
 }
 
-function fmt(iso) {
+function norm(v) { return String(v ?? "").trim(); }
+function toNum(v) { const n = Number(v); return Number.isFinite(n) ? n : 0; }
+
+function fmtDate(iso) {
   try {
     const d = new Date(iso);
     if (Number.isNaN(d.getTime())) return "";
@@ -47,16 +52,11 @@ function fmt(iso) {
 /***************** NETWORK *****************/
 async function fetchJson(url) {
   const res = await fetch(url, { method: "GET", cache: "no-store" });
-  // Apps Script đôi khi trả 200 nhưng body không phải JSON nếu lỗi
   const text = await res.text();
-  try {
-    return JSON.parse(text);
-  } catch {
-    throw new Error(`INVALID_JSON: ${text.slice(0, 200)}`);
-  }
+  try { return JSON.parse(text); }
+  catch { throw new Error("INVALID_JSON: " + text.slice(0, 200)); }
 }
 
-// POST no-cors (để khỏi dính CORS). Không đọc được response -> chỉ dùng khi cần.
 async function postNoCors(payload) {
   await fetch(API_URL, {
     method: "POST",
@@ -67,45 +67,21 @@ async function postNoCors(payload) {
 }
 
 /***************** DATA *****************/
-let ALL_RESULTS = []; // dữ liệu gốc từ API
-let VIEW_RESULTS = []; // dữ liệu sau lọc (để export)
+let ALL_RESULTS = [];
+let VIEW_RESULTS = [];
 
-function normStr(v) {
-  return String(v ?? "").trim();
+function makeKey(r) {
+  // key: submittedAt||username||quizTitle||attemptNo
+  return [norm(r.submittedAt), norm(r.username), norm(r.quizTitle), norm(r.attemptNo)].join("||");
 }
 
-function toNum(v) {
-  const n = Number(v);
-  return Number.isFinite(n) ? n : 0;
-}
-
-// Tạo “id” tạm để xóa trên giao diện (vì sheet RESULTS không có cột id)
-function makeRowKey(r) {
-  // đủ ổn định: thời gian + username + bài + attempt
-  return [
-    normStr(r.submittedAt),
-    normStr(r.username),
-    normStr(r.quizTitle),
-    normStr(r.attemptNo),
-  ].join("||");
-}
-
-/***************** LOAD FROM API *****************/
-async function loadResultsFromApi() {
-  setStatus("⏳ Đang tải kết quả từ Google Sheet...");
-
-  // cache-buster để tránh cache trung gian
+async function loadResults() {
+  setStatus("⏳ Đang tải kết quả...");
   const url = `${API_URL}?action=listResults&t=${Date.now()}`;
-
   const data = await fetchJson(url);
-  if (!data || data.ok !== true) {
-    throw new Error(data?.error || "LOAD_FAILED");
-  }
+  if (!data || data.ok !== true) throw new Error(data?.error || "LOAD_FAILED");
 
-  // data.results = mảng object theo header sheet
   const results = Array.isArray(data.results) ? data.results : [];
-
-  // Chuẩn hóa key (vì sheet có thể có score/maxScore hoặc không)
   ALL_RESULTS = results.map((x) => ({
     submittedAt: x.submittedAt || "",
     cat: x.cat || "",
@@ -116,55 +92,41 @@ async function loadResultsFromApi() {
     autoSubmitted: x.autoSubmitted ?? 0,
     timeLimitMin: x.timeLimitMin ?? 0,
     durationSec: x.durationSec ?? 0,
-
     fullName: x.fullName || "",
     rank: x.rank || "",
     position: x.position || "",
     unit: x.unit || "",
     phone: x.phone || "",
     username: x.username || "",
-
-    // có thể có hoặc không
     score: x.score ?? "",
     maxScore: x.maxScore ?? "",
   }));
 
-  setStatus(`✅ Đã tải: ${ALL_RESULTS.length} dòng`);
+  setStatus(`✅ Đã tải ${ALL_RESULTS.length} dòng`);
 }
 
-/***************** FILTER + RENDER *****************/
 function applyFilters(items) {
-  const cat = normStr($("cat")?.value);
-  const weekVal = normStr($("week")?.value);
-  const week = weekVal ? Number(weekVal) : 0;
-  const q = normStr($("q")?.value).toLowerCase();
+  const cat = norm($("cat")?.value);
+  const weekVal = norm($("week")?.value);
+  const week = weekVal ? toNum(weekVal) : 0;
+  const q = norm($("q")?.value).toLowerCase();
 
   let out = [...items];
 
-  if (cat) out = out.filter((x) => normStr(x.cat) === cat);
-  if (week) out = out.filter((x) => Number(x.week) === week);
+  if (cat) out = out.filter((x) => norm(x.cat) === cat);
+  if (week) out = out.filter((x) => toNum(x.week) === week);
 
   if (q) {
     out = out.filter((x) => {
       const blob = [
-        x.quizTitle,
-        x.fullName,
-        x.rank,
-        x.position,
-        x.unit,
-        x.phone,
-        x.username,
-        x.cat,
-        x.week,
-      ]
-        .map((v) => normStr(v).toLowerCase())
-        .join(" ");
+        x.quizTitle, x.fullName, x.rank, x.position, x.unit,
+        x.phone, x.username, x.cat, x.week
+      ].map(v => norm(v).toLowerCase()).join(" ");
       return blob.includes(q);
     });
   }
 
-  // mới nhất lên đầu
-  out.sort((a, b) => normStr(b.submittedAt).localeCompare(normStr(a.submittedAt)));
+  out.sort((a, b) => norm(b.submittedAt).localeCompare(norm(a.submittedAt))); // mới nhất lên đầu
   return out;
 }
 
@@ -177,38 +139,34 @@ function render() {
 
   if (!items.length) {
     tbody.innerHTML = `<tr><td colspan="11" style="padding:14px;color:#666">Chưa có kết quả.</td></tr>`;
-    setStatus(`0 kết quả`);
+    setStatus("0 kết quả (đã lọc)");
     return;
   }
 
-  tbody.innerHTML = items
-    .map((r) => {
-      const key = makeRowKey(r);
+  tbody.innerHTML = items.map((r) => {
+    const scoreText =
+      norm(r.score) || norm(r.maxScore)
+        ? `<b>${esc(r.score)} / ${esc(r.maxScore)}</b>`
+        : `<span style="color:#666">—</span>`;
 
-      const scoreText =
-        normStr(r.score) || normStr(r.maxScore)
-          ? `<b>${esc(r.score)} / ${esc(r.maxScore)}</b>`
-          : `<span style="color:#666">—</span>`;
+    const key = esc(makeKey(r));
 
-      return `
-        <tr>
-          <td>${esc(fmt(r.submittedAt))}</td>
-          <td>${esc(r.cat)}</td>
-          <td>${esc(r.week)}</td>
-          <td>${esc(r.quizTitle)}</td>
-          <td>${esc(r.fullName)}</td>
-          <td>${esc(r.rank)}</td>
-          <td>${esc(r.position)}</td>
-          <td>${esc(r.unit)}</td>
-          <td>${esc(r.phone)}</td>
-          <td>${scoreText}</td>
-          <td style="white-space:nowrap;">
-            <button class="btn danger del-one" type="button" data-key="${esc(key)}">❌</button>
-          </td>
-        </tr>
-      `;
-    })
-    .join("");
+    return `
+      <tr>
+        <td>${esc(fmtDate(r.submittedAt))}</td>
+        <td>${esc(r.cat)}</td>
+        <td>${esc(r.week)}</td>
+        <td>${esc(r.quizTitle)}</td>
+        <td>${esc(r.fullName)}</td>
+        <td>${esc(r.rank)}</td>
+        <td>${esc(r.position)}</td>
+        <td>${esc(r.unit)}</td>
+        <td>${esc(r.phone)}</td>
+        <td>${scoreText}</td>
+        <td><button class="btn danger del-one" data-key="${key}" type="button">✖</button></td>
+      </tr>
+    `;
+  }).join("");
 
   setStatus(`${items.length} kết quả (đã lọc)`);
 }
@@ -218,23 +176,9 @@ function exportCSV() {
   const items = VIEW_RESULTS || [];
 
   const header = [
-    "submittedAt",
-    "cat",
-    "week",
-    "quizTitle",
-    "attemptNo",
-    "maxAttempts",
-    "autoSubmitted",
-    "timeLimitMin",
-    "durationSec",
-    "fullName",
-    "rank",
-    "position",
-    "unit",
-    "phone",
-    "username",
-    "score",
-    "maxScore",
+    "submittedAt","cat","week","quizTitle","attemptNo","maxAttempts","autoSubmitted",
+    "timeLimitMin","durationSec","fullName","rank","position","unit","phone","username",
+    "score","maxScore"
   ];
 
   const rows = items.map((r) => [
@@ -258,7 +202,7 @@ function exportCSV() {
   ]);
 
   const csv = [header, ...rows]
-    .map((line) => line.map((v) => `"${String(v).replaceAll('"', '""')}"`).join(","))
+    .map(line => line.map(v => `"${String(v).replaceAll('"', '""')}"`).join(","))
     .join("\n");
 
   const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
@@ -270,41 +214,43 @@ function exportCSV() {
   a.remove();
 }
 
-/***************** DELETE / CLEAR (UI FIRST) *****************/
-// NOTE: Apps Script hiện tại của chủ tướng CHƯA có action xóa server.
-// Tôi cho xóa trên giao diện + reload lại từ server.
-// Nếu chủ tướng muốn xóa thật trên sheet, tôi sẽ bổ sung action deleteResult/clearResults bên Apps Script sau.
-
-function deleteOneUI(key) {
-  ALL_RESULTS = ALL_RESULTS.filter((r) => makeRowKey(r) !== key);
-  render();
+/***************** DELETE SERVER (REAL) *****************/
+async function deleteOneServer(key) {
+  await postNoCors({
+    action: "deleteResult",
+    adminPassword: ADMIN_PASSWORD,
+    key
+  });
 }
 
-async function clearAllUI() {
-  ALL_RESULTS = [];
-  render();
+async function clearAllServer() {
+  await postNoCors({
+    action: "clearResults",
+    adminPassword: ADMIN_PASSWORD
+  });
 }
 
 /***************** INIT *****************/
 document.addEventListener("DOMContentLoaded", async () => {
-  // filter events
+  // filter
   ["input", "change"].forEach((evt) => {
     $("cat")?.addEventListener(evt, render);
     $("week")?.addEventListener(evt, render);
     $("q")?.addEventListener(evt, render);
   });
 
-  // export
   $("exportCsv")?.addEventListener("click", exportCSV);
 
-  // clear all (UI + reload)
   $("clearAll")?.addEventListener("click", async () => {
-    if (!confirm("Xóa toàn bộ kết quả HIỂN THỊ trên admin? (Sheet vẫn giữ nếu chưa bật xóa server)")) return;
-    await clearAllUI();
-    setStatus("✅ Đã xóa trên giao diện. (Nếu muốn xóa luôn trên Sheet, báo tôi để bật API clearResults)");
+    if (!confirm("Xóa TOÀN BỘ kết quả trong Google Sheet (tab RESULTS)?")) return;
+    setStatus("⏳ Đang xóa toàn bộ trên Sheet...");
+    await clearAllServer();
+    await loadResults();
+    render();
+    setStatus("✅ Đã xóa toàn bộ trên Google Sheet.");
   });
 
-  // delete one (delegation)
+  // delete one
   document.addEventListener("click", async (e) => {
     const btn = e.target.closest(".del-one");
     if (!btn) return;
@@ -312,31 +258,28 @@ document.addEventListener("DOMContentLoaded", async () => {
     const key = btn.getAttribute("data-key");
     if (!key) return;
 
-    if (!confirm("Xóa kết quả này khỏi giao diện admin? (Sheet vẫn giữ nếu chưa bật xóa server)")) return;
+    if (!confirm("Xóa dòng này trong Google Sheet (tab RESULTS)?")) return;
 
-    // xóa ngay trên UI (không phụ thuộc cache)
-    deleteOneUI(key);
-
-    // (tuỳ chọn) nếu sau này chủ tướng muốn xóa trên server, bật action deleteResult ở Apps Script rồi mở lại đoạn dưới:
-    // await postNoCors({ action:"deleteResult", adminPassword: ADMIN_PASSWORD, key });
-
-    setStatus("✅ Đã xóa trên giao diện. (Muốn xóa thật trên Sheet, báo tôi để bật API deleteResult)");
+    setStatus("⏳ Đang xóa trên Sheet...");
+    await deleteOneServer(key);
+    await loadResults();
+    render();
+    setStatus("✅ Đã xóa trên Google Sheet.");
   });
 
-  // load data
+  // load
   try {
-    await loadResultsFromApi();
+    await loadResults();
     render();
   } catch (err) {
     console.error(err);
-    setStatus("❌ Không lấy được kết quả từ API. Kiểm tra Apps Script có action=listResults và đúng link /exec.");
+    setStatus("❌ Không lấy được kết quả. Kiểm tra Apps Script có action=listResults và đúng link /exec.");
     const tbody = $("tbody");
     if (tbody) {
       tbody.innerHTML =
         `<tr><td colspan="11" style="padding:14px;color:#b00020">
-          Không tải được dữ liệu. Hãy kiểm tra:<br/>
-          • Apps Script đã thêm action=listResults trong doGet<br/>
-          • Đang dùng đúng link /exec mới<br/>
+          Không tải được dữ liệu.<br/>
+          Hãy thử mở: <b>${esc(API_URL)}?action=listResults</b>
         </td></tr>`;
     }
   }
