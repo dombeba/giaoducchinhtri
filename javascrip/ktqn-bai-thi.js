@@ -3,7 +3,7 @@ const RESULT_KEY = "KTQN_RESULTS_V1";
 
 // ✅ đồng bộ quiz từ Apps Script
 const QUIZ_API_URL =
-  "https://script.google.com/macros/s/AKfycbwSvIMUxw7NWwQ4dB-9cLIfAfyT9QRv21ukPHEaBO9ZweNzS4PbXRNhOmVdUePPvfvW/exec";
+  "https://script.google.com/macros/s/AKfycbxY7818jgoFttC7rl4HdhFy4RM84dPTIvAmLWo7kNr4Cw-62TAikiHaV-3iudhLpcwJ5Q/exec";
 
 // cache local phòng khi api lỗi
 const QUIZ_CACHE_KEY = "KTQN_QUIZZES_CACHE_V1";
