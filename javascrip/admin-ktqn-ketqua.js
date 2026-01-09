@@ -13,6 +13,8 @@ if (input !== ADMIN_PASSWORD) {
   alert("❌ Sai mật khẩu. Không có quyền truy cập.");
   window.location.href = "index.html";
 }
+const RESULTS_API_URL =
+  "https://script.google.com/macros/s/AKfycbynj-8QUyqFOYFM5ZG-_HmEYrTjQlknZK57GNRbfULNYZj4ab3SJ5EkYwzgIQYUWsYGhw/exec";
 
 // ====== CONFIG ======
 // 🔴 DÁN LINK CSV TAB RESULTS (Publish to web -> CSV) VÀO ĐÂY
