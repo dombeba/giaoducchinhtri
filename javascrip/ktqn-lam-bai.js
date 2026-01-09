@@ -1,24 +1,23 @@
 /**************************************************
- * KTQN - Làm bài thi (CORS-safe)
- * ✅ Quiz: đọc từ Google Sheet (Publish CSV) => đồng bộ mọi thiết bị
- * ✅ Result: lưu local + gửi Apps Script bằng no-cors => ghi vào tab RESULTS
+ * KTQN - Làm bài thi (ĐỒNG BỘ MỌI THIẾT BỊ)
+ * ✅ Quiz: đọc từ Google Sheet (Publish CSV) => đồng bộ
+ * ✅ Attempts: đếm từ Apps Script ?action=listResults => xóa trên admin là thi lại được
+ * ✅ Result: gửi Apps Script bằng no-cors => ghi vào tab RESULTS
  **************************************************/
 
 // ====== STORAGE KEYS ======
 const SESSION_KEY = "KTQN_SESSION_V1";
-const RESULT_KEY = "KTQN_RESULTS_V1";
+const RESULT_KEY = "KTQN_RESULTS_V1"; // chỉ lưu lịch sử local (không dùng khóa lượt thi)
 
-// ====== QUIZZES CSV (Publish to web -> CSV) ======
-// 🔴 DÁN LINK CSV TAB QUIZZES Ở ĐÂY (phải có output=csv)
-const QUIZZES_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRll8YoIR4meYyIMQ4zscJfwj6hc4FBXKYBr6al7BGXGFR8bIHBKJvi2ATlTgBlT2nQUPNtbUb-DZcS/pub?gid=1035670183&single=true&output=csv";
+// ====== QUIZZES CSV ======
+const QUIZZES_CSV_URL =
+  "https://docs.google.com/spreadsheets/d/e/2PACX-1vRll8YoIR4meYyIMQ4zscJfwj6hc4FBXKYBr6al7BGXGFR8bIHBKJvi2ATlTgBlT2nQUPNtbUb-DZcS/pub?gid=1035670183&single=true&output=csv";
 
-
-// cache quiz (phòng khi CSV lỗi)
 const QUIZ_CACHE_KEY = "KTQN_QUIZZES_CACHE_V1";
 
-// ====== RESULT API (Apps Script /exec) ======
-// ✅ Dùng để ghi vào tab RESULTS
-const RESULT_API_URL =
+// ====== API (Apps Script /exec) ======
+// 🔥 DÁN ĐÚNG LINK /exec mới của chủ tướng (container-bound)
+const API_URL =
   "https://script.google.com/macros/s/AKfycbxY7818jgoFttC7rl4HdhFy4RM84dPTIvAmLWo7kNr4Cw-62TAikiHaV-3iudhLpcwJ5Q/exec";
 
 // ====== LABELS ======
@@ -31,11 +30,8 @@ const CAT_LABEL = {
 
 // ====== HELPERS ======
 function loadSession() {
-  try {
-    return JSON.parse(localStorage.getItem(SESSION_KEY) || "null");
-  } catch {
-    return null;
-  }
+  try { return JSON.parse(localStorage.getItem(SESSION_KEY) || "null"); }
+  catch { return null; }
 }
 
 function requireLogin() {
@@ -49,7 +45,7 @@ function requireLogin() {
   return s;
 }
 
-function loadResults() {
+function loadLocalResults() {
   try {
     const arr = JSON.parse(localStorage.getItem(RESULT_KEY) || "[]");
     return Array.isArray(arr) ? arr : [];
@@ -58,7 +54,7 @@ function loadResults() {
   }
 }
 
-function saveResults(arr) {
+function saveLocalResults(arr) {
   localStorage.setItem(RESULT_KEY, JSON.stringify(arr));
 }
 
@@ -71,10 +67,9 @@ function esc(s) {
     .replaceAll("'", "&#39;");
 }
 
-function countAttempts(results, quizId, username) {
-  return results.filter(
-    (r) => r.quizId === quizId && (r.user?.username || "") === username
-  ).length;
+function safeNum(v, fallback = 0) {
+  const n = Number(v);
+  return Number.isFinite(n) ? n : fallback;
 }
 
 function makeUUID() {
@@ -86,9 +81,7 @@ function makeUUID() {
 }
 
 function cacheSave(key, arr) {
-  try {
-    localStorage.setItem(key, JSON.stringify(arr || []));
-  } catch {}
+  try { localStorage.setItem(key, JSON.stringify(arr || [])); } catch {}
 }
 function cacheLoad(key) {
   try {
@@ -99,13 +92,11 @@ function cacheLoad(key) {
   }
 }
 
-function sleep(ms) {
-  return new Promise((r) => setTimeout(r, ms));
-}
-
-function safeNum(v, fallback = 0) {
-  const n = Number(v);
-  return Number.isFinite(n) ? n : fallback;
+async function fetchJson(url) {
+  const res = await fetch(url, { method: "GET", cache: "no-store" });
+  const text = await res.text();
+  try { return JSON.parse(text); }
+  catch { throw new Error("INVALID_JSON: " + text.slice(0, 200)); }
 }
 
 // ====== CSV PARSER ======
@@ -165,17 +156,10 @@ function toObjects(csvText) {
 }
 
 function normalizeQuizRow(x) {
-  // Header khuyến nghị của QUIZZES:
-  // id,cat,week,title,maxAttempts,timeLimitMin,questionsJson,createdAt,updatedAt
-  // hỗ trợ trường hợp lỡ dùng category thay cat
   const cat = String(x.cat || x.category || "").trim();
 
   let questions = [];
-  try {
-    questions = JSON.parse(x.questionsJson || "[]");
-  } catch {
-    questions = [];
-  }
+  try { questions = JSON.parse(x.questionsJson || "[]"); } catch { questions = []; }
 
   return {
     id: String(x.id || "").trim(),
@@ -194,11 +178,9 @@ async function fetchQuizzesFromCSV() {
   if (!QUIZZES_CSV_URL || QUIZZES_CSV_URL.includes("DAN_LINK_CSV")) {
     throw new Error("CHUA_DAN_LINK_CSV_QUIZZES");
   }
-  const url = `${QUIZZES_CSV_URL}${
-    QUIZZES_CSV_URL.includes("?") ? "&" : "?"
-  }_=${Date.now()}`;
+  const url = `${QUIZZES_CSV_URL}${QUIZZES_CSV_URL.includes("?") ? "&" : "?"}_=${Date.now()}`;
 
-  const res = await fetch(url);
+  const res = await fetch(url, { cache: "no-store" });
   if (!res.ok) throw new Error("FETCH_CSV_FAILED");
 
   const csv = await res.text();
@@ -209,13 +191,32 @@ async function fetchQuizzesFromCSV() {
   return quizzes;
 }
 
+// ====== ATTEMPTS (SERVER) ======
+// Đếm lượt thi từ RESULTS (server) => admin xóa là thi lại được
+// Match theo: username + cat + week + quizTitle
+function countAttemptsServer(results, quiz, username) {
+  const u = String(username || "");
+  const cat = String(quiz.cat || "");
+  const week = String(quiz.week ?? "");
+  const title = String(quiz.title || "");
+
+  return (results || []).filter((r) =>
+    String(r.username || "") === u &&
+    String(r.cat || "") === cat &&
+    String(r.week ?? "") === week &&
+    String(r.quizTitle || "") === title
+  ).length;
+}
+
+async function fetchAllResultsFromServer() {
+  // cần Apps Script có action=listResults
+  const data = await fetchJson(`${API_URL}?action=listResults&t=${Date.now()}`);
+  if (!data || data.ok !== true) throw new Error(data?.error || "LIST_RESULTS_FAILED");
+  return Array.isArray(data.results) ? data.results : [];
+}
+
 // ====== SEND RESULT (no-cors) ======
 function pushResultToSheetNonBlocking(record) {
-  if (!RESULT_API_URL) return;
-
-  // ✅ payload PHẲNG đúng header tab RESULTS của chủ tướng:
-  // submittedAt, cat, week, quizTitle, attemptNo, maxAttempts, autoSubmitted,
-  // timeLimitMin, durationSec, fullName, rank, position, unit, phone, username
   const payload = {
     action: "submitResult",
 
@@ -238,14 +239,14 @@ function pushResultToSheetNonBlocking(record) {
     phone: record.user?.phone || "",
     username: record.user?.username || "",
 
-    // thêm để tiện về sau (nếu script có dùng)
-    score: record.score ?? 0,
-    maxScore: record.maxScore ?? 0,
+    // thêm để tiện thống kê
+    score: record.score ?? "",
+    maxScore: record.maxScore ?? "",
     quizId: record.quizId || "",
   };
 
   try {
-    fetch(RESULT_API_URL, {
+    fetch(API_URL, {
       method: "POST",
       mode: "no-cors",
       headers: { "Content-Type": "text/plain;charset=utf-8" },
@@ -269,7 +270,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const userBox = document.getElementById("userBox");
   if (userBox) userBox.textContent = `${sess.fullName || ""} • ${sess.unit || ""}`;
 
-  // ✅ tải quiz từ CSV (sync), fallback cache
+  // 1) tải quiz từ CSV (sync), fallback cache
   let quizzes = [];
   try {
     quizzes = await fetchQuizzesFromCSV();
@@ -294,9 +295,16 @@ document.addEventListener("DOMContentLoaded", async () => {
   const maxAttempts = Number(quiz.maxAttempts ?? 3);
   const timeLimitMin = Number(quiz.timeLimitMin ?? 0);
 
-  // ✅ chặn nếu đã hết lượt thi (hiện tính theo local trên máy)
-  const resultsNow = loadResults();
-  const used = countAttempts(resultsNow, quiz.id, sess.username);
+  // 2) ĐẾM LƯỢT THI TỪ SERVER (QUAN TRỌNG)
+  let resultsServer = [];
+  try {
+    resultsServer = await fetchAllResultsFromServer();
+  } catch (e) {
+    // nếu server lỗi, để an toàn: KHÔNG chặn cứng, nhưng cảnh báo
+    if (statusEl) statusEl.textContent = "⚠️ Không tải được lượt thi từ server (listResults). Vui lòng thử lại.";
+  }
+
+  const used = countAttemptsServer(resultsServer, quiz, sess.username);
   if (used >= maxAttempts) {
     alert(`Bạn đã thi đủ ${maxAttempts} lần cho bài này.`);
     window.location.href = `ktqn-bai-thi.html?cat=${encodeURIComponent(quiz.cat)}`;
@@ -346,7 +354,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     })
     .join("");
 
-  // ✅ timer
+  // timer
   let timerId = null;
   let remainingSec = timeLimitMin > 0 ? timeLimitMin * 60 : 0;
   const startAt = Date.now();
@@ -397,10 +405,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     return { score, maxScore };
   }
 
-  function submit(autoSubmitted = false) {
+  async function submit(autoSubmitted = false) {
     if (!autoSubmitted) {
       const unanswered = qs.findIndex(
-        (q, idx) => !formEl.querySelector(`input[name="q_${idx}"]:checked`)
+        (_, idx) => !formEl.querySelector(`input[name="q_${idx}"]:checked`)
       );
       if (unanswered >= 0) {
         if (statusEl) statusEl.textContent = `⚠️ Chưa trả lời Câu ${unanswered + 1}.`;
@@ -416,16 +424,22 @@ document.addEventListener("DOMContentLoaded", async () => {
       timerId = null;
     }
 
-    const { score, maxScore } = calcScore();
-
-    const results = loadResults();
-    const attemptNo = countAttempts(results, quiz.id, sess.username) + 1;
-
-    if (attemptNo > maxAttempts) {
-      alert(`Bạn đã thi đủ ${maxAttempts} lần cho bài này.`);
-      window.location.href = `ktqn-bai-thi.html?cat=${encodeURIComponent(quiz.cat)}`;
-      return;
+    // 🔥 kiểm tra lại lượt thi trên server ngay trước khi ghi (tránh mở 2 tab)
+    let usedNow = used;
+    try {
+      const fresh = await fetchAllResultsFromServer();
+      usedNow = countAttemptsServer(fresh, quiz, sess.username);
+      if (usedNow >= maxAttempts) {
+        alert(`Bạn đã thi đủ ${maxAttempts} lần cho bài này.`);
+        window.location.href = `ktqn-bai-thi.html?cat=${encodeURIComponent(quiz.cat)}`;
+        return;
+      }
+    } catch {
+      // nếu server lỗi, cho nộp nhưng có thể bị vượt lượt (hiếm)
     }
+
+    const { score, maxScore } = calcScore();
+    const attemptNo = usedNow + 1;
 
     const durationSec = Math.round((Date.now() - startAt) / 1000);
     const rid = makeUUID();
@@ -458,11 +472,12 @@ document.addEventListener("DOMContentLoaded", async () => {
       maxScore,
     };
 
-    // 1) local
-    results.push(record);
-    saveResults(results);
+    // 1) local history (chỉ để xem nhanh/offline)
+    const local = loadLocalResults();
+    local.push(record);
+    saveLocalResults(local);
 
-    // 2) push to sheet (no-cors)
+    // 2) push to sheet (server)
     pushResultToSheetNonBlocking(record);
 
     // 3) go result page
