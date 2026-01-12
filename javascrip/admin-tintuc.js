@@ -8,7 +8,7 @@
 const ADMIN_PASSWORD = "123321";
 
 // 🔴 DÁN LINK /exec TIN TỨC CỦA CHỦ TƯỚNG
-const API_URL = "PASTE_YOUR_NEWS_EXEC_HERE";
+const API_URL = "https://script.google.com/macros/s/AKfycbwHtgydq5jmIoHPaelCRkq1inb1DrnBxxSITOFiowawHzfvoFW8URUoAvAV3Ea2-n6SiA/exec";
 
 // Nếu muốn khóa admin bằng mật khẩu ngay khi mở trang:
 (() => {
