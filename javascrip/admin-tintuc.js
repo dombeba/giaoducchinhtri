@@ -1,10 +1,9 @@
 // =============================
-// ADMIN - TIN TỨC (SERVER-FIRST, REALTIME via JSONP)
+// ADMIN - TIN TỨC (SERVER-FIRST) - v2 FIX TITLE
 // - LIST/GET: JSONP (không CORS)
 // - UPSERT/DELETE: POST no-cors
 // =============================
 
-// ===== BẢO VỆ ADMIN =====
 const ADMIN_PASSWORD = "123321";
 const input = prompt("🔐 Nhập mật khẩu quản trị:");
 if (input !== ADMIN_PASSWORD) {
@@ -12,7 +11,7 @@ if (input !== ADMIN_PASSWORD) {
   window.location.href = "index.html";
 }
 
-// 🔴 DÁN LINK /exec TIN TỨC (script.google.com/macros/s/.../exec)
+// 🔴 DÁN LINK /exec TIN TỨC
 const API_URL = "https://script.google.com/macros/s/AKfycbwHtgydq5jmIoHPaelCRkq1inb1DrnBxxSITOFiowawHzfvoFW8URUoAvAV3Ea2-n6SiA/exec";
 
 const $ = (id) => document.getElementById(id);
@@ -21,6 +20,16 @@ const listEl = $("list");
 
 function setStatus(msg) {
   if (statusEl) statusEl.textContent = msg || "";
+}
+
+function mustEl(id) {
+  const el = $(id);
+  if (!el) throw new Error(`MISSING_ELEMENT_ID_${id}`);
+  return el;
+}
+
+function getVal(id) {
+  return String(mustEl(id).value ?? "").trim();
 }
 
 function escMini(s) {
@@ -75,9 +84,7 @@ function jsonp(url, timeoutMs = 12000) {
 
 // ===== POST no-cors =====
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-
 function postNoCors(payload) {
-  // no-cors: gửi được, không đọc response
   return fetch(API_URL, {
     method: "POST",
     mode: "no-cors",
@@ -88,8 +95,6 @@ function postNoCors(payload) {
 }
 
 // ===== FILE -> BASE64 (CHẶN ẢNH NẶNG) =====
-// Google Sheet giới hạn ký tự/ô, base64 rất dễ làm lỗi.
-// => chỉ cho file cực nhỏ (<=25KB). Ảnh lớn => dùng link.
 const MAX_FILE_BYTES = 25_000;
 
 function tooLargeMsg(name = "Ảnh") {
@@ -112,14 +117,14 @@ function fileToBase64(file) {
 }
 
 async function pickImage(urlId, fileId, label = "Ảnh") {
-  const url = ($(urlId)?.value || "").trim();
+  const url = String(($(urlId)?.value || "")).trim();
   const file = $(fileId)?.files?.[0];
 
   if (file) {
     if (file.size > MAX_FILE_BYTES) {
       alert(tooLargeMsg(label));
       try { $(fileId).value = ""; } catch {}
-      return ""; // ép dùng link / nén ảnh
+      return "";
     }
     return await fileToBase64(file);
   }
@@ -127,7 +132,7 @@ async function pickImage(urlId, fileId, label = "Ảnh") {
 }
 
 async function pickGallery(urlsId, filesId) {
-  const urlRaw = ($(urlsId)?.value || "").trim();
+  const urlRaw = String(($(urlsId)?.value || "")).trim();
   const urlList = urlRaw ? urlRaw.split("\n").map(s => s.trim()).filter(Boolean) : [];
 
   const files = Array.from($(filesId)?.files || []);
@@ -159,10 +164,10 @@ function buildImgToken(src, caption) {
   return `\n\n[[IMG:${src}|${safeCaption}]]\n\n`;
 }
 async function handleInsertInlineImage() {
-  const ta = $("content");
-  const url = ($("inlineImgUrl")?.value || "").trim();
+  const ta = mustEl("content");
+  const url = String(($( "inlineImgUrl")?.value || "")).trim();
   const file = $("inlineImgFile")?.files?.[0];
-  const caption = ($("inlineImgCaption")?.value || "").trim();
+  const caption = String(($( "inlineImgCaption")?.value || "")).trim();
 
   let src = "";
   if (file) {
@@ -177,63 +182,67 @@ async function handleInsertInlineImage() {
   }
 
   if (!src) return setStatus("⚠️ Cần chọn ảnh hoặc dán link để chèn.");
-
   insertAtCursor(ta, buildImgToken(src, caption));
 
   if ($("inlineImgUrl")) $("inlineImgUrl").value = "";
   if ($("inlineImgFile")) $("inlineImgFile").value = "";
   if ($("inlineImgCaption")) $("inlineImgCaption").value = "";
-
   setStatus("✅ Đã chèn ảnh vào nội dung.");
 }
 $("insertInlineImage")?.addEventListener("click", () => {
-  handleInsertInlineImage().catch(() => setStatus("❌ Lỗi khi chèn ảnh."));
+  handleInsertInlineImage().catch((e) => {
+    console.error(e);
+    setStatus("❌ Lỗi khi chèn ảnh.");
+  });
 });
 
 // ===== FORM =====
 async function getFormData() {
-  const title = ($("title")?.value || "").trim();
-  const date = $("date")?.value || "";
-  const category = ($("category")?.value || "Hoạt động").trim();
-  const author = ($("author")?.value || "").trim();
-  const source = ($("source")?.value || "").trim();
-  const excerpt = ($("excerpt")?.value || "").trim();
+  // ✅ đọc chắc chắn element tồn tại
+  const title = getVal("title");
+  const date = getVal("date");
+  const category = String(($("category")?.value || "Hoạt động")).trim();
+  const author = getVal("author");
+  const source = getVal("source");
+  const excerpt = String(($( "excerpt")?.value || "")).trim();
 
   const thumb = await pickImage("thumbUrl", "thumbFile", "Ảnh đại diện");
   const hero = await pickImage("heroUrl", "heroFile", "Ảnh đầu bài");
 
-  const content = ($("content")?.value || "").trim();
+  const content = String(mustEl("content").value || "").trim();
   const gallery = await pickGallery("galleryUrls", "galleryFiles");
 
   return { title, date, category, author, source, excerpt, thumb, hero, content, gallery };
 }
 
 function fillForm(p) {
-  $("title").value = p.title || "";
-  $("date").value = p.date || "";
-  $("category").value = p.category || "Hoạt động";
-  $("author").value = p.author || "";
-  $("source").value = p.source || "";
-  $("excerpt").value = p.excerpt || "";
+  mustEl("title").value = p.title || "";
+  mustEl("date").value = p.date || "";
+  mustEl("category").value = p.category || "Hoạt động";
+  mustEl("author").value = p.author || "";
+  mustEl("source").value = p.source || "";
+  mustEl("excerpt").value = p.excerpt || "";
 
-  $("thumbUrl").value = (p.thumb && String(p.thumb).startsWith("data:")) ? "" : (p.thumb || "");
-  $("thumbFile").value = "";
+  mustEl("thumbUrl").value = (p.thumb && String(p.thumb).startsWith("data:")) ? "" : (p.thumb || "");
+  mustEl("thumbFile").value = "";
 
-  $("heroUrl").value = (p.hero && String(p.hero).startsWith("data:")) ? "" : (p.hero || "");
-  $("heroFile").value = "";
+  mustEl("heroUrl").value = (p.hero && String(p.hero).startsWith("data:")) ? "" : (p.hero || "");
+  mustEl("heroFile").value = "";
 
-  $("content").value = p.content || "";
+  mustEl("content").value = p.content || "";
 
   const g = Array.isArray(p.gallery) ? p.gallery : [];
   const linksOnly = g.filter(x => !String(x).startsWith("data:"));
-  $("galleryUrls").value = linksOnly.join("\n");
-  $("galleryFiles").value = "";
+  mustEl("galleryUrls").value = linksOnly.join("\n");
+  mustEl("galleryFiles").value = "";
 
-  $("save").dataset.editId = p.id || "";
+  // ✅ lưu id để sửa đúng bài
+  if ($("postId")) $("postId").value = p.id || "";
+  mustEl("save").dataset.editId = p.id || "";
 }
 
 function clearForm() {
-  ["title","date","author","source","excerpt","thumbUrl","heroUrl","content","galleryUrls"].forEach(id => {
+  ["postId","title","date","author","source","excerpt","thumbUrl","heroUrl","content","galleryUrls"].forEach(id => {
     if ($(id)) $(id).value = "";
   });
   ["thumbFile","heroFile","galleryFiles","inlineImgFile"].forEach(id => {
@@ -242,9 +251,8 @@ function clearForm() {
   ["inlineImgUrl","inlineImgCaption"].forEach(id => {
     if ($(id)) $(id).value = "";
   });
-
   if ($("category")) $("category").value = "Hoạt động";
-  $("save").dataset.editId = "";
+  mustEl("save").dataset.editId = "";
 }
 
 // ===== SERVER DATA =====
@@ -335,35 +343,54 @@ async function renderList() {
 }
 
 // ===== SAVE =====
-$("save")?.addEventListener("click", async () => {
+mustEl("save")?.addEventListener("click", async () => {
   try {
     const data = await getFormData();
 
-    if (!data.title || !data.date || !data.content) {
-      setStatus("⚠️ Cần nhập: Tiêu đề + Ngày đăng + Nội dung chi tiết.");
+    // ✅ chặn cứng: nếu title rỗng -> không gửi
+    if (!data.title) {
+      alert("❌ Chưa có TIÊU ĐỀ.\nHãy nhập tiêu đề trước khi lưu.");
+      mustEl("title").focus();
+      setStatus("❌ Thiếu tiêu đề.");
+      return;
+    }
+    if (!data.date) {
+      alert("❌ Chưa chọn NGÀY ĐĂNG.");
+      mustEl("date").focus();
+      setStatus("❌ Thiếu ngày đăng.");
+      return;
+    }
+    if (!data.content) {
+      alert("❌ Chưa có NỘI DUNG.");
+      mustEl("content").focus();
+      setStatus("❌ Thiếu nội dung.");
       return;
     }
 
-    const editId = $("save").dataset.editId || "";
+    // ✅ debug rõ ràng
+    console.log("DEBUG SEND title =", data.title);
+
+    const editId = mustEl("save").dataset.editId || getVal("postId") || "";
     const post = { id: editId, ...data };
 
-    setStatus("⏳ Đang lưu bài (server)...");
+    setStatus(`⏳ Đang lưu (title="${data.title}")...`);
     await postNoCors({ action: "upsertNews", adminPassword: ADMIN_PASSWORD, post });
 
     await sleep(1200);
 
-    $("save").dataset.editId = "";
+    mustEl("save").dataset.editId = "";
     clearForm();
     await renderList();
 
     setStatus(editId ? "✅ Đã cập nhật bài" : "✅ Đã lưu bài");
   } catch (e) {
     console.error(e);
+    alert("❌ Lỗi khi lưu: " + String(e?.message || e));
     setStatus("❌ Lỗi khi lưu bài.");
   }
 });
 
-$("cancelEdit")?.addEventListener("click", () => {
+mustEl("cancelEdit")?.addEventListener("click", () => {
   clearForm();
   setStatus("Đã hủy sửa.");
 });
