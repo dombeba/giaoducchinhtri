@@ -23,18 +23,15 @@
     <section class="card">
       <h2>✍️ Đăng / Sửa bài</h2>
 
-      <!-- ✅ thêm id ẩn để sửa đúng bài -->
-      <input id="postId" type="hidden" value="" />
-
       <div class="grid">
         <label class="full">
           Tiêu đề <span class="req">*</span>
-          <input id="title" type="text" placeholder="VD: Đơn vị tổ chức huấn luyện..." required />
+          <input id="title" type="text" placeholder="VD: Đơn vị tổ chức huấn luyện..." />
         </label>
 
         <label>
           Ngày đăng <span class="req">*</span>
-          <input id="date" type="date" required />
+          <input id="date" type="date" />
         </label>
 
         <label>
@@ -86,7 +83,7 @@
 
         <label class="full">
           Nội dung chi tiết <span class="req">*</span>
-          <textarea id="content" rows="12" placeholder="Nội dung dài của bài viết..." required></textarea>
+          <textarea id="content" rows="12" placeholder="Nội dung dài của bài viết..."></textarea>
           <div class="hint">Mẹo: có thể chèn ảnh vào giữa nội dung ở khung bên dưới rồi bấm “Chèn vào nội dung”.</div>
         </label>
 
@@ -112,7 +109,9 @@
 
           <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;">
             <button class="btn primary" id="insertInlineImage" type="button">Chèn vào nội dung</button>
-            <div class="hint" style="margin:0;">Ảnh sẽ được chèn tại vị trí con trỏ trong ô “Nội dung”.</div>
+            <div class="hint" style="margin:0;">
+              Ảnh sẽ được chèn tại vị trí con trỏ trong ô “Nội dung”.
+            </div>
           </div>
         </div>
 
@@ -142,8 +141,6 @@
 
   </main>
 
-  <script src="javascrip/admin-tintuc.js"></script>
-
-
+  <script src="javascrip/admin-tintuc.js?v=20260112_1400"></script>
 </body>
 </html>
