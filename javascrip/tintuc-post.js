@@ -5,7 +5,7 @@
 // File: javascrip/tintuc-post.js
 // =============================
 const API_URL =
-  "https://script.google.com/macros/s/AKfycbzrQ_b36RUr50zYjUzZNymT3a3Cph9NNbZac9yYdDzbD9xyB5JQkggAJIAtMY5N25Qi3A/exec"; // 🔴 DÁN LINK /exec TIN TỨC (SCRIPT RIÊNG)
+  "https://script.google.com/macros/s/AKfycbzj2lgfuel4EUutBxfd69rNO45tg7KDGzLwz1PjoLhZvUtzkwdKY6ShzwqVrfOyhWvNGQ/exec"; // 🔴 DÁN LINK /exec TIN TỨC (SCRIPT RIÊNG)
 
 const esc = (s) =>
   String(s || "")
