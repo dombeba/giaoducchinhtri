@@ -2,7 +2,7 @@
 // TIN TỨC - LIST (SERVER-FIRST, REALTIME via JSONP)
 // File: javascrip/tintuc.js
 // =============================
-const API_URL = "https://script.google.com/macros/s/AKfycbzj2lgfuel4EUutBxfd69rNO45tg7KDGzLwz1PjoLhZvUtzkwdKY6ShzwqVrfOyhWvNGQ/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbw_uf1vwdogMhZoQ6YfeYC9Gm26R_x1txdCk2cq2tz0jDLCOeHm_uxU--u2QqpwCZ-tag/exec";
 
 const newsEl = document.getElementById("news");
 const countEl = document.getElementById("count");
