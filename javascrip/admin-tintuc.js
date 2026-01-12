@@ -1,5 +1,14 @@
 /**************** ADMIN - TIN TỨC (FULL SAFE: JSONP GET + no-cors POST) ****************/
 const ADMIN_PASSWORD = "123321";
+// ✅ BẮT NHẬP MẬT KHẨU KHI VÀO TRANG ADMIN
+(() => {
+  const pw = prompt("🔒 Nhập mật khẩu quản trị:");
+  if (pw !== ADMIN_PASSWORD) {
+    alert("❌ Sai mật khẩu.");
+    location.href = "tintuc.html"; // hoặc "index.html"
+  }
+})();
+
 const API_URL = "https://script.google.com/macros/s/AKfycbzctYLpyy5xceGNdO_WYDCPgIAYzIAov2OV3GslYiSULNuoWPYtkRxwq90ZNBtqSeC29A/exec"; // 🔴 dán /exec
 
 const $ = (id) => document.getElementById(id);
