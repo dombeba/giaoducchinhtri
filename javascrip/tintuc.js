@@ -3,7 +3,7 @@
 // File: javascrip/tintuc.js
 // =============================
 const API_URL =
-  "https://script.google.com/macros/s/AKfycbzBLnOi4PGSkGnUAw8t8dRo2W3y1JmKdNBFTnQSHXw9yHk_-Wg6Vu-Qw-3K0LyuASZQGw/exec"; // 🔴 DÁN LINK /exec TIN TỨC (SCRIPT RIÊNG)
+  "https://script.google.com/macros/s/AKfycbzrQ_b36RUr50zYjUzZNymT3a3Cph9NNbZac9yYdDzbD9xyB5JQkggAJIAtMY5N25Qi3A/exec"; // 🔴 DÁN LINK /exec TIN TỨC (SCRIPT RIÊNG)
 
 const newsEl = document.getElementById("news");
 const countEl = document.getElementById("count");
