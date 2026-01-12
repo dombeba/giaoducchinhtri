@@ -1,16 +1,16 @@
 /**************************************************
- * ADMIN - TIN TỨC (SERVER-FIRST, FIX TITLE 100%)
- * - GET: JSONP (listNews)
- * - POST: no-cors (upsert/delete) + poll list để xác nhận
+ * ADMIN - TIN TỨC (SERVER-FIRST) - FIX TITLE 100%
+ * - GET list: JSONP (không CORS)
+ * - POST save/delete: no-cors (không đọc response) + poll list để xác nhận
  **************************************************/
 
 // ====== CONFIG ======
 const ADMIN_PASSWORD = "123321";
 
-// 🔴 DÁN LINK /exec TIN TỨC CỦA CHỦ TƯỚNG
+// 🔴 DÁN LINK /exec Tin tức (Apps Script)
 const API_URL = "https://script.google.com/macros/s/AKfycbwHtgydq5jmIoHPaelCRkq1inb1DrnBxxSITOFiowawHzfvoFW8URUoAvAV3Ea2-n6SiA/exec";
 
-// Nếu muốn khóa admin bằng mật khẩu ngay khi mở trang:
+// ====== BẢO VỆ ADMIN ======
 (() => {
   const pw = prompt("🔐 Nhập mật khẩu quản trị:");
   if (pw !== ADMIN_PASSWORD) {
@@ -27,18 +27,14 @@ const listEl = $("list");
 function setStatus(msg) {
   if (statusEl) statusEl.textContent = msg || "";
 }
-
 function mustEl(id) {
   const el = $(id);
   if (!el) throw new Error(`MISSING_ELEMENT_ID_${id}`);
   return el;
 }
-
 function val(id) {
   return String(mustEl(id).value ?? "").trim();
 }
-
-// ====== UTILS ======
 function esc(s) {
   return String(s || "")
     .replaceAll("&", "&amp;")
@@ -47,13 +43,8 @@ function esc(s) {
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#39;");
 }
-
-function sleep(ms) {
-  return new Promise((r) => setTimeout(r, ms));
-}
-
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 function uuidv4() {
-  // uuid v4 đơn giản (đủ dùng)
   return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
     const r = (Math.random() * 16) | 0;
     const v = c === "x" ? r : (r & 0x3) | 0x8;
@@ -61,7 +52,7 @@ function uuidv4() {
   });
 }
 
-// ====== JSONP (GET listNews/getNews) ======
+// ====== JSONP ======
 function jsonp(url, timeoutMs = 12000) {
   return new Promise((resolve, reject) => {
     const cb = "__jsonp_cb_" + Math.random().toString(16).slice(2);
@@ -85,16 +76,14 @@ function jsonp(url, timeoutMs = 12000) {
     document.head.appendChild(s);
   });
 }
-
 async function apiListNews() {
   const d = await jsonp(`${API_URL}?action=listNews`);
   if (!d || d.ok !== true) throw new Error(d?.error || "LIST_NEWS_FAILED");
   return Array.isArray(d.items) ? d.items : [];
 }
 
-// ====== POST no-cors (upsert/delete) ======
+// ====== POST no-cors ======
 async function postNoCors(payload) {
-  // no-cors: gửi được nhưng không đọc response
   await fetch(API_URL, {
     method: "POST",
     mode: "no-cors",
@@ -104,13 +93,12 @@ async function postNoCors(payload) {
   }).catch(() => {});
 }
 
-// ====== IMAGE (limit base64) ======
+// ====== IMAGE (giới hạn base64 để khỏi chết request) ======
 const MAX_FILE_BYTES = 25_000;
 
 function tooLargeMsg(name = "Ảnh") {
   return `❌ ${name} quá nặng (>25KB).\nHãy dùng LINK ảnh hoặc nén ảnh xuống <25KB.`;
 }
-
 function fileToBase64(file) {
   return new Promise((resolve, reject) => {
     const rd = new FileReader();
@@ -119,7 +107,6 @@ function fileToBase64(file) {
     rd.readAsDataURL(file);
   });
 }
-
 async function pickImage(urlId, fileId, label = "Ảnh") {
   const url = String(($(urlId)?.value || "")).trim();
   const file = $(fileId)?.files?.[0];
@@ -133,7 +120,6 @@ async function pickImage(urlId, fileId, label = "Ảnh") {
   }
   return url;
 }
-
 async function pickGallery(urlsId, filesId) {
   const urlRaw = String(($(urlsId)?.value || "")).trim();
   const urlList = urlRaw ? urlRaw.split("\n").map(s => s.trim()).filter(Boolean) : [];
@@ -161,12 +147,10 @@ function insertAtCursor(textarea, text) {
   textarea.focus();
   textarea.setSelectionRange(pos, pos);
 }
-
 function buildImgToken(src, caption) {
   const safeCaption = String(caption || "").replaceAll("]", ")").replaceAll("|", "/");
   return `\n\n[[IMG:${src}|${safeCaption}]]\n\n`;
 }
-
 async function handleInsertInlineImage() {
   const ta = mustEl("content");
   const url = String(($("inlineImgUrl")?.value || "")).trim();
@@ -181,20 +165,16 @@ async function handleInsertInlineImage() {
       return;
     }
     src = await fileToBase64(file);
-  } else {
-    src = url;
-  }
-  if (!src) return setStatus("⚠️ Cần chọn ảnh hoặc dán link để chèn.");
+  } else src = url;
 
+  if (!src) return setStatus("⚠️ Cần chọn ảnh hoặc dán link để chèn.");
   insertAtCursor(ta, buildImgToken(src, caption));
 
   if ($("inlineImgUrl")) $("inlineImgUrl").value = "";
   if ($("inlineImgFile")) $("inlineImgFile").value = "";
   if ($("inlineImgCaption")) $("inlineImgCaption").value = "";
-
   setStatus("✅ Đã chèn ảnh vào nội dung.");
 }
-
 $("insertInlineImage")?.addEventListener("click", () => {
   handleInsertInlineImage().catch((e) => {
     console.error(e);
@@ -214,11 +194,8 @@ function clearForm() {
     if ($(id)) $(id).value = "";
   });
   if ($("category")) $("category").value = "Hoạt động";
-
-  // lưu id bài đang sửa
   $("save").dataset.editId = "";
 }
-
 function fillForm(p) {
   $("title").value = p.title || "";
   $("date").value = p.date || "";
@@ -241,10 +218,11 @@ function fillForm(p) {
   $("galleryFiles").value = "";
 
   $("save").dataset.editId = p.id || "";
+  setStatus("✍️ Đang sửa bài...");
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
-// ====== RENDER LIST ======
+// ====== LIST RENDER ======
 let ITEMS = [];
 
 async function renderList() {
@@ -272,11 +250,11 @@ async function renderList() {
   listEl.innerHTML = items.map(p => {
     const titleText = (p.title && String(p.title).trim()) ? String(p.title).trim() : "(Chưa có tiêu đề)";
     const thumb = p.thumb || p.hero || "";
-    const imgHtml = thumb ? `<img src="${esc(thumb)}" alt="thumb">` : `<div class="thumb-ph">thumb</div>`;
+    const img = thumb ? `<img src="${esc(thumb)}" alt="thumb">` : `<div class="thumb-ph">thumb</div>`;
 
     return `
       <div class="item">
-        ${imgHtml}
+        ${img}
         <div style="flex:1">
           <h3>${esc(titleText)}</h3>
           <div class="meta">📅 ${esc(p.date || "")} • 🏷 ${esc(p.category || "")} ${p.author ? `• ✍ ${esc(p.author)}` : ""}</div>
@@ -290,7 +268,6 @@ async function renderList() {
     `;
   }).join("");
 
-  // edit
   listEl.querySelectorAll("[data-edit]").forEach(btn => {
     btn.addEventListener("click", () => {
       const id = btn.getAttribute("data-edit");
@@ -299,7 +276,6 @@ async function renderList() {
     });
   });
 
-  // delete
   listEl.querySelectorAll("[data-del]").forEach(btn => {
     btn.addEventListener("click", async () => {
       const id = btn.getAttribute("data-del");
@@ -318,7 +294,7 @@ async function renderList() {
 // ====== SAVE ======
 $("save")?.addEventListener("click", async () => {
   try {
-    // ✅ LẤY TEXT TRƯỚC (không để ảnh làm rỗng title)
+    // ✅ LẤY TEXT TRƯỚC
     const title = val("title");
     const date = val("date");
     const category = String(($("category")?.value || "Hoạt động")).trim();
@@ -331,25 +307,24 @@ $("save")?.addEventListener("click", async () => {
     if (!date) { alert("❌ Chưa chọn NGÀY ĐĂNG"); mustEl("date").focus(); return; }
     if (!content) { alert("❌ Chưa có NỘI DUNG"); mustEl("content").focus(); return; }
 
-    // ✅ tạo id ở client để poll xác nhận (vì POST no-cors không đọc response)
+    // ✅ ID: sửa thì giữ id, thêm mới thì tạo id
     const editId = String($("save").dataset.editId || "").trim();
     const id = editId || uuidv4();
 
-    // ✅ XỬ LÝ ẢNH SAU
+    // ✅ Ảnh sau
     const thumb = await pickImage("thumbUrl", "thumbFile", "Ảnh đại diện");
     const hero  = await pickImage("heroUrl", "heroFile", "Ảnh đầu bài");
     const gallery = await pickGallery("galleryUrls", "galleryFiles");
 
-    // ✅ SCHEMA ĐÚNG CHO APPS SCRIPT: post:{title,...}
+    // ✅ SCHEMA ĐÚNG CHO APPS SCRIPT
     const post = { id, title, date, category, author, source, excerpt, thumb, hero, content, gallery };
 
-    console.log("DEBUG SEND title =", title);
     console.log("DEBUG SEND post =", post);
 
     setStatus(`⏳ Đang lưu bài: "${title}" ...`);
     await postNoCors({ action: "upsertNews", adminPassword: ADMIN_PASSWORD, post });
 
-    // ✅ Poll listNews để chắc chắn bài đã lên sheet và có title
+    // ✅ Poll để xác nhận đã lên Sheet (vì POST no-cors không đọc response)
     let ok = false;
     for (let i = 0; i < 10; i++) {
       await sleep(800);
@@ -362,8 +337,8 @@ $("save")?.addEventListener("click", async () => {
     }
 
     if (!ok) {
-      setStatus(`⚠️ Đã gửi nhưng chưa thấy cập nhật title trên server. Hãy thử bấm Lưu lại lần nữa.`);
-      alert("⚠️ Đã gửi nhưng chưa thấy title cập nhật trên server.\nHãy bấm Lưu lại lần nữa (đôi khi Apps Script ghi chậm).");
+      setStatus(`⚠️ Đã gửi nhưng chưa thấy server cập nhật title="${title}".`);
+      alert("⚠️ Đã gửi nhưng chưa thấy server cập nhật tiêu đề.\nHãy bấm Lưu lại 1 lần hoặc kiểm tra API_URL / deploy Apps Script.");
       return;
     }
 
@@ -383,6 +358,7 @@ $("cancelEdit")?.addEventListener("click", () => {
   setStatus("Đã hủy sửa.");
 });
 
+// init
 document.addEventListener("DOMContentLoaded", () => {
   console.log("admin-tintuc.js loaded @", new Date().toISOString());
   renderList();
