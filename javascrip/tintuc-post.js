@@ -1,4 +1,4 @@
-const API_URL = "https://script.google.com/macros/library/d/1xSGWEAwZ5KxcyGg3-0raY7GADe1BUbKd2EAwGiCECZd46eTMr9HfTCBg/1"; // <-- DÁN /exec Tin tức
+const API_URL = "https://script.google.com/macros/s/AKfycbyDjCplmNZe4YJkrbdcKDunORDSc0PPR4U-SgfD-yfAktDb4UCVCV8dx0EwJgftoyY3sA/exec"; // <-- DÁN /exec Tin tức
 
 const esc = (s) => String(s || "")
   .replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")
