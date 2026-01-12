@@ -2,7 +2,7 @@
 // TIN TỨC - DETAIL (SERVER-FIRST, REALTIME via JSONP)
 // File: javascrip/tintuc-post.js
 // =============================
-const API_URL = "https://script.google.com/macros/s/AKfycbw_uf1vwdogMhZoQ6YfeYC9Gm26R_x1txdCk2cq2tz0jDLCOeHm_uxU--u2QqpwCZ-tag/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbwHtgydq5jmIoHPaelCRkq1inb1DrnBxxSITOFiowawHzfvoFW8URUoAvAV3Ea2-n6SiA/exec";
 
 const esc = (s) =>
   String(s || "")

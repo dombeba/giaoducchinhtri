@@ -15,7 +15,7 @@ if (input !== ADMIN_PASSWORD) {
 
 // ====== CONFIG ======
 const API_URL =
-  "https://script.google.com/macros/s/AKfycbw_uf1vwdogMhZoQ6YfeYC9Gm26R_x1txdCk2cq2tz0jDLCOeHm_uxU--u2QqpwCZ-tag/exec"; // 🔴 DÁN LINK /exec TIN TỨC (SCRIPT RIÊNG)
+  "https://script.google.com/macros/s/AKfycbwHtgydq5jmIoHPaelCRkq1inb1DrnBxxSITOFiowawHzfvoFW8URUoAvAV3Ea2-n6SiA/exec"; // 🔴 DÁN LINK /exec TIN TỨC (SCRIPT RIÊNG)
 
 // ====== DOM ======
 const $ = (id) => document.getElementById(id);
