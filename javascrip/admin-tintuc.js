@@ -7,7 +7,7 @@ if (input !== ADMIN_PASSWORD) {
 }
 
 // ====== CONFIG ======
-const API_URL = "https://script.google.com/macros/s/AKfycbyDjCplmNZe4YJkrbdcKDunORDSc0PPR4U-SgfD-yfAktDb4UCVCV8dx0EwJgftoyY3sA/exec"; // <-- DÁN /exec của Tin tức
+const API_URL = "https://script.google.com/macros/s/AKfycbzBLnOi4PGSkGnUAw8t8dRo2W3y1JmKdNBFTnQSHXw9yHk_-Wg6Vu-Qw-3K0LyuASZQGw/exec"; // <-- DÁN /exec của Tin tức
 
 // DOM
 const $ = (id) => document.getElementById(id);
