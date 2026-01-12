@@ -2,8 +2,7 @@
 // TIN TỨC - LIST (SERVER-FIRST, REALTIME via JSONP)
 // File: javascrip/tintuc.js
 // =============================
-const API_URL =
-  "https://script.google.com/macros/s/AKfycbzj2lgfuel4EUutBxfd69rNO45tg7KDGzLwz1PjoLhZvUtzkwdKY6ShzwqVrfOyhWvNGQ/exec"; // 🔴 DÁN LINK /exec TIN TỨC (SCRIPT RIÊNG)
+const API_URL = "https://script.google.com/macros/s/AKfycbzj2lgfuel4EUutBxfd69rNO45tg7KDGzLwz1PjoLhZvUtzkwdKY6ShzwqVrfOyhWvNGQ/exec";
 
 const newsEl = document.getElementById("news");
 const countEl = document.getElementById("count");
@@ -20,21 +19,34 @@ const esc = (s) =>
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#39;");
 
-function toVNDate(dateStr) {
-  const [y, m, d] = (dateStr || "").split("-");
-  if (!y || !m || !d) return dateStr || "";
-  return `${d}/${m}/${y}`;
+// ✅ nhận cả yyyy-mm-dd và cả chuỗi Date kiểu "Mon Jan..."
+function toVNDate(v) {
+  if (!v) return "";
+  const s = String(v).trim();
+
+  const m = s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (m) return `${m[3]}/${m[2]}/${m[1]}`;
+
+  const t = Date.parse(s);
+  if (!Number.isNaN(t)) {
+    const d = new Date(t);
+    const dd = String(d.getDate()).padStart(2, "0");
+    const mm = String(d.getMonth() + 1).padStart(2, "0");
+    const yy = d.getFullYear();
+    return `${dd}/${mm}/${yy}`;
+  }
+
+  return s;
 }
+
 function normalize(s) {
   return String(s || "").toLowerCase().trim();
 }
-
-// ✅ In đậm bằng **...**
 function applyBold(escapedText) {
   return String(escapedText).replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
 }
 
-// ====== JSONP (NO CORS) ======
+// ====== JSONP ======
 function jsonp(url, timeoutMs = 12000) {
   return new Promise((resolve, reject) => {
     const cb = "__jsonp_cb_" + Math.random().toString(16).slice(2);
@@ -46,23 +58,12 @@ function jsonp(url, timeoutMs = 12000) {
 
     function cleanup() {
       clearTimeout(timer);
-      try {
-        delete window[cb];
-      } catch {
-        window[cb] = undefined;
-      }
+      try { delete window[cb]; } catch { window[cb] = undefined; }
       if (s && s.parentNode) s.parentNode.removeChild(s);
     }
 
-    window[cb] = (data) => {
-      cleanup();
-      resolve(data);
-    };
-
-    s.onerror = () => {
-      cleanup();
-      reject(new Error("JSONP_LOAD_FAILED"));
-    };
+    window[cb] = (data) => { cleanup(); resolve(data); };
+    s.onerror = () => { cleanup(); reject(new Error("JSONP_LOAD_FAILED")); };
 
     const sep = url.includes("?") ? "&" : "?";
     s.src = `${url}${sep}callback=${cb}&_=${Date.now()}`;
@@ -94,9 +95,9 @@ function applyFilters(items) {
     });
   }
 
-  if (sort === "old") out.sort((a, b) => (a.date || "").localeCompare(b.date || ""));
+  if (sort === "old") out.sort((a, b) => String(a.date || "").localeCompare(String(b.date || "")));
   else if (sort === "views") out.sort((a, b) => Number(b.views || 0) - Number(a.views || 0));
-  else out.sort((a, b) => (b.date || "").localeCompare(a.date || ""));
+  else out.sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")));
 
   return out;
 }
@@ -105,7 +106,7 @@ function renderSuggested(allItems) {
   if (!suggestedEl) return;
 
   const items = [...allItems]
-    .sort((a, b) => (b.date || "").localeCompare(a.date || ""))
+    .sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")))
     .slice(0, 7);
 
   if (!items.length) {
@@ -117,7 +118,7 @@ function renderSuggested(allItems) {
     .map(
       (p) => `
       <a class="suggest-item" href="tintuc-post.html?id=${encodeURIComponent(p.id)}" title="${esc(p.title)}">
-        <div class="suggest-title">${esc(p.title)}</div>
+        <div class="suggest-title">${esc((p.title && String(p.title).trim()) ? String(p.title).trim() : "(Chưa có tiêu đề)")}</div>
         <div class="suggest-meta">📅 ${esc(toVNDate(p.date))}${p.category ? ` • 🏷 ${esc(p.category)}` : ""}</div>
       </a>
     `
@@ -142,30 +143,26 @@ function render() {
 
   newsEl.innerHTML = items
     .map((p) => {
+      const titleText = (p.title && String(p.title).trim()) ? String(p.title).trim() : "(Chưa có tiêu đề)";
       const thumb = p.thumb || p.hero || "";
-      const thumbHtml = thumb
-        ? `<img src="${esc(thumb)}" alt="Ảnh">`
-        : `<img src="" alt="Ảnh" style="opacity:.12">`;
+      const thumbHtml = thumb ? `<img src="${esc(thumb)}" alt="Ảnh">` : `<img src="" alt="Ảnh" style="opacity:.12">`;
 
       const badge = p.category ? `<span class="badge">🏷 ${esc(p.category)}</span>` : "";
       const author = p.author ? `<span>✍ ${esc(p.author)}</span>` : "";
       const views = `<span>👁 ${esc(p.views || 0)}</span>`;
-
       const excerptHtml = p.excerpt ? applyBold(esc(p.excerpt)) : `Chưa có tóm tắt.`;
 
       return `
         <article class="item">
           <div class="thumb">${thumbHtml}</div>
           <div>
-            <a class="title" href="tintuc-post.html?id=${encodeURIComponent(p.id)}">${esc(p.title)}</a>
-
+            <a class="title" href="tintuc-post.html?id=${encodeURIComponent(p.id)}">${esc(titleText)}</a>
             <div class="meta">
               <span>📅 ${esc(toVNDate(p.date))}</span>
               ${badge}
               ${author}
               ${views}
             </div>
-
             <p class="excerpt">${excerptHtml}</p>
           </div>
         </article>

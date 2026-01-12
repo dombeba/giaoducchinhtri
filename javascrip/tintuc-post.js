@@ -1,11 +1,8 @@
 // =============================
 // TIN TỨC - DETAIL (SERVER-FIRST, REALTIME via JSONP)
-// - GET post: JSONP (no CORS)
-// - bump view: POST no-cors
 // File: javascrip/tintuc-post.js
 // =============================
-const API_URL =
-  "https://script.google.com/macros/s/AKfycbzj2lgfuel4EUutBxfd69rNO45tg7KDGzLwz1PjoLhZvUtzkwdKY6ShzwqVrfOyhWvNGQ/exec"; // 🔴 DÁN LINK /exec TIN TỨC (SCRIPT RIÊNG)
+const API_URL = "https://script.google.com/macros/s/AKfycbzj2lgfuel4EUutBxfd69rNO45tg7KDGzLwz1PjoLhZvUtzkwdKY6ShzwqVrfOyhWvNGQ/exec";
 
 const esc = (s) =>
   String(s || "")
@@ -15,18 +12,26 @@ const esc = (s) =>
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#39;");
 
-function toVNDate(dateStr) {
-  const [y, m, d] = (dateStr || "").split("-");
-  if (!y || !m || !d) return dateStr || "";
-  return `${d}/${m}/${y}`;
+function toVNDate(v) {
+  if (!v) return "";
+  const s = String(v).trim();
+  const m = s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (m) return `${m[3]}/${m[2]}/${m[1]}`;
+  const t = Date.parse(s);
+  if (!Number.isNaN(t)) {
+    const d = new Date(t);
+    const dd = String(d.getDate()).padStart(2, "0");
+    const mm = String(d.getMonth() + 1).padStart(2, "0");
+    const yy = d.getFullYear();
+    return `${dd}/${mm}/${yy}`;
+  }
+  return s;
 }
-
-// ✅ In đậm bằng **...**
 function applyBold(escapedText) {
   return String(escapedText).replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
 }
 
-// ====== JSONP (NO CORS) ======
+// ====== JSONP ======
 function jsonp(url, timeoutMs = 12000) {
   return new Promise((resolve, reject) => {
     const cb = "__jsonp_cb_" + Math.random().toString(16).slice(2);
@@ -38,23 +43,12 @@ function jsonp(url, timeoutMs = 12000) {
 
     function cleanup() {
       clearTimeout(timer);
-      try {
-        delete window[cb];
-      } catch {
-        window[cb] = undefined;
-      }
+      try { delete window[cb]; } catch { window[cb] = undefined; }
       if (s && s.parentNode) s.parentNode.removeChild(s);
     }
 
-    window[cb] = (data) => {
-      cleanup();
-      resolve(data);
-    };
-
-    s.onerror = () => {
-      cleanup();
-      reject(new Error("JSONP_LOAD_FAILED"));
-    };
+    window[cb] = (data) => { cleanup(); resolve(data); };
+    s.onerror = () => { cleanup(); reject(new Error("JSONP_LOAD_FAILED")); };
 
     const sep = url.includes("?") ? "&" : "?";
     s.src = `${url}${sep}callback=${cb}&_=${Date.now()}`;
@@ -62,7 +56,6 @@ function jsonp(url, timeoutMs = 12000) {
   });
 }
 
-// ====== POST no-cors ======
 function postNoCors(payload) {
   fetch(API_URL, {
     method: "POST",
@@ -73,18 +66,16 @@ function postNoCors(payload) {
   }).catch(() => {});
 }
 
-// Token ảnh chèn giữa bài: [[IMG:src|caption]]
+// Token ảnh giữa bài: [[IMG:src|caption]]
 function renderRichContent(raw) {
   const text = String(raw || "");
   const re = /\[\[IMG:([^\|\]]+)\|([^\]]*)\]\]/g;
-
   let html = "";
   let lastIndex = 0;
 
   const pushText = (chunk) => {
     const t = String(chunk || "");
     if (!t.trim()) return;
-
     let safe = esc(t);
     safe = applyBold(safe);
     safe = safe.replaceAll("\n", "<br>");
@@ -94,21 +85,17 @@ function renderRichContent(raw) {
   let m;
   while ((m = re.exec(text)) !== null) {
     pushText(text.slice(lastIndex, m.index));
-
     const src = (m[1] || "").trim();
     const cap = (m[2] || "").trim();
-
     html += `
       <figure class="inline-figure">
         <img src="${esc(src)}" alt="${esc(cap || "Ảnh")}">
         ${cap ? `<figcaption>${applyBold(esc(cap))}</figcaption>` : ``}
       </figure>
     `;
-
     lastIndex = re.lastIndex;
   }
   pushText(text.slice(lastIndex));
-
   return html || `<div class="empty">Nội dung trống.</div>`;
 }
 
@@ -126,7 +113,6 @@ function renderRichContent(raw) {
   }
 
   try {
-    // ✅ JSONP getNews (không CORS)
     const d = await jsonp(`${API_URL}?action=getNews&id=${encodeURIComponent(id)}`);
     if (!d || d.ok !== true || !d.post) {
       if (head) head.textContent = "❌ Không tìm thấy bài viết";
@@ -135,10 +121,11 @@ function renderRichContent(raw) {
     }
 
     const post = d.post;
+    const titleText = (post.title && String(post.title).trim()) ? String(post.title).trim() : "(Chưa có tiêu đề)";
 
-    if (head) head.textContent = `📰 ${post.title || "Bài viết"}`;
+    if (head) head.textContent = `📰 ${titleText}`;
 
-    // ✅ bump view (POST no-cors)
+    // bump view
     postNoCors({ action: "bumpNewsView", id });
 
     const hero = post.hero || post.thumb || "";
@@ -148,7 +135,7 @@ function renderRichContent(raw) {
     metaParts.push(`📅 ${esc(toVNDate(post.date))}`);
     if (post.category) metaParts.push(`🏷 ${esc(post.category)}`);
     if (post.author) metaParts.push(`✍ ${esc(post.author)}`);
-    metaParts.push(`👁 ${esc(post.views || 0)}+`); // + vì vừa bump
+    metaParts.push(`👁 ${esc(post.views || 0)}+`);
 
     const sourceHtml = post.source
       ? ` • <a class="detail-link" href="${esc(post.source)}" target="_blank" rel="noopener">Mở nguồn</a>`
@@ -156,7 +143,7 @@ function renderRichContent(raw) {
 
     if (detail) {
       detail.innerHTML = `
-        <h1 class="detail-title">${esc(post.title)}</h1>
+        <h1 class="detail-title">${esc(titleText)}</h1>
 
         <div class="detail-meta">
           <span>${metaParts.join(" • ")}</span>
@@ -179,7 +166,6 @@ function renderRichContent(raw) {
   } catch (e) {
     console.error(e);
     if (head) head.textContent = "❌ Lỗi tải bài viết";
-    if (detail)
-      detail.innerHTML = `<div class="empty" style="color:#b00020">Không tải được dữ liệu từ server.</div>`;
+    if (detail) detail.innerHTML = `<div class="empty" style="color:#b00020">Không tải được dữ liệu từ server.</div>`;
   }
 })();
