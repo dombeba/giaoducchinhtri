@@ -2,10 +2,9 @@
 // ADMIN - TIN TỨC (SERVER-FIRST, REALTIME via JSONP)
 // - LIST/GET: JSONP (không CORS)
 // - UPSERT/DELETE: POST no-cors
-// File: javascrip/admin-tintuc.js
 // =============================
 
-// ===== BẢO VỆ ADMIN (CÁCH 1) =====
+// ===== BẢO VỆ ADMIN =====
 const ADMIN_PASSWORD = "123321";
 const input = prompt("🔐 Nhập mật khẩu quản trị:");
 if (input !== ADMIN_PASSWORD) {
@@ -13,16 +12,13 @@ if (input !== ADMIN_PASSWORD) {
   window.location.href = "index.html";
 }
 
-// ====== CONFIG ======
-const API_URL =
-  "https://script.google.com/macros/s/AKfycbwHtgydq5jmIoHPaelCRkq1inb1DrnBxxSITOFiowawHzfvoFW8URUoAvAV3Ea2-n6SiA/exec"; // 🔴 DÁN LINK /exec TIN TỨC (SCRIPT RIÊNG)
+// 🔴 DÁN LINK /exec TIN TỨC (script.google.com/macros/s/.../exec)
+const API_URL = "https://script.google.com/macros/s/AKfycbwHtgydq5jmIoHPaelCRkq1inb1DrnBxxSITOFiowawHzfvoFW8URUoAvAV3Ea2-n6SiA/exec";
 
-// ====== DOM ======
 const $ = (id) => document.getElementById(id);
 const statusEl = $("status");
 const listEl = $("list");
 
-// ====== UI ======
 function setStatus(msg) {
   if (statusEl) statusEl.textContent = msg || "";
 }
@@ -36,13 +32,23 @@ function escMini(s) {
     .replaceAll("'", "&#39;");
 }
 
-function toVNDate(dateStr) {
-  const [y, m, d] = (dateStr || "").split("-");
-  if (!y || !m || !d) return dateStr || "";
-  return `${d}/${m}/${y}`;
+function toVNDate(v) {
+  if (!v) return "";
+  const s = String(v).trim();
+  const m = s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (m) return `${m[3]}/${m[2]}/${m[1]}`;
+  const t = Date.parse(s);
+  if (!Number.isNaN(t)) {
+    const d = new Date(t);
+    const dd = String(d.getDate()).padStart(2, "0");
+    const mm = String(d.getMonth() + 1).padStart(2, "0");
+    const yy = d.getFullYear();
+    return `${dd}/${mm}/${yy}`;
+  }
+  return s;
 }
 
-// ====== JSONP (NO CORS) ======
+// ===== JSONP =====
 function jsonp(url, timeoutMs = 12000) {
   return new Promise((resolve, reject) => {
     const cb = "__jsonp_cb_" + Math.random().toString(16).slice(2);
@@ -54,23 +60,12 @@ function jsonp(url, timeoutMs = 12000) {
 
     function cleanup() {
       clearTimeout(timer);
-      try {
-        delete window[cb];
-      } catch {
-        window[cb] = undefined;
-      }
+      try { delete window[cb]; } catch { window[cb] = undefined; }
       if (s && s.parentNode) s.parentNode.removeChild(s);
     }
 
-    window[cb] = (data) => {
-      cleanup();
-      resolve(data);
-    };
-
-    s.onerror = () => {
-      cleanup();
-      reject(new Error("JSONP_LOAD_FAILED"));
-    };
+    window[cb] = (data) => { cleanup(); resolve(data); };
+    s.onerror = () => { cleanup(); reject(new Error("JSONP_LOAD_FAILED")); };
 
     const sep = url.includes("?") ? "&" : "?";
     s.src = `${url}${sep}callback=${cb}&_=${Date.now()}`;
@@ -78,7 +73,7 @@ function jsonp(url, timeoutMs = 12000) {
   });
 }
 
-// ====== POST no-cors ======
+// ===== POST no-cors =====
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 function postNoCors(payload) {
@@ -92,8 +87,20 @@ function postNoCors(payload) {
   }).catch(() => {});
 }
 
-// ====== FILE -> BASE64 ======
-const MAX_FILE_BYTES = 900_000;
+// ===== FILE -> BASE64 (CHẶN ẢNH NẶNG) =====
+// Google Sheet giới hạn ký tự/ô, base64 rất dễ làm lỗi.
+// => chỉ cho file cực nhỏ (<=25KB). Ảnh lớn => dùng link.
+const MAX_FILE_BYTES = 25_000;
+
+function tooLargeMsg(name = "Ảnh") {
+  return (
+    `❌ ${name} quá nặng để lưu trực tiếp lên Google Sheet.\n\n` +
+    `Cách xử lý:\n` +
+    `1) Dán LINK ảnh (khuyến nghị)\n` +
+    `2) Hoặc nén ảnh xuống < 25KB rồi chọn lại\n\n` +
+    `Nếu ảnh nặng, bài sẽ không lưu ổn định.`
+  );
+}
 
 function fileToBase64(file) {
   return new Promise((resolve, reject) => {
@@ -104,14 +111,15 @@ function fileToBase64(file) {
   });
 }
 
-async function pickImage(urlId, fileId) {
+async function pickImage(urlId, fileId, label = "Ảnh") {
   const url = ($(urlId)?.value || "").trim();
   const file = $(fileId)?.files?.[0];
 
   if (file) {
     if (file.size > MAX_FILE_BYTES) {
-      const ok = confirm("Ảnh khá nặng. Lưu base64 có thể nhanh đầy dung lượng. Vẫn lưu?");
-      if (!ok) return "";
+      alert(tooLargeMsg(label));
+      try { $(fileId).value = ""; } catch {}
+      return ""; // ép dùng link / nén ảnh
     }
     return await fileToBase64(file);
   }
@@ -120,19 +128,19 @@ async function pickImage(urlId, fileId) {
 
 async function pickGallery(urlsId, filesId) {
   const urlRaw = ($(urlsId)?.value || "").trim();
-  const urlList = urlRaw
-    ? urlRaw.split("\n").map((s) => s.trim()).filter(Boolean)
-    : [];
+  const urlList = urlRaw ? urlRaw.split("\n").map(s => s.trim()).filter(Boolean) : [];
 
   const files = Array.from($(filesId)?.files || []);
   const base64List = [];
   for (const f of files) {
     if (f.size > MAX_FILE_BYTES) {
-      const ok = confirm(`Ảnh "${f.name}" khá nặng. Vẫn lưu?`);
-      if (!ok) continue;
+      alert(tooLargeMsg(`Ảnh "${f.name}"`));
+      continue;
     }
     base64List.push(await fileToBase64(f));
   }
+  try { $(filesId).value = ""; } catch {}
+
   return [...base64List, ...urlList];
 }
 
@@ -146,14 +154,10 @@ function insertAtCursor(textarea, text) {
   textarea.focus();
   textarea.setSelectionRange(pos, pos);
 }
-
 function buildImgToken(src, caption) {
-  const safeCaption = String(caption || "")
-    .replaceAll("]", ")")
-    .replaceAll("|", "/");
+  const safeCaption = String(caption || "").replaceAll("]", ")").replaceAll("|", "/");
   return `\n\n[[IMG:${src}|${safeCaption}]]\n\n`;
 }
-
 async function handleInsertInlineImage() {
   const ta = $("content");
   const url = ($("inlineImgUrl")?.value || "").trim();
@@ -163,15 +167,17 @@ async function handleInsertInlineImage() {
   let src = "";
   if (file) {
     if (file.size > MAX_FILE_BYTES) {
-      const ok = confirm("Ảnh khá nặng. Lưu base64 có thể nhanh đầy dung lượng. Vẫn lưu?");
-      if (!ok) return;
+      alert(tooLargeMsg(`Ảnh chèn "${file.name}"`));
+      try { $("inlineImgFile").value = ""; } catch {}
+      return;
     }
     src = await fileToBase64(file);
   } else {
     src = url;
   }
 
-  if (!src) return setStatus("Cần chọn file ảnh hoặc dán link ảnh để chèn.");
+  if (!src) return setStatus("⚠️ Cần chọn ảnh hoặc dán link để chèn.");
+
   insertAtCursor(ta, buildImgToken(src, caption));
 
   if ($("inlineImgUrl")) $("inlineImgUrl").value = "";
@@ -180,7 +186,6 @@ async function handleInsertInlineImage() {
 
   setStatus("✅ Đã chèn ảnh vào nội dung.");
 }
-
 $("insertInlineImage")?.addEventListener("click", () => {
   handleInsertInlineImage().catch(() => setStatus("❌ Lỗi khi chèn ảnh."));
 });
@@ -194,8 +199,8 @@ async function getFormData() {
   const source = ($("source")?.value || "").trim();
   const excerpt = ($("excerpt")?.value || "").trim();
 
-  const thumb = await pickImage("thumbUrl", "thumbFile");
-  const hero = await pickImage("heroUrl", "heroFile");
+  const thumb = await pickImage("thumbUrl", "thumbFile", "Ảnh đại diện");
+  const hero = await pickImage("heroUrl", "heroFile", "Ảnh đầu bài");
 
   const content = ($("content")?.value || "").trim();
   const gallery = await pickGallery("galleryUrls", "galleryFiles");
@@ -220,7 +225,7 @@ function fillForm(p) {
   $("content").value = p.content || "";
 
   const g = Array.isArray(p.gallery) ? p.gallery : [];
-  const linksOnly = g.filter((x) => !String(x).startsWith("data:"));
+  const linksOnly = g.filter(x => !String(x).startsWith("data:"));
   $("galleryUrls").value = linksOnly.join("\n");
   $("galleryFiles").value = "";
 
@@ -228,13 +233,13 @@ function fillForm(p) {
 }
 
 function clearForm() {
-  ["title", "date", "author", "source", "excerpt", "thumbUrl", "heroUrl", "content", "galleryUrls"].forEach((id) => {
+  ["title","date","author","source","excerpt","thumbUrl","heroUrl","content","galleryUrls"].forEach(id => {
     if ($(id)) $(id).value = "";
   });
-  ["thumbFile", "heroFile", "galleryFiles", "inlineImgFile"].forEach((id) => {
+  ["thumbFile","heroFile","galleryFiles","inlineImgFile"].forEach(id => {
     if ($(id)) $(id).value = "";
   });
-  ["inlineImgUrl", "inlineImgCaption"].forEach((id) => {
+  ["inlineImgUrl","inlineImgCaption"].forEach(id => {
     if ($(id)) $(id).value = "";
   });
 
@@ -242,14 +247,14 @@ function clearForm() {
   $("save").dataset.editId = "";
 }
 
-// ===== SERVER LIST (JSONP) =====
+// ===== SERVER DATA =====
+let ITEMS_MEM = [];
+
 async function loadAll() {
   const d = await jsonp(`${API_URL}?action=listNews`);
   if (!d || d.ok !== true) throw new Error(d?.error || "LIST_NEWS_FAILED");
   return Array.isArray(d.items) ? d.items : [];
 }
-
-let ITEMS_MEM = [];
 
 async function renderList() {
   if (!listEl) return;
@@ -265,7 +270,6 @@ async function renderList() {
     return;
   }
 
-  // sort: mới nhất theo date, fallback updatedAt
   const items = [...ITEMS_MEM].sort((a, b) =>
     String(b.date || b.updatedAt || "").localeCompare(String(a.date || a.updatedAt || ""))
   );
@@ -275,42 +279,37 @@ async function renderList() {
     return;
   }
 
-  listEl.innerHTML = items
-    .map((p) => {
-      const thumb = p.thumb || p.hero || "";
-      const imgHtml = thumb
-        ? `<img src="${escMini(thumb)}" alt="thumb">`
-        : `<img src="" alt="thumb" style="opacity:.12">`;
+  listEl.innerHTML = items.map(p => {
+    const titleText = (p.title && String(p.title).trim()) ? String(p.title).trim() : "(Chưa có tiêu đề)";
+    const thumb = p.thumb || p.hero || "";
+    const imgHtml = thumb ? `<img src="${escMini(thumb)}" alt="thumb">` : `<img src="" alt="thumb" style="opacity:.12">`;
 
-      return `
-        <div class="item">
-          ${imgHtml}
-          <div style="flex:1">
-            <h3>${escMini(p.title)}</h3>
-            <div class="meta">
-              📅 ${escMini(toVNDate(p.date))} • 🏷 ${escMini(p.category || "")}
-              ${p.author ? `• ✍ ${escMini(p.author)}` : ""}
-              • 👁 ${escMini(p.views || 0)}
-            </div>
+    return `
+      <div class="item">
+        ${imgHtml}
+        <div style="flex:1">
+          <h3>${escMini(titleText)}</h3>
+          <div class="meta">
+            📅 ${escMini(toVNDate(p.date))} • 🏷 ${escMini(p.category || "")}
+            ${p.author ? `• ✍ ${escMini(p.author)}` : ""}
+            • 👁 ${escMini(p.views || 0)}
+          </div>
 
-            ${p.excerpt ? `<div class="meta" style="margin-top:6px">${escMini(String(p.excerpt)).slice(0,160)}${String(p.excerpt).length>160?"…":""}</div>` : ""}
-
-            <div class="actions">
-              <a class="btn" href="tintuc-post.html?id=${encodeURIComponent(p.id)}">Xem</a>
-              <button class="btn" data-edit="${escMini(p.id)}" type="button">Sửa</button>
-              <button class="btn danger" data-del="${escMini(p.id)}" type="button">Xóa</button>
-            </div>
+          <div class="actions">
+            <a class="btn" href="tintuc-post.html?id=${encodeURIComponent(p.id)}">Xem</a>
+            <button class="btn" data-edit="${escMini(p.id)}" type="button">Sửa</button>
+            <button class="btn danger" data-del="${escMini(p.id)}" type="button">Xóa</button>
           </div>
         </div>
-      `;
-    })
-    .join("");
+      </div>
+    `;
+  }).join("");
 
-  // edit
-  listEl.querySelectorAll("[data-edit]").forEach((btn) => {
+  // Edit
+  listEl.querySelectorAll("[data-edit]").forEach(btn => {
     btn.addEventListener("click", () => {
       const id = btn.getAttribute("data-edit");
-      const p = ITEMS_MEM.find((x) => String(x.id) === String(id));
+      const p = ITEMS_MEM.find(x => String(x.id) === String(id));
       if (!p) return;
       fillForm(p);
       setStatus("✍️ Đang sửa bài: " + (p.title || ""));
@@ -318,8 +317,8 @@ async function renderList() {
     });
   });
 
-  // delete
-  listEl.querySelectorAll("[data-del]").forEach((btn) => {
+  // Delete
+  listEl.querySelectorAll("[data-del]").forEach(btn => {
     btn.addEventListener("click", async () => {
       const id = btn.getAttribute("data-del");
       if (!id) return;
@@ -327,8 +326,6 @@ async function renderList() {
 
       setStatus("⏳ Đang xóa (server)...");
       await postNoCors({ action: "deleteNews", adminPassword: ADMIN_PASSWORD, id });
-
-      // chờ server ghi sheet
       await sleep(900);
 
       await renderList();
@@ -341,6 +338,7 @@ async function renderList() {
 $("save")?.addEventListener("click", async () => {
   try {
     const data = await getFormData();
+
     if (!data.title || !data.date || !data.content) {
       setStatus("⚠️ Cần nhập: Tiêu đề + Ngày đăng + Nội dung chi tiết.");
       return;
@@ -352,13 +350,12 @@ $("save")?.addEventListener("click", async () => {
     setStatus("⏳ Đang lưu bài (server)...");
     await postNoCors({ action: "upsertNews", adminPassword: ADMIN_PASSWORD, post });
 
-    // chờ server ghi sheet
-    await sleep(1000);
+    await sleep(1200);
 
     $("save").dataset.editId = "";
     clearForm();
-
     await renderList();
+
     setStatus(editId ? "✅ Đã cập nhật bài" : "✅ Đã lưu bài");
   } catch (e) {
     console.error(e);
