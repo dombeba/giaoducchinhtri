@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Danh mục - Kiến thức Quân sự</title>
+  <link rel="stylesheet" href="css/kienthuc.css" />
+  <style>
+    .k-cards{ display:grid; grid-template-columns: repeat(2,1fr); gap:12px; padding:12px; }
+    .k-card{
+      border:1px solid var(--line); border-radius:12px; background:#fff;
+      padding:12px; text-decoration:none; color:var(--text);
+      display:flex; gap:10px; align-items:flex-start;
+    }
+    .k-ico{ width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center;
+      background:rgba(47,119,183,.10); border:1px solid rgba(0,0,0,.06); font-size:22px; flex:0 0 auto;
+    }
+    .k-ct{ flex:1; }
+    .k-ct h3{ margin:0 0 6px; font-size:16px; color:#1b5fa8; }
+    .k-ct p{ margin:0; color:var(--muted); font-weight:700; line-height:1.6; }
+    .k-tags{ margin-top:8px; display:flex; gap:8px; flex-wrap:wrap; }
+    .k-tag{ font-size:12px; font-weight:900; color:var(--muted);
+      border:1px solid var(--line); padding:4px 8px; border-radius:999px; background:#fafafa;
+    }
+    @media (max-width: 900px){ .k-cards{ grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+
+<header class="k-header">
+  <div class="k-header-inner">
+    <div class="k-brand">
+      <div class="k-badge">🪖</div>
+      <div>
+        <div class="k-suptitle">HẢI ĐỘI 211</div>
+        <h1 class="k-title">DANH MỤC KIẾN THỨC QUÂN SỰ</h1>
+        <div class="k-sub">Chọn tài liệu để xem chi tiết</div>
+      </div>
+    </div>
+    <div class="k-actions">
+      <a class="k-btn" href="index.html">🏠 Trang chủ</a>
+      <a class="k-btn" href="tonghop.html">📁 Tổng hợp</a>
+    </div>
+  </div>
+</header>
+
+<section class="k-toolbar">
+  <div class="k-toolbar-inner">
+    <div class="k-search">
+      <label class="k-lbl">Tìm tài liệu</label>
+      <input id="q" class="k-input" type="search" placeholder="Nhập từ khóa… (ví dụ: huấn luyện, điều lệnh, bắn súng)" />
+      <div id="qHint" class="k-hint"></div>
+    </div>
+    <div class="k-meta">
+      <div class="k-chip" id="count">0 tài liệu</div>
+    </div>
+  </div>
+</section>
+
+<main class="k-wrap">
+  <div class="k-panel">
+    <div class="k-panel-head">📚 TÀI LIỆU QUÂN SỰ</div>
+    <div id="cards" class="k-cards"></div>
+  </div>
+</main>
+
+<script>
+  // 1) Thêm tài liệu mới: chỉ cần thêm 1 object vào đây (mai mốt thêm 20 cái vẫn ok)
+  const DOCS = [
+    {
+      title: "THỜI GIAN, CHỈ TIÊU HUẤN LUYỆN TRONG NĂM",
+      desc: "Thời gian/Chỉ tiêu • Phân bổ giờ • Quan điểm - nguyên tắc • Hướng dẫn thảo luận",
+      href: "kienthuc-template.html",
+      tags: ["Huấn luyện", "2026", "Thực hành"]
+    },
+    {
+  title: "Nhiệm vụ, chức trách VCĐ & ngành (Cấp 1–2) • Quản lý VK-TB",
+  desc: "Bố trí chiến đấu cấp 1, cấp 2 • Phân công quản lý vũ khí, trang bị • Tổ chức thảo luận",
+  href: "kienthuc-quansu-file2.html",
+  tags: ["VCĐ", "Bố trí chiến đấu", "VK-TB"]
+}
+  ];
+
+  const $ = (id)=>document.getElementById(id);
+  const cardsEl = $("cards");
+  const countEl = $("count");
+  const qEl = $("q");
+  const hintEl = $("qHint");
+
+  function esc(s){
+    return String(s||"")
+      .replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;").replaceAll("'","&#39;");
+  }
+
+  function render(){
+    const q = (qEl.value||"").trim().toLowerCase();
+    const items = DOCS.filter(d=>{
+      if(!q) return true;
+      return (d.title||"").toLowerCase().includes(q)
+        || (d.desc||"").toLowerCase().includes(q)
+        || (d.tags||[]).join(" ").toLowerCase().includes(q);
+    });
+
+    countEl.textContent = `${items.length} tài liệu`;
+
+    cardsEl.innerHTML = items.map(d=>`
+      <a class="k-card" href="${esc(d.href)}">
+        <div class="k-ico">📘</div>
+        <div class="k-ct">
+          <h3>${esc(d.title)}</h3>
+          <p>${esc(d.desc)}</p>
+          <div class="k-tags">
+            ${(d.tags||[]).map(t=>`<span class="k-tag">${esc(t)}</span>`).join("")}
+          </div>
+        </div>
+      </a>
+    `).join("");
+
+    hintEl.textContent = q ? `Đang lọc theo: "${q}"` : "";
+  }
+
+  qEl.addEventListener("input", render);
+  render();
+</script>
+
+</body>
+</html>
