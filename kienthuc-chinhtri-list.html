@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Danh mục - Bài giảng Chính trị</title>
+  <link rel="stylesheet" href="css/kienthuc.css" />
+  <style>
+    .k-cards{ display:grid; grid-template-columns: repeat(2,1fr); gap:12px; padding:12px; }
+    .k-card{
+      border:1px solid var(--line);
+      border-radius:12px;
+      background:#fff;
+      padding:12px;
+      text-decoration:none;
+      color:var(--text);
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+    }
+    .k-ico{
+      width:44px;height:44px;border-radius:12px;
+      display:flex;align-items:center;justify-content:center;
+      background:rgba(31,122,58,.10);
+      border:1px solid rgba(0,0,0,.06);
+      font-size:22px;
+      flex:0 0 auto;
+    }
+    .k-ct{ flex:1; min-width:0; }
+    .k-ct h3{ margin:0 0 6px; font-size:16px; color:#1b5fa8; }
+    .k-ct p{ margin:0; color:var(--muted); font-weight:700; line-height:1.6; }
+    .k-tags{ margin-top:8px; display:flex; gap:8px; flex-wrap:wrap; }
+    .k-tag{ font-size:12px; font-weight:900; color:var(--muted);
+      border:1px solid var(--line); padding:4px 8px; border-radius:999px; background:#fafafa;
+    }
+    @media (max-width: 900px){ .k-cards{ grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+
+<header class="k-header">
+  <div class="k-header-inner">
+    <div class="k-brand">
+      <div class="k-badge">🏛️</div>
+      <div class="k-brand-text">
+        <div class="k-suptitle">HẢI ĐỘI 211</div>
+        <h1 class="k-title" id="pageTitle">DANH MỤC BÀI GIẢNG CHÍNH TRỊ</h1>
+        <div class="k-sub" id="pageSub">Chọn bài để xem chi tiết • Có tìm kiếm</div>
+      </div>
+    </div>
+    <div class="k-actions">
+      <a class="k-btn" href="index.html">🏠 Trang chủ</a>
+    </div>
+  </div>
+</header>
+
+<section class="k-toolbar">
+  <div class="k-toolbar-inner">
+    <div class="k-search">
+      <label class="k-lbl">Tìm bài giảng</label>
+      <input id="q" class="k-input" type="search" placeholder="Nhập từ khóa… (ví dụ: truyền thống, đoàn kết, dân chủ, kỷ luật, tăng gia)" />
+      <div id="qHint" class="k-hint"></div>
+    </div>
+    <div class="k-meta">
+      <div class="k-chip" id="count">0 bài</div>
+    </div>
+  </div>
+</section>
+
+<main class="k-wrap">
+  <div class="k-panel">
+    <div class="k-panel-head">📚 BÀI GIẢNG CHÍNH TRỊ</div>
+    <div id="cards" class="k-cards"></div>
+  </div>
+</main>
+
+<footer class="k-footer">
+  <div class="k-footer-inner">
+    <span>© Hải đội 211 • Tài liệu nội bộ</span>
+    <a class="k-top" href="#pageTitle">⬆ Lên đầu</a>
+  </div>
+</footer>
+
+<script>
+  const DOCS = [{"icon": "📘", "title": "Bài 1. Truyền thống của dân tộc và Quân đội nhân dân Việt Nam", "desc": "Chủ nghĩa yêu nước • Truyền thống anh hùng • Trách nhiệm chiến sĩ", "href": "chinhtri-bai1.html", "tags": ["Truyền thống", "Dân tộc", "QĐNDVN"]}, {"icon": "📘", "title": "Bài 2. ĐCSVN & Chủ tịch Hồ Chí Minh lãnh đạo Quân đội", "desc": "Nguyên tắc Đảng lãnh đạo • Chống 'phi chính trị hoá' • Trách nhiệm", "href": "chinhtri-bai2.html", "tags": ["ĐCSVN", "Hồ Chí Minh", "Lãnh đạo"]}, {"icon": "📘", "title": "Bài 3. Bản chất, mục tiêu, lý tưởng chiến đấu • Chức năng, nhiệm vụ", "desc": "Bản chất giai cấp công nhân • Mục tiêu lý tưởng • Nhiệm vụ • Đối tượng", "href": "chinhtri-bai3.html", "tags": ["Bản chất", "Lý tưởng", "Chức năng"]}, {"icon": "📘", "title": "Bài 4. Giữ vững & tăng cường đoàn kết nội bộ, quân dân, quốc tế", "desc": "Đoàn kết nội bộ • Quân–dân • Quốc tế • Biện pháp & trách nhiệm", "href": "chinhtri-bai4.html", "tags": ["Đoàn kết", "Quân dân", "Quốc tế"]}, {"icon": "📘", "title": "Bài 5. Dân chủ và kỷ luật trong QĐND Việt Nam", "desc": "Vai trò • Bản chất • Mối quan hệ • Biện pháp phát huy", "href": "chinhtri-bai5.html", "tags": ["Dân chủ", "Kỷ luật", "VMTD"]}, {"icon": "📘", "title": "Bài 6. Tăng gia sản xuất • Tiết kiệm chống lãng phí • Quản lý VKTB", "desc": "TGSX • Cuộc vận động 50 • An toàn – tiết kiệm • Trách nhiệm", "href": "chinhtri-bai6.html", "tags": ["TGSX", "Tiết kiệm", "VKTB"]}];
+  const $ = (id)=>document.getElementById(id);
+  const cardsEl = $("cards");
+  const countEl = $("count");
+  const qEl = $("q");
+  const hintEl = $("qHint");
+
+  function esc(s){
+    return String(s||"")
+      .replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;").replaceAll("'","&#39;");
+  }
+
+  function render(){
+    const q = (qEl.value||"").trim().toLowerCase();
+    const items = DOCS.filter(d=>{
+      if(!q) return true;
+      return (d.title||"").toLowerCase().includes(q)
+        || (d.desc||"").toLowerCase().includes(q)
+        || (d.tags||[]).join(" ").toLowerCase().includes(q);
+    });
+
+    countEl.textContent = `${items.length} bài`;
+
+    cardsEl.innerHTML = items.map(d=>`
+      <a class="k-card" href="${esc(d.href)}">
+        <div class="k-ico">${esc(d.icon || "📘")}</div>
+        <div class="k-ct">
+          <h3>${esc(d.title)}</h3>
+          <p>${esc(d.desc)}</p>
+          <div class="k-tags">
+            ${(d.tags||[]).map(t=>`<span class="k-tag">${esc(t)}</span>`).join("")}
+          </div>
+        </div>
+      </a>
+    `).join("");
+
+    hintEl.textContent = q ? `Đang lọc theo: "${q}"` : "";
+  }
+
+  qEl.addEventListener("input", render);
+  render();
+</script>
+
+</body>
+</html>
