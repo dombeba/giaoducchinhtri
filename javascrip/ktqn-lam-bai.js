@@ -107,7 +107,7 @@ document.addEventListener("DOMContentLoaded", async ()=>{
     const used = usedAttempts(results, quiz, sess.username);
     if(used >= maxAttempts){
       alert(`Bạn đã thi đủ ${maxAttempts} lần cho bài này.`);
-      location.href = `ktqn-ketqua-cua-toi.html?cat=${encodeURIComponent(quiz.cat)}`;
+      location.href = `ktqn-bai-thi.html?cat=${encodeURIComponent(quiz.cat)}`;
       return;
     }
 
