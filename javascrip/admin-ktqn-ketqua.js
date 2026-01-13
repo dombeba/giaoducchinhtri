@@ -1,47 +1,37 @@
-/**************************************************
- * KTQN - KẾT QUẢ BÀI THI (SERVER-FIRST, MOBILE SAFE)
- * - Đọc kết quả từ Apps Script: ?action=listResults
- * - Dò đúng dòng vừa nộp bằng submittedAt/username/quizTitle/attemptNo
- * - Poll 12 lần (mỗi 1s) để bắt kịp độ trễ ghi sheet
- **************************************************/
-
-const SESSION_KEY = "KTQN_SESSION_V1";
+/***************** CONFIG *****************/
 const API_URL =
   "https://script.google.com/macros/s/AKfycbxY7818jgoFttC7rl4HdhFy4RM84dPTIvAmLWo7kNr4Cw-62TAikiHaV-3iudhLpcwJ5Q/exec";
 
+const ADMIN_PASSWORD = "123321";
+
+/***************** ADMIN LOCK *****************/
+(() => {
+  const input = prompt("🔐 Nhập mật khẩu quản trị:");
+  if (input !== ADMIN_PASSWORD) {
+    alert("❌ Sai mật khẩu.");
+    window.location.href = "kienthucquannhan.html";
+  }
+})();
+
+/***************** DOM *****************/
 const $ = (id) => document.getElementById(id);
+
+function setStatus(msg) {
+  const el = $("status");
+  if (el) el.textContent = msg || "";
+}
 
 function esc(s) {
   return String(s ?? "")
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#39;");
-}
-function norm(v){ return String(v ?? "").trim(); }
-function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
-
-function loadSession() {
-  try { return JSON.parse(localStorage.getItem(SESSION_KEY) || "null"); }
-  catch { return null; }
-}
-function requireLogin() {
-  const s = loadSession();
-  if (!s?.username) {
-    window.location.href =
-      `dangnhapktqn.html?return=${encodeURIComponent(location.pathname + location.search)}`;
-    return null;
-  }
-  return s;
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
 }
 
-async function fetchJson(url) {
-  const res = await fetch(url, { method:"GET", cache:"no-store" });
-  const text = await res.text();
-  try { return JSON.parse(text); }
-  catch { throw new Error("INVALID_JSON: " + text.slice(0,200)); }
-}
+function norm(v) { return String(v ?? "").trim(); }
+function toNum(v) { const n = Number(v); return Number.isFinite(n) ? n : 0; }
 
 function fmtDate(iso) {
   try {
@@ -59,173 +49,238 @@ function fmtDate(iso) {
   }
 }
 
-async function listResults() {
-  const d = await fetchJson(`${API_URL}?action=listResults&t=${Date.now()}`);
-  if (!d || d.ok !== true) throw new Error(d?.error || "LIST_RESULTS_FAILED");
-  return Array.isArray(d.results) ? d.results : [];
+/***************** NETWORK *****************/
+async function fetchJson(url) {
+  const res = await fetch(url, { method: "GET", cache: "no-store" });
+  const text = await res.text();
+  try { return JSON.parse(text); }
+  catch { throw new Error("INVALID_JSON: " + text.slice(0, 200)); }
 }
 
-function readHint() {
-  // Ưu tiên query at=... (vừa nộp), fallback localStorage hint
-  const params = new URLSearchParams(location.search);
-  const at = params.get("at") || "";
-
-  let hint = null;
-  try { hint = JSON.parse(localStorage.getItem("KTQN_LAST_RESULT_HINT") || "null"); }
-  catch { hint = null; }
-
-  if (at && hint) hint.submittedAt = at; // overwrite cho chắc
-  if (at && !hint) hint = { submittedAt: at };
-
-  return hint;
+async function postNoCors(payload) {
+  await fetch(API_URL, {
+    method: "POST",
+    mode: "no-cors",
+    headers: { "Content-Type": "text/plain;charset=utf-8" },
+    body: JSON.stringify(payload),
+  });
 }
 
-function matchRow(r, hint, sess){
-  // Nếu có đủ hint: match chính xác
-  const okAt = hint?.submittedAt ? norm(r.submittedAt) === norm(hint.submittedAt) : false;
+/***************** DATA *****************/
+let ALL_RESULTS = [];
+let VIEW_RESULTS = [];
 
-  const okUser = hint?.username
-    ? norm(r.username) === norm(hint.username)
-    : norm(r.username) === norm(sess.username);
-
-  const okTitle = hint?.quizTitle ? norm(r.quizTitle) === norm(hint.quizTitle) : true;
-
-  const okAttempt = hint?.attemptNo !== undefined && hint?.attemptNo !== null && String(hint.attemptNo) !== ""
-    ? String(r.attemptNo ?? "") === String(hint.attemptNo)
-    : true;
-
-  // Nếu có submittedAt thì lấy theo submittedAt (mạnh nhất)
-  if (hint?.submittedAt) return okAt && okUser && okTitle && okAttempt;
-
-  // Nếu không có submittedAt: lấy “mới nhất” theo user + title + attempt
-  return okUser && okTitle && okAttempt;
+function makeKey(r) {
+  // key: submittedAt||username||quizTitle||attemptNo
+  return [norm(r.submittedAt), norm(r.username), norm(r.quizTitle), norm(r.attemptNo)].join("||");
 }
 
-function pickLatestOfUser(rows, sess){
-  const mine = rows.filter(r => norm(r.username) === norm(sess.username));
-  mine.sort((a,b)=> norm(b.submittedAt).localeCompare(norm(a.submittedAt)));
-  return mine[0] || null;
+async function loadResults() {
+  setStatus("⏳ Đang tải kết quả...");
+  const url = `${API_URL}?action=listResults&t=${Date.now()}`;
+  const data = await fetchJson(url);
+  if (!data || data.ok !== true) throw new Error(data?.error || "LOAD_FAILED");
+
+  const results = Array.isArray(data.results) ? data.results : [];
+  ALL_RESULTS = results.map((x) => ({
+    submittedAt: x.submittedAt || "",
+    cat: x.cat || "",
+    week: x.week ?? "",
+    quizTitle: x.quizTitle || "",
+    attemptNo: x.attemptNo ?? "",
+    maxAttempts: x.maxAttempts ?? "",
+    autoSubmitted: x.autoSubmitted ?? 0,
+    timeLimitMin: x.timeLimitMin ?? 0,
+    durationSec: x.durationSec ?? 0,
+    fullName: x.fullName || "",
+    rank: x.rank || "",
+    position: x.position || "",
+    unit: x.unit || "",
+    phone: x.phone || "",
+    username: x.username || "",
+    score: x.score ?? "",
+    maxScore: x.maxScore ?? "",
+  }));
+
+  setStatus(`✅ Đã tải ${ALL_RESULTS.length} dòng`);
 }
 
-function renderResult(row, sess){
-  const box = $("box");
-  const pill = $("pill");
-  const sub = $("sub");
+function applyFilters(items) {
+  const cat = norm($("cat")?.value);
+  const weekVal = norm($("week")?.value);
+  const week = weekVal ? toNum(weekVal) : 0;
+  const q = norm($("q")?.value).toLowerCase();
 
-  if(!row){
-    if(pill) pill.textContent = "❌ Không tìm thấy";
-    if(sub) sub.textContent = "Chưa lấy được kết quả từ server.";
-    if(box){
-      box.innerHTML = `
-        <div style="color:#b00020;font-weight:900">
-          Kết quả không tồn tại (chưa đồng bộ kịp hoặc bạn chưa có kết quả).
-        </div>
-        <div style="margin-top:10px;color:#666">
-          Gợi ý: thử mở lại sau vài giây hoặc vào “Kết quả của tôi”.
-        </div>
-      `;
-    }
+  let out = [...items];
+
+  if (cat) out = out.filter((x) => norm(x.cat) === cat);
+  if (week) out = out.filter((x) => toNum(x.week) === week);
+
+  if (q) {
+    out = out.filter((x) => {
+      const blob = [
+        x.quizTitle, x.fullName, x.rank, x.position, x.unit,
+        x.phone, x.username, x.cat, x.week
+      ].map(v => norm(v).toLowerCase()).join(" ");
+      return blob.includes(q);
+    });
+  }
+
+  out.sort((a, b) => norm(b.submittedAt).localeCompare(norm(a.submittedAt))); // mới nhất lên đầu
+  return out;
+}
+
+function render() {
+  const tbody = $("tbody");
+  if (!tbody) return;
+
+  const items = applyFilters(ALL_RESULTS);
+  VIEW_RESULTS = items;
+
+  if (!items.length) {
+    tbody.innerHTML = `<tr><td colspan="11" style="padding:14px;color:#666">Chưa có kết quả.</td></tr>`;
+    setStatus("0 kết quả (đã lọc)");
     return;
   }
 
-  const score = (row.score ?? "");
-  const maxScore = (row.maxScore ?? "");
-  const scoreText = (String(score) !== "" && String(maxScore) !== "")
-    ? `${score} / ${maxScore}`
-    : (String(score) !== "" ? String(score) : "—");
+  tbody.innerHTML = items.map((r) => {
+    const scoreText =
+      norm(r.score) || norm(r.maxScore)
+        ? `<b>${esc(r.score)} / ${esc(r.maxScore)}</b>`
+        : `<span style="color:#666">—</span>`;
 
-  if(pill) pill.textContent = `✅ ${scoreText}`;
-  if(sub){
-    sub.textContent = `Tài khoản: ${sess.username} • ${sess.fullName || ""} • ${sess.unit || ""}`;
-  }
+    const key = esc(makeKey(r));
 
-  const meta = [
-    `⏱ Thời gian nộp: <b>${esc(fmtDate(row.submittedAt))}</b>`,
-    `📌 Mục: <b>${esc(row.cat)}</b> • Tuần: <b>${esc(row.week)}</b>`,
-    `📝 Bài: <b>${esc(row.quizTitle)}</b>`,
-    `🔁 Lần thi: <b>${esc(row.attemptNo)}</b> / ${esc(row.maxAttempts ?? "")}`,
-    `⌛ Thời lượng: <b>${esc(row.durationSec ?? 0)}s</b>${Number(row.autoSubmitted||0) ? ` • <span style="color:#b00020;font-weight:900">Tự nộp</span>` : ""}`
-  ].join("<br>");
-
-  if(box){
-    box.innerHTML = `
-      <div style="line-height:1.8">
-        <div style="font-size:18px;font-weight:900;margin-bottom:8px">
-          🎯 Điểm: ${esc(scoreText)}
-        </div>
-        <div style="color:#333">${meta}</div>
-        <hr style="border:none;border-top:1px solid #eee;margin:12px 0">
-        <div style="color:#666">
-          Nếu chưa thấy kết quả mới nhất, hãy chờ vài giây và tải lại trang.
-        </div>
-      </div>
+    return `
+      <tr>
+        <td>${esc(fmtDate(r.submittedAt))}</td>
+        <td>${esc(r.cat)}</td>
+        <td>${esc(r.week)}</td>
+        <td>${esc(r.quizTitle)}</td>
+        <td>${esc(r.fullName)}</td>
+        <td>${esc(r.rank)}</td>
+        <td>${esc(r.position)}</td>
+        <td>${esc(r.unit)}</td>
+        <td>${esc(r.phone)}</td>
+        <td>${scoreText}</td>
+        <td><button class="btn danger del-one" data-key="${key}" type="button">✖</button></td>
+      </tr>
     `;
-  }
+  }).join("");
 
-  // backList đúng mục
-  const back = $("backList");
-  if(back){
-    back.href = `ktqn-bai-thi.html?cat=${encodeURIComponent(row.cat || "")}`;
-  }
+  setStatus(`${items.length} kết quả (đã lọc)`);
 }
 
-document.addEventListener("DOMContentLoaded", async ()=>{
-  const sess = requireLogin();
-  if(!sess) return;
+/***************** EXPORT CSV *****************/
+function exportCSV() {
+  const items = VIEW_RESULTS || [];
 
-  const hint = readHint();
-  const just = new URLSearchParams(location.search).get("just") === "1";
+  const header = [
+    "submittedAt","cat","week","quizTitle","attemptNo","maxAttempts","autoSubmitted",
+    "timeLimitMin","durationSec","fullName","rank","position","unit","phone","username",
+    "score","maxScore"
+  ];
 
-  // UI “đang đồng bộ”
-  if($("pill")) $("pill").textContent = "⏳ Đang đồng bộ...";
-  if($("sub")) $("sub").textContent = "Đang lấy kết quả từ server...";
+  const rows = items.map((r) => [
+    r.submittedAt || "",
+    r.cat || "",
+    r.week ?? "",
+    r.quizTitle || "",
+    r.attemptNo ?? "",
+    r.maxAttempts ?? "",
+    String(r.autoSubmitted ?? ""),
+    r.timeLimitMin ?? "",
+    r.durationSec ?? "",
+    r.fullName || "",
+    r.rank || "",
+    r.position || "",
+    r.unit || "",
+    r.phone || "",
+    r.username || "",
+    r.score ?? "",
+    r.maxScore ?? "",
+  ]);
 
-  try{
-    let rows = [];
-    let found = null;
+  const csv = [header, ...rows]
+    .map(line => line.map(v => `"${String(v).replaceAll('"', '""')}"`).join(","))
+    .join("\n");
 
-    // ✅ Poll tối đa 12s nếu vừa nộp bài (điện thoại cần cái này)
-    const tries = just ? 12 : 1;
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = `KTQN_RESULTS_${new Date().toISOString().slice(0, 10)}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+}
 
-    for(let i=0;i<tries;i++){
-      rows = await listResults();
+/***************** DELETE SERVER (REAL) *****************/
+async function deleteOneServer(key) {
+  await postNoCors({
+    action: "deleteResult",
+    adminPassword: ADMIN_PASSWORD,
+    key
+  });
+}
 
-      // nếu có hint => tìm đúng dòng
-      if(hint){
-        found = rows.find(r => matchRow(r, hint, sess)) || null;
-      }
+async function clearAllServer() {
+  await postNoCors({
+    action: "clearResults",
+    adminPassword: ADMIN_PASSWORD
+  });
+}
 
-      // nếu không tìm được và không có hint => lấy mới nhất của user
-      if(!found && !hint){
-        found = pickLatestOfUser(rows, sess);
-      }
+/***************** INIT *****************/
+document.addEventListener("DOMContentLoaded", async () => {
+  // filter
+  ["input", "change"].forEach((evt) => {
+    $("cat")?.addEventListener(evt, render);
+    $("week")?.addEventListener(evt, render);
+    $("q")?.addEventListener(evt, render);
+  });
 
-      if(found) break;
+  $("exportCsv")?.addEventListener("click", exportCSV);
 
-      if(just){
-        if($("sub")) $("sub").textContent = `⏳ Đang đồng bộ kết quả... (${i+1}/${tries})`;
-        await sleep(1000);
-      }
-    }
+  $("clearAll")?.addEventListener("click", async () => {
+    if (!confirm("Xóa TOÀN BỘ kết quả trong Google Sheet (tab RESULTS)?")) return;
+    setStatus("⏳ Đang xóa toàn bộ trên Sheet...");
+    await clearAllServer();
+    await loadResults();
+    render();
+    setStatus("✅ Đã xóa toàn bộ trên Google Sheet.");
+  });
 
-    // Nếu vẫn chưa thấy: fallback lấy newest của user
-    if(!found){
-      found = pickLatestOfUser(rows, sess);
-    }
+  // delete one
+  document.addEventListener("click", async (e) => {
+    const btn = e.target.closest(".del-one");
+    if (!btn) return;
 
-    renderResult(found, sess);
+    const key = btn.getAttribute("data-key");
+    if (!key) return;
 
-  }catch(err){
+    if (!confirm("Xóa dòng này trong Google Sheet (tab RESULTS)?")) return;
+
+    setStatus("⏳ Đang xóa trên Sheet...");
+    await deleteOneServer(key);
+    await loadResults();
+    render();
+    setStatus("✅ Đã xóa trên Google Sheet.");
+  });
+
+  // load
+  try {
+    await loadResults();
+    render();
+  } catch (err) {
     console.error(err);
-    if($("pill")) $("pill").textContent = "❌ Lỗi tải";
-    if($("sub")) $("sub").textContent = "Không lấy được kết quả từ server.";
-    if($("box")){
-      $("box").innerHTML = `
-        <div style="color:#b00020;font-weight:900">Không tải được dữ liệu từ server.</div>
-        <div style="margin-top:10px;color:#666">
-          Thử mở: <b>${esc(API_URL)}?action=listResults</b>
-        </div>
-      `;
+    setStatus("❌ Không lấy được kết quả. Kiểm tra Apps Script có action=listResults và đúng link /exec.");
+    const tbody = $("tbody");
+    if (tbody) {
+      tbody.innerHTML =
+        `<tr><td colspan="11" style="padding:14px;color:#b00020">
+          Không tải được dữ liệu.<br/>
+          Hãy thử mở: <b>${esc(API_URL)}?action=listResults</b>
+        </td></tr>`;
     }
   }
 });
