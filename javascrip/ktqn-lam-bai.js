@@ -200,7 +200,7 @@ document.addEventListener("DOMContentLoaded", async ()=>{
         score, maxScore
       });
 
-      location.href="ktqn-ketqua-cua-toi.html";
+      location.href="ktqn-ketqua.html";
     }
 
     if($("submitBtn")) $("submitBtn").addEventListener("click",()=>doSubmit(false));
