@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kỹ thuật – Nội dung công tác (BQDP–KSĐK & Màu sơn)</title>
+  <link rel="stylesheet" href="css/kienthuc.css" />
+</head>
+<body>
+
+<header class="k-header">
+  <div class="k-header-inner">
+    <div class="k-brand">
+      <div class="k-badge">🛠️</div>
+      <div class="k-brand-text">
+        <div class="k-suptitle">HẢI ĐỘI 211</div>
+        <h1 class="k-title" id="pageTitle">KIẾN THỨC KỸ THUẬT</h1>
+        <div class="k-sub" id="pageSub">Nội dung công tác kỹ thuật: BQDP–KSĐK cấp tàu • Quy định màu sơn trên tàu</div>
+      </div>
+    </div>
+    <div class="k-actions">
+      <a class="k-btn" href="index.html">🏠 Trang chủ</a>
+      <a class="k-btn" href="kienthuc-haucan-list.html">📚 Danh mục Hậu cần</a>
+    </div>
+  </div>
+  </div>
+</header>
+
+<section class="k-toolbar">
+  <div class="k-toolbar-inner">
+    <div class="k-search">
+      <label class="k-lbl">Tìm trong trang</label>
+      <input id="q" class="k-input" type="search"
+             placeholder="Nhập từ khóa… (ví dụ: BQDP, KSĐK, ngày kỹ thuật, 2362, khí nén, ống cứu hỏa)" />
+      <div id="qHint" class="k-hint"></div>
+    </div>
+    <div class="k-meta">
+      <div class="k-chip" id="lastUpdate">Cập nhật: —</div>
+      <button class="k-btn k-btn-primary" id="expandAll" type="button">Mở hết</button>
+      <button class="k-btn" id="collapseAll" type="button">Gập hết</button>
+    </div>
+  </div>
+</section>
+
+<main class="k-wrap">
+  <div class="k-grid">
+
+    <aside class="k-side">
+      <div class="k-panel">
+        <div class="k-panel-head">📑 Mục lục</div>
+        <nav id="toc" class="k-toc"></nav>
+      </div>
+    </aside>
+
+    <section class="k-main">
+      <div class="k-panel">
+        <div class="k-panel-head">📌 NỘI DUNG</div>
+
+        <div class="k-content" id="contentRoot">
+
+          <details class="acc" open>
+            <summary class="acc-sum">THỰC HÀNH HUẤN LUYỆN</summary>
+            <div class="acc-body">
+              <p><strong>Nội dung:</strong> Hướng dẫn đăng ký sổ BQDP–KSĐK cấp tàu • Quy định màu sơn trên tàu • Hướng dẫn thảo luận.</p>
+            </div>
+          </details>
+
+          <!-- I -->
+          <details class="acc">
+            <summary class="acc-sum">I. HƯỚNG DẪN ĐĂNG KÝ SỔ BQDP–KSĐK CẤP TÀU</summary>
+            <div class="acc-body">
+
+              <h3>1) Các đầu sổ BQDP–KSĐK cấp tàu</h3>
+              <p>Đối với cấp tàu sử dụng <strong>04 đầu sổ</strong> BQDP–KSĐK:</p>
+              <ul>
+                <li>01 cuốn đăng ký kế hoạch chung toàn tàu</li>
+                <li>01 cuốn đăng ký kế hoạch của ngành Tổng hợp</li>
+                <li>01 cuốn đăng ký kế hoạch của ngành Quân khí</li>
+                <li>01 cuốn đăng ký kế hoạch của ngành Cơ điện</li>
+              </ul>
+
+              <div class="k-divider"></div>
+
+              <h3>2) Kế hoạch BQDP & KSĐK (cấp phê duyệt trên một cấp)</h3>
+              <p><strong>Cột nội dung kiểm sửa</strong> chia làm 3 phần:</p>
+              <ul>
+                <li><strong>I.</strong> Thao tác sấy VKMM, vệ sinh lau chùi hằng ngày</li>
+                <li><strong>II.</strong> Nội dung BQDP–KSĐK (ngày kỹ thuật: tuần/tháng/quý; trước/sau đi biển)</li>
+                <li><strong>III.</strong> Nội dung kiểm sửa đột xuất</li>
+              </ul>
+              <p>Phần người lập kế hoạch: ghi rõ họ tên và ký cùng một hàng.</p>
+
+              <div class="k-divider"></div>
+
+              <h3>3) Đăng ký tình hình chấp hành chế độ BQDP & KSĐK</h3>
+              <p>Dạng bảng theo tháng (chuyển năm trước → tháng 1…12 → cộng trong năm → tổng cộng).</p>
+
+              <div class="k-table-wrap">
+                <table class="k-table">
+                  <thead>
+                    <tr>
+                      <th>Tên trang bị</th>
+                      <th>Chuyển năm trước</th>
+                      <th>Tháng 1</th>
+                      <th>Tháng 2</th>
+                      <th>…</th>
+                      <th>Tháng 12</th>
+                      <th>Cộng năm</th>
+                      <th>Tổng cộng</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Máy chính (vị trí/số hiệu máy)</td>
+                      <td>50000</td>
+                      <td>1000</td>
+                      <td>1500</td>
+                      <td>…</td>
+                      <td>2000</td>
+                      <td>61500</td>
+                      <td>111500</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <p><strong>Lưu ý quan trọng:</strong></p>
+              <ul>
+                <li>Khi có kế hoạch <strong>thay dầu nhờn máy</strong>: phải đăng ký vào sổ BQDP (mục II), đồng thời ghi vào: <strong>Sổ nhật ký máy</strong>, <strong>Sổ nhật ký trực canh sức sống tàu</strong>, <strong>trực canh neo đậu</strong>.</li>
+                <li>Tàu trên đốc / trên biển / trước–sau đi biển: chỉ ghi mục lục phần I (thao tác hằng ngày), không ghi thêm phần khác nếu không thực hiện.</li>
+              </ul>
+
+              <div class="k-divider"></div>
+
+              <h3>4) Quy định thời gian – nhân công (tổng hợp)</h3>
+              <h4>4.1. Mục I: thao tác hằng ngày</h4>
+              <ul>
+                <li>Thứ 3 đến thứ 5: <strong>0h45 phút/người/ngày</strong> (trừ ngày nghỉ lễ)</li>
+                <li>Thứ 6: <strong>01h00 phút/người/ngày</strong> (trừ ngày nghỉ lễ)</li>
+                <li>Lượt người: tính theo quân số thực tế có mặt (đã trừ phép/công tác)</li>
+              </ul>
+
+              <h4>4.2. Mục II: ngày kỹ thuật</h4>
+              <ul>
+                <li>BQDP–KSĐK tuần: <strong>7h/người/ngày</strong></li>
+                <li>BQDP–KSĐK tháng: <strong>14h/người/2 ngày</strong></li>
+                <li>Chú ý: đảo thời gian để kế hoạch & thực tế có sai lệch hợp lý, sát thực tế</li>
+              </ul>
+
+              <h4>4.3. Mục III: kiểm sửa đột xuất</h4>
+              <ul>
+                <li>Có phát sinh hư hỏng thì phải đăng ký kiểm sửa đột xuất (VD: thay cánh bơm, phớt bơm, hệ thống điện…)</li>
+              </ul>
+
+              <div class="k-divider"></div>
+
+              <h3>5) Quy định cách ghi phần II, III</h3>
+              <ul>
+                <li>Ghi theo nguyên tắc: <strong>Tên trang bị trước – nội dung công việc sau</strong>.</li>
+                <li>Nội dung công việc căn cứ thực tế TBKT, khả năng thời gian, quy định ngày kỹ thuật (theo văn bản 2362/QĐ-BTL nếu áp dụng) để lập.</li>
+                <li>Các trang bị còn lại (nếu chưa BQKS hết): ghi “Kiểm tra sự hoạt động”.</li>
+              </ul>
+
+              <div class="k-divider"></div>
+
+              <h3>6) Mẫu bảng: Kế hoạch BQDP–KSĐK tuần (cấp ngành Cơ điện, quân số 05)</h3>
+
+              <div class="k-table-wrap">
+                <table class="k-table">
+                  <thead>
+                    <tr>
+                      <th>TT</th>
+                      <th>Nội dung</th>
+                      <th>Dự tính (lượt người)</th>
+                      <th>Dự tính (TG)</th>
+                      <th>Thực tế (lượt người)</th>
+                      <th>Thực tế (TG)</th>
+                      <th>Kết quả</th>
+                      <th>Tổng TG thực tế</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>I</td>
+                      <td><strong>Thao tác sấy VKMM, vệ sinh lau chùi hằng ngày</strong></td>
+                      <td colspan="6">—</td>
+                      <td>—</td>
+                    </tr>
+                    <tr>
+                      <td>1</td>
+                      <td>Thao tác VKMM, vệ sinh lau chùi hằng ngày</td>
+                      <td>15</td><td>00:45</td><td>15</td><td>01:00</td><td>Hoàn thành</td><td>11:15</td>
+                    </tr>
+                    <tr>
+                      <td>2</td>
+                      <td>Tổng thao tác VKMM, lau chùi VKTBKT</td>
+                      <td>05</td><td>01:00</td><td>05</td><td>01:00</td><td>Hoàn thành</td><td>05:00</td>
+                    </tr>
+
+                    <tr>
+                      <td>II</td>
+                      <td><strong>Nội dung BQDP–KSĐK (tuần, trước/sau đi biển)</strong></td>
+                      <td colspan="6">—</td>
+                      <td>—</td>
+                    </tr>
+                    <tr>
+                      <td>1</td>
+                      <td>Máy chính: …</td>
+                      <td>03</td><td>03:00</td><td>03</td><td>03:00</td><td>Hoàn thành</td><td>09:00</td>
+                    </tr>
+                    <tr>
+                      <td>2</td>
+                      <td>Máy phụ: …</td>
+                      <td>02</td><td>04:00</td><td>02</td><td>04:00</td><td>Hoàn thành</td><td>08:00</td>
+                    </tr>
+                    <tr>
+                      <td>3</td>
+                      <td>Bơm nước ngọt: …</td>
+                      <td>02</td><td>03:00</td><td>02</td><td>03:00</td><td>Hoàn thành</td><td>06:00</td>
+                    </tr>
+
+                    <tr>
+                      <td>III</td>
+                      <td><strong>Kiểm sửa đột xuất</strong></td>
+                      <td colspan="6">—</td>
+                      <td>—</td>
+                    </tr>
+                    <tr>
+                      <td>1</td>
+                      <td>Máy chính: …</td>
+                      <td>01</td><td>02:00</td><td>01</td><td>01:00</td><td>Hoàn thành/Chưa</td><td>02:00</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <p><strong>Thời gian ký phê duyệt:</strong> thứ 6 tuần trước với bảo quản tuần/tháng; ký trước 01 ngày với bảo quản trước/sau đi biển (thực hiện không kể ngày nghỉ lễ).</p>
+
+            </div>
+          </details>
+
+          <!-- II -->
+          <details class="acc">
+            <summary class="acc-sum">II. QUY ĐỊNH MÀU SƠN TRÊN TÀU</summary>
+            <div class="acc-body">
+
+              <p><em>Bảng dưới đây trích theo quy định trong tài liệu, dùng để thống nhất nhận diện trang bị/hệ thống.</em></p>
+
+              <div class="k-table-wrap">
+                <table class="k-table">
+                  <thead>
+                    <tr>
+                      <th>TT</th>
+                      <th>Tên gọi / Hạng mục</th>
+                      <th>Màu sơn</th>
+                      <th>Ký hiệu & màu chữ viết</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>1</td><td>Bình khí nén</td><td>Đen</td><td>Khí nén màu trắng</td></tr>
+                    <tr><td>2</td><td>Bình khí cacbonnic</td><td>Đen</td><td>Khí cacbonnic màu vàng</td></tr>
+                    <tr><td>3</td><td>Bình oxi</td><td>Xanh da trời</td><td>Khí oxi màu đen</td></tr>
+                    <tr><td>4</td><td>Bình Axetylen</td><td>Trắng</td><td>Axetylen màu đỏ</td></tr>
+                    <tr><td>5</td><td>Tay van cứu hỏa</td><td>Đỏ</td><td>—</td></tr>
+                    <tr><td>6</td><td>Tay van các hệ thống khác</td><td>Đen</td><td>—</td></tr>
+                    <tr><td>7</td><td>Vòi cứu hỏa</td><td>Đỏ</td><td>—</td></tr>
+                    <tr><td>8</td><td>Bình dập lửa</td><td>Đỏ</td><td>—</td></tr>
+                    <tr><td>9</td><td>HT ống nước biển</td><td>Xanh lá cây</td><td>—</td></tr>
+                    <tr><td>10</td><td>HT ống cứu hỏa</td><td>Đỏ</td><td>—</td></tr>
+                    <tr><td>11</td><td>HT ống dầu nhờn</td><td>Vàng</td><td>—</td></tr>
+                    <tr><td>12</td><td>HT ống nước ngọt</td><td>Xanh hòa bình</td><td>—</td></tr>
+                    <tr><td>13</td><td>HT ống khí nén</td><td>Xanh da trời</td><td>—</td></tr>
+                    <tr><td>14</td><td>HT ống nhiên liệu</td><td>Đỏ nâu</td><td>—</td></tr>
+                    <tr><td>15</td><td>Thiết bị cẩu</td><td>Cam</td><td>—</td></tr>
+                    <tr><td>16</td><td>Neo, tời neo, cọc bích…</td><td>Đen</td><td>—</td></tr>
+                    <tr><td>17</td><td>Ốc/ống inox, tăng đơ inox…</td><td>Không sơn</td><td>Bôi lớp mỡ mỏng bảo quản</td></tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <p><strong>Ghi chú bổ sung (trích ý):</strong></p>
+              <ul>
+                <li>Các trang thiết bị bằng đồng, thiết bị truyền động, ốc thường mở, vú mỡ…: <strong>không sơn</strong>.</li>
+                <li>Boong mũi/lái/mạn/boong thượng…: <strong>xanh lá cây</strong>; chân lan can/chân pháo cao 10cm cùng màu boong.</li>
+                <li>Ca bin, mạn trên mớn nước, lan can: <strong>trắng</strong>; chân cabin/lan can cao 1cm cùng màu sơn boong.</li>
+              </ul>
+
+            </div>
+          </details>
+
+          <!-- III -->
+          <details class="acc">
+            <summary class="acc-sum">III. HƯỚNG DẪN THẢO LUẬN</summary>
+            <div class="acc-body">
+              <h3>1) Nội dung câu hỏi thảo luận</h3>
+              <ol>
+                <li>Phương pháp lập kế hoạch BQDP–KSĐK cấp ngành, cấp tàu?</li>
+                <li>Quy định màu sơn trên tàu áp dụng như thế nào?</li>
+              </ol>
+
+              <h3>2) Thời gian</h3>
+              <p>00:10</p>
+
+              <h3>3) Tổ chức, phương pháp</h3>
+              <p><strong>a) Tổ chức:</strong> Lấy đơn vị ngành để thảo luận, do đồng chí giáo viên hướng dẫn và duy trì.</p>
+              <p><strong>b) Phương pháp:</strong></p>
+              <ul>
+                <li>Người duy trì phổ biến quy định buổi thảo luận; đặt câu hỏi; gợi ý để người học suy nghĩ.</li>
+                <li>Dành 3–5 phút để nghiên cứu; điều hành dân chủ; kết hợp chỉ định nhanh/chậm/trung bình/yếu.</li>
+                <li>Trước khi chuyển nội dung khác: tóm tắt, kết luận, nêu yêu cầu thực hiện.</li>
+              </ul>
+
+              <h3>4) Địa điểm</h3>
+              <ul>
+                <li>Ôn luyện: Phòng CLB Tàu 9002</li>
+                <li>Thảo luận: Phòng CLB Tàu 9002</li>
+              </ul>
+            </div>
+          </details>
+
+        </div>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<footer class="k-footer">
+  <div class="k-footer-inner">
+    <span>© Hải đội 211 • Tài liệu nội bộ</span>
+    <a class="k-top" href="#pageTitle">⬆ Lên đầu</a>
+  </div>
+</footer>
+
+<script src="javascrip/kienthuc.js"></script>
+</body>
+</html>
