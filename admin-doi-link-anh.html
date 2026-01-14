@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin - Đổi link ảnh Drive → Web</title>
+  <link rel="stylesheet" href="css/admin-doi-link-anh.css" />
+</head>
+<body>
+
+  <main class="wrap">
+    <header class="head">
+      <div>
+        <h1>🔗 Admin — Đổi link ảnh (Google Drive → Web)</h1>
+        <p class="sub">
+          Dán link Drive → tự tách ID → xuất ra link ảnh chuẩn (UC + Thumbnail) để dán lên web.
+        </p>
+      </div>
+
+      <div class="head-actions">
+        <a class="btn" href="admin-tintuc.html">🛠 Admin Tin tức</a>
+        <a class="btn" href="tintuc.html">📰 Trang tin</a>
+        <a class="btn" href="index.html">🏠 Trang chủ</a>
+      </div>
+    </header>
+
+    <section class="card">
+      <h2>1) Dán link Google Drive</h2>
+
+      <div class="grid">
+        <label class="full">
+          Link Drive (1 dòng / nhiều dòng đều được)
+          <textarea id="inp" rows="8" placeholder="Ví dụ:
+https://drive.google.com/file/d/ID/view?usp=sharing
+https://drive.google.com/open?id=ID
+..."></textarea>
+          <div class="hint">
+            Hỗ trợ các dạng: <b>/file/d/ID/view</b> • <b>?id=ID</b> • <b>uc?export=view&id=ID</b> • <b>thumbnail?id=ID</b>
+          </div>
+        </label>
+
+        <div class="actions full">
+          <button class="btn primary" id="btnConvert" type="button">⚡ Đổi link</button>
+          <button class="btn" id="btnClear" type="button">🧹 Xóa</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>2) Kết quả link ảnh dùng cho web</h2>
+
+      <div class="tools">
+        <button class="btn" id="btnCopyUC" type="button">📋 Copy TẤT CẢ link UC</button>
+        <button class="btn" id="btnCopyThumb" type="button">📋 Copy TẤT CẢ link Thumbnail</button>
+        <button class="btn" id="btnCopyBoth" type="button">📋 Copy UC + Thumbnail (mỗi dòng 2 link)</button>
+      </div>
+
+      <div class="outgrid">
+        <div class="outcol">
+          <div class="outhead">✅ Link UC (chuẩn, ổn định)</div>
+          <textarea id="outUC" rows="10" readonly placeholder="Kết quả UC sẽ hiện ở đây..."></textarea>
+        </div>
+
+        <div class="outcol">
+          <div class="outhead">🖼 Link Thumbnail (hợp ảnh bài viết)</div>
+          <textarea id="outThumb" rows="10" readonly placeholder="Kết quả Thumbnail sẽ hiện ở đây..."></textarea>
+        </div>
+      </div>
+
+      <div class="mini">
+        <div class="mini-title">📌 Gợi ý dùng nhanh</div>
+        <ul>
+          <li>Ảnh đại diện / ảnh đầu bài: thường dùng <b>Thumbnail</b>.</li>
+          <li>Chèn ảnh giữa bài: dùng <b>UC</b> cho ổn định.</li>
+          <li>Nếu web không hiện ảnh: vào Drive → Chia sẻ → <b>“Bất kỳ ai có liên kết”</b> (Viewer).</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>3) Kiểm tra nhanh (tự động)</h2>
+      <p class="sub">
+        Sau khi đổi link, bấm mở thử 1 link UC/Thumbnail trong tab mới: nếu hiện <b>ảnh trực tiếp</b> là OK.
+      </p>
+    </section>
+  </main>
+
+  <script src="javascrip/admin-doi-link-anh.js"></script>
+</body>
+</html>
