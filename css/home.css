@@ -50,19 +50,19 @@ body{
 /* Header */
 .header{
   text-align:center;
-  margin-top:40px;
+  margin-top:20px;
 }
 
 .h1{
   color:var(--green);
-  font-size:48px;
+  font-size:30px;
   margin:0;
 }
 
 .h2{
   color:var(--blue);
-  font-size:36px;
-  font-weight:900;
+  font-size:30px;
+  font-weight:800;
 }
 
 .ornament{
@@ -79,6 +79,7 @@ body{
   grid-template-columns:1fr 1fr;
   gap:40px;
   padding:40px 60px;
+   margin-top: -30px
 }
 
 /* Left */
@@ -375,3 +376,101 @@ body{
   .unit-line{ font-size: 13px; }
   .unit-sub{ font-size: 12px; }
 }
+.sub-items {
+  list-style: none;
+  margin: 2px 0 6px 18px;
+  padding: 0;
+  font-size: 1px !important;   /* NHỎ RÕ RỆT */
+  line-height: 1.3;
+  color: #666 !important;
+  font-style: italic;
+}
+
+.sub-items li {
+  margin: 1px 0;
+}
+/* ÉP CHỮ GHI CHÚ DƯỚI "KIẾN THỨC CHÍNH TRỊ" */
+.content .sub-items,
+.content .sub-items li {
+  font-size: 15px !important;          /* NHỎ HẲN */
+  line-height: 1.25 !important;
+  color:#7b1fa2;
+  font-style: italic;
+  font-weight: 800 !important;   /* ĐẬM NHẸ */
+  font-weight: normal !important;
+  text-transform: none !important;
+}
+
+/* CẮT HOÀN TOÀN KẾ THỪA TỪ LINK / BULLETS */
+.content .sub-items li {
+  font-family: Arial, Helvetica, sans-serif !important;
+}
+/* Mục lớn + QR */
+.bullets .item-qr{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.bullets .item-qr a{
+  flex:1;
+  min-width:0;
+}
+
+/* QR nhỏ gọn */
+.bullets .mini-qr{
+  width:34px;
+  height:34px;
+  border-radius:6px;
+  background:#fff;
+  border:1px solid rgba(0,0,0,.15);
+  padding:2px;
+}
+
+/* Mobile: QR nhỏ lại chút */
+@media (max-width: 600px){
+  .bullets .mini-qr{ width:28px; height:28px; }
+}
+  /* ITEM + QR */
+.bullets .item-qr{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin: 8px 0 14px;
+}
+
+/* NÚT HIỆN QR */
+.qr-btn{
+  font-size: 10px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px solid #b30000;
+  background: #fff;
+  color: #b30000;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+/* QR ẩn mặc định */
+.bullets .mini-qr{
+  display:none;
+  width:60px;
+  height:60px;
+  padding:8px;
+  background:#fff;
+  border:1px solid rgba(0,0,0,.2);
+  border-radius:10px;
+}
+
+/* Khi mở */
+.item-qr.open .mini-qr{
+  display:block;
+}
+
+/* Mobile */
+@media (max-width:600px){
+  .qr-btn{ font-size: 11px; }
+}
+
+

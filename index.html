@@ -11,98 +11,145 @@
 <body>
 
 <main class="poster">
-  <div class="topbar"></div>
 
-  <!-- Trang trí góc -->
-  <div class="corner left">
-    <div class="sun"></div>
-    <div class="stem"></div>
-    <div class="leaf"></div>
-  </div>
+  <!-- HEADER -->
+  <header class="header">
+    <div class="unit-top">
+      <div class="unit-line">HẢI ĐOÀN 21 CẢNH SÁT BIỂN</div>
+      <div class="unit-line unit-sub">HẢI ĐỘI 211</div>
+    </div>
 
-  <div class="corner right">
-    <div class="sun"></div>
-    <div class="stem"></div>
-    <div class="leaf"></div>
-  </div>
+    <h1 class="h1">MÔ HÌNH</h1>
+    <div class="h2">SỐ HÓA CÔNG TÁC GIÁO DỤC CHÍNH TRỊ</div>
+    <div class="ornament"><span></span></div>
+  </header>
 
- <!-- Header -->
-<header class="header">
-
-  <div class="unit-top">
-    <div class="unit-line">HẢI ĐOÀN 21 CẢNH SÁT BIỂN</div>
-    <div class="unit-line unit-sub">HẢI ĐỘI 211</div>
-  </div>
-
-  <h1 class="h1">MÔ HÌNH</h1>
-  <div class="h2">SỐ HÓA CÔNG TÁC GIÁO DỤC CHÍNH TRỊ</div>
-  <div class="ornament"><span></span></div>
-
-</header>
-
-
-  <!-- Nội dung -->
+  <!-- NỘI DUNG -->
   <section class="content">
-    <!-- Trái -->
+
+    <!-- CỘT TRÁI -->
     <div>
-      <h2 class="section-title">Kiến thức Quân nhân:</h2>
-     <ul class="bullets">
-      <li><a href="tintuc.html" target="_blank" rel="noopener">Tin tức Hải đội 211</a></li>
-  <li><a href="tonghop.html" target="_blank" rel="noopener">Kiến thức Chính trị</a></li>
-  <li><a href="kienthuc-quansu-list.html" target="_blank" rel="noopener">Kiến thức Quân sự</a></li>
-  <li><a href="kienthuc-haucan-list.html" target="_blank" rel="noopener">Kiến thức Hậu cần - Kỹ thuật</a></li>
-  <li><a href="https://example.com/nhan-thuc" target="_blank" rel="noopener">Nhận thức chính trị - xã hội</a></li>
-  <li><a href="https://example.com/phap-luat" target="_blank" rel="noopener">Kiến thức Pháp luật</a></li>
-</ul>
+      <ul class="bullets">
+
+        <!-- TIN TỨC -->
+        <li class="item-qr item-qr-toggle">
+          <a href="tintuc.html" target="_blank" rel="noopener">
+            Tin tức Hải đội 211
+          </a>
+
+          <button class="qr-btn" type="button">HIỆN QR</button>
+
+          <img class="mini-qr" src="css/maqr/maqrtintuc.png" alt="QR Tin tức">
+        </li>
+
+        <!-- CHÍNH TRỊ -->
+        <li class="item-qr item-qr-toggle">
+          <a href="tonghop.html" target="_blank" rel="noopener">
+            Kiến thức Chính trị
+          </a>
+
+          <button class="qr-btn" type="button">HIỆN QR</button>
+
+          <img class="mini-qr" src="css/maqr/maqrktct.png" alt="QR Chính trị">
+        </li>
+
+        <!-- GHI CHÚ -->
+        <ul class="sub-items">
+          <li>• Lời Bác Hồ dạy – Ngày này năm xưa</li>
+          <li>• Bài giảng chính trị</li>
+          <li>• 15 bài hát quy định</li>
+          <li>• Các vũ điệu trong quân đội</li>
+        </ul>
+
+        <!-- QUÂN SỰ -->
+        <li class="item-qr item-qr-toggle">
+          <a href="kienthuc-quansu-list.html" target="_blank" rel="noopener">
+            Kiến thức Quân sự
+          </a>
+
+          <button class="qr-btn" type="button">HIỆN QR</button>
+
+          <img class="mini-qr" src="css/maqr/maqrktquansu.png" alt="QR Quân sự">
+        </li>
+
+        <!-- HẬU CẦN -->
+        <li class="item-qr item-qr-toggle">
+          <a href="kienthuc-haucan-list.html" target="_blank" rel="noopener">
+            Kiến thức Hậu cần - Kỹ thuật
+          </a>
+
+          <button class="qr-btn" type="button">HIỆN QR</button>
+
+          <img class="mini-qr" src="css/maqr/maqrhckt.png" alt="QR Hậu cần">
+        </li>
+
+        <!-- NHẬN THỨC -->
+        <li class="item-qr item-qr-toggle">
+          <a href="#" target="_blank" rel="noopener">
+            Nhận thức chính trị - xã hội
+          </a>
+
+          <button class="qr-btn" type="button">HIỆN QR</button>
+
+          <img class="mini-qr" src="css/maqr/maqrhckt.png" alt="QR Nhận thức">
+        </li>
+
+        <!-- PHÁP LUẬT -->
+        <li class="item-qr item-qr-toggle">
+          <a href="#" target="_blank" rel="noopener">
+            Kiến thức Pháp luật
+          </a>
+
+          <button class="qr-btn" type="button">HIỆN QR</button>
+
+          <img class="mini-qr" src="css/maqr/maqrhckt.png" alt="QR Pháp luật">
+        </li>
+
+      </ul>
     </div>
 
-    <!-- Phải -->
-<div>
-  <div class="right-head">TRÒ CHƠI TRẮC NGHIỆM TRỰC TUYẾN</div>
+    <!-- CỘT PHẢI -->
+    <div>
+      <div class="right-head">TRÒ CHƠI TRẮC NGHIỆM TRỰC TUYẾN</div>
 
-  <ul class="checks">
-    <li><span class="hand">👉</span>Kiểm tra, đánh giá kết quả học tập của quân nhân</li>
-    <li><span class="hand">👉</span>Đổi mới hình thức dạy, học, kiểm tra</li>
-    <li><span class="hand">👉</span>Linh hoạt, tiện lợi, dễ dùng trên điện thoại, laptop</li>
-  </ul>
+      <ul class="checks">
+        <li>👉 Kiểm tra, đánh giá kết quả học tập của quân nhân</li>
+        <li>👉 Đổi mới hình thức dạy, học, kiểm tra</li>
+        <li>👉 Linh hoạt, tiện lợi, dễ dùng trên điện thoại, laptop</li>
+      </ul>
 
-  <!-- LINK TRẮC NGHIỆM -->
-  <a
-    href="./kienthucquannhan.html"
-    target="_blank"
-    class="quiz-link"
-  >
-    ▶ BẤM VÀO ĐÂY ĐỂ LÀM BÀI TRẮC NGHIỆM
-  </a>
+      <a href="./kienthucquannhan.html" target="_blank" class="quiz-link">
+        ▶ BẤM VÀO ĐÂY ĐỂ LÀM BÀI TRẮC NGHIỆM
+      </a>
 
-  <!-- QR -->
-  <div class="qr-area">
-    <a href="./kienthucquannhan.html" target="_blank">
-      <img
-        src="./css/anh/qrthi.png"
-        alt="QR Trắc nghiệm"
-        class="qr-img"
-      />
-    </a>
-    <div class="qr-note">Quét mã QR để<br>tham gia thi trắc nghiệm</div>
-  </div>
-</div>
-
-
-
-  <!-- Trang trí đáy -->
-  <div class="bottom-band"></div>
-  <div class="flowers"></div>
-
-  <!-- Hình minh họa -->
-  <div class="soldiers">
-    <div class="card">
-      Hình ảnh chiến sĩ / đơn vị
+      <div class="qr-area">
+        <img src="./css/anh/maqrtong.png" class="qr-img" alt="QR Trắc nghiệm">
+        <div class="qr-note">Quét mã QR để vào trang</div>
+      </div>
     </div>
-  </div>
+
+  </section>
 </main>
 
-<!-- JavaScript -->
-<script src="javascrip/home.js"></script>
+<!-- JS HIỆN / ẨN QR -->
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll(".item-qr-toggle").forEach(item => {
+    const btn = item.querySelector(".qr-btn");
+
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+
+      // đóng QR khác
+      document.querySelectorAll(".item-qr-toggle.open")
+        .forEach(x => { if (x !== item) x.classList.remove("open"); });
+
+      // toggle QR hiện tại
+      item.classList.toggle("open");
+    });
+  });
+});
+</script>
+
 </body>
 </html>
