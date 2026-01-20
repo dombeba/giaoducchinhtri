@@ -5,8 +5,63 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Các vũ điệu trong Quân đội</title>
 
-  <!-- CSS riêng (không dùng chung home.css nữa) -->
+  <!-- CSS riêng của trang -->
   <link rel="stylesheet" href="css/cacvudieu.css">
+
+  <!-- FIX video (đảm bảo video KHÔNG phình ra) -->
+  <style>
+    .dance-card{ user-select:none; }
+
+    .video-shell{
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      border-radius: 12px;
+      background: #000;
+      box-shadow: 0 6px 18px rgba(0,0,0,.15);
+    }
+
+    .video-poster{
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      position: relative;
+      z-index: 1;
+    }
+
+    .play-btn{
+      position: absolute;
+      inset: 0;
+      margin: auto;
+      width: 76px;
+      height: 76px;
+      border-radius: 50%;
+      background: rgba(0,0,0,.55);
+      color: #fff;
+      font-size: 26px;
+      font-weight: 900;
+      border: 2px solid rgba(255,255,255,.8);
+      cursor: pointer;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .play-btn:active{ transform: scale(.98); }
+
+    /* 🔑 QUAN TRỌNG: video phải fit theo khung */
+    .video-shell video{
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;   /* không méo */
+      background: #000;
+      display: block;
+    }
+  </style>
 </head>
 
 <body>
@@ -20,30 +75,55 @@
     <section class="dance-wrap">
       <div class="dance-grid">
 
-        <div class="dance-card" data-url="https://www.youtube.com/watch?v=30LlvhUagHs">
-        <h3 class="dance-title"><a href="https://www.youtube.com/watch?v=30LlvhUagHs" target="_blank" rel="noopener">1. Vũ điệu Quân dân</a></h3>
-        <img class="dance-qr" src="./css/anh/ma1.png" alt="QR Vũ điệu Quân dân">
-      </div>
-        
-      <div class="dance-card" data-url="https://www.youtube.com/watch?v=DiNxexiYfQ0&list=RDDiNxexiYfQ0&start_radio=1">
-        <h3 class="dance-title"><a href="https://www.youtube.com/watch?v=DiNxexiYfQ0&list=RDDiNxexiYfQ0&start_radio=1" target="_blank" rel="noopener">2. Vũ điệu Niềm tin</a></h3>
-        <img class="dance-qr" src="./css/anh/ma2.png" alt="QR Vũ điệu Niềm tin">
-      </div>
+        <div class="dance-card"
+             data-src="video/(106) Bài 2 Vũ điệu quân dân nhạc múa chuẩn - YouTube.mp4"
+             data-poster="anhvudieu/vudieuquandan.jpg">
+          <h3 class="dance-title">1. Vũ điệu Quân dân</h3>
+          <div class="video-shell">
+            <button class="play-btn" type="button" aria-label="Phát video">▶</button>
+            <img class="video-poster" alt="Xem video Vũ điệu Quân dân" />
+          </div>
+        </div>
 
-        <div class="dance-card" data-url="https://www.youtube.com/watch?v=BI606IUp5Wk&list=RDBI606IUp5Wk&start_radio=1">
-        <h3 class="dance-title"><a href="https://www.youtube.com/watch?v=BI606IUp5Wk&list=RDBI606IUp5Wk&start_radio=1" target="_blank" rel="noopener">3. Vũ điệu Lính trẻ</a></h3>
-        <img class="dance-qr" src="./css/anh/ma3.png" alt="QR Vũ điệu Lính trẻ">
-      </div>
+        <div class="dance-card"
+             data-src="video/(106) Vũ Điệu Niềm Tin NHẠC NHẢY CHUẨN - YouTube.mp4"
+             data-poster="anhvudieu/niem tin.jpg">
+          <h3 class="dance-title">2. Vũ điệu Niềm tin</h3>
+          <div class="video-shell">
+            <button class="play-btn" type="button" aria-label="Phát video">▶</button>
+            <img class="video-poster" alt="Xem video Vũ điệu Niềm tin" />
+          </div>
+        </div>
 
-        <div class="dance-card" data-url="https://www.youtube.com/watch?v=S-uUPLIWtHM&list=RDS-uUPLIWtHM&start_radio=1">
-        <h3 class="dance-title"><a href="https://www.youtube.com/watch?v=S-uUPLIWtHM&list=RDS-uUPLIWtHM&start_radio=1" target="_blank" rel="noopener">4. Vũ điệu Hành quân</a></h3>
-        <img class="dance-qr" src="./css/anh/ma4.png" alt="QR Vũ điệu Hành quân">
-      </div>
+        <div class="dance-card"
+             data-src="video/(106) Bài 4 Vũ Điệu Lính trẻ NHẠC NHẢY CHUẨN - YouTube.mp4"
+             data-poster="anhvudieu/linhtre.jpg">
+          <h3 class="dance-title">3. Vũ điệu Lính trẻ</h3>
+          <div class="video-shell">
+            <button class="play-btn" type="button" aria-label="Phát video">▶</button>
+            <img class="video-poster" alt="Xem video Vũ điệu Lính trẻ" />
+          </div>
+        </div>
 
-        <div class="dance-card" data-url="https://www.youtube.com/watch?v=vzJPkvrSkFM&list=RDvzJPkvrSkFM&start_radio=1">
-        <h3 class="dance-title"><a href="https://www.youtube.com/watch?v=vzJPkvrSkFM&list=RDvzJPkvrSkFM&start_radio=1" target="_blank" rel="noopener">5. Vũ điệu Hòa bình</a></h3>
-        <img class="dance-qr" src="./css/anh/ma5.png" alt="QR Vũ điệu Hòa bình">
-      </div>
+        <div class="dance-card"
+             data-src="video/(106) Bài 3 Vũ Điệu Hành Quân NHẠC CHUẨN - YouTube.mp4"
+             data-poster="anhvudieu/hanhquan.jpg">
+          <h3 class="dance-title">4. Vũ điệu Hành quân</h3>
+          <div class="video-shell">
+            <button class="play-btn" type="button" aria-label="Phát video">▶</button>
+            <img class="video-poster" alt="Xem video Vũ điệu Hành quân" />
+          </div>
+        </div>
+
+        <div class="dance-card"
+             data-src="video/(106) Bài 5 Vũ điệu hòa bình NHẠC NHẢY CHUẨN - YouTube.mp4"
+             data-poster="anhvudieu/hoabinh.jpg">
+          <h3 class="dance-title">5. Vũ điệu Hòa bình</h3>
+          <div class="video-shell">
+            <button class="play-btn" type="button" aria-label="Phát video">▶</button>
+            <img class="video-poster" alt="Xem video Vũ điệu Hòa bình" />
+          </div>
+        </div>
 
       </div>
 
@@ -52,20 +132,86 @@
       </div>
     </section>
   </main>
+
   <script>
-  // Click cả khung card để mở link
-  document.querySelectorAll(".dance-card").forEach(card => {
-    card.style.cursor = "pointer";
+  (function(){
+    const ACTIVE = { video: null };
 
-    card.addEventListener("click", (e) => {
-      // Nếu bấm vào link <a> hoặc bấm đúng ảnh QR thì để hành vi mặc định
-      if (e.target.closest("a") || e.target.closest(".dance-qr")) return;
+    function isLandscape(){
+      return window.matchMedia && window.matchMedia("(orientation: landscape)").matches;
+    }
+    function isIOS(){
+      return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    }
 
-      const url = card.dataset.url;
-      if (url) window.open(url, "_blank", "noopener");
-    });
-  });
-</script>
+    function buildVideo(src, poster){
+      const v = document.createElement("video");
+      v.setAttribute("playsinline", "");
+      v.setAttribute("preload", "metadata");
+      v.setAttribute("controls", "");
+      v.setAttribute("controlsList", "nodownload noplaybackrate");
+      v.disablePictureInPicture = true;
 
+      if (poster) v.poster = poster;
+      v.src = src;
+
+      v.addEventListener("contextmenu", (e)=> e.preventDefault());
+      return v;
+    }
+
+    // iOS Safari: fullscreen native cho video (ổn định, không làm zoom web)
+    function tryNativeFullscreen(video){
+      if(!video) return;
+      if(typeof video.webkitEnterFullscreen === "function"){
+        try { video.webkitEnterFullscreen(); } catch(e) {}
+      }
+    }
+
+    function wireCard(card){
+      const shell = card.querySelector(".video-shell");
+      const posterImg = card.querySelector(".video-poster");
+      const btn = card.querySelector(".play-btn");
+      const src = card.dataset.src;
+      const poster = card.dataset.poster || "";
+
+      if (posterImg) posterImg.src = poster;
+
+      function loadAndPlay(){
+        // pause video khác
+        if (ACTIVE.video && ACTIVE.video !== shell.querySelector("video")){
+          try { ACTIVE.video.pause(); } catch(e) {}
+        }
+
+        let v = shell.querySelector("video");
+        if (!v){
+          v = buildVideo(src, poster);
+          shell.innerHTML = "";
+          shell.appendChild(v);
+        }
+
+        ACTIVE.video = v;
+
+        const p = v.play();
+        if (p && typeof p.catch === "function") p.catch(()=>{});
+
+        // ✅ Chỉ auto-fullscreen trên iOS và chỉ khi đang xoay ngang
+        // (PC/Android không requestFullscreen nữa -> tránh ESC làm “phóng to web”)
+        if (isIOS() && isLandscape()){
+          // play click là user gesture -> iOS cho phép
+          tryNativeFullscreen(v);
+        }
+      }
+
+      btn && btn.addEventListener("click", (e)=>{ e.preventDefault(); loadAndPlay(); });
+      shell && shell.addEventListener("click", (e)=>{
+        if (e.target && e.target.tagName === "VIDEO") return;
+        loadAndPlay();
+      });
+      shell && shell.addEventListener("contextmenu", (e)=> e.preventDefault());
+    }
+
+    document.querySelectorAll(".dance-card").forEach(wireCard);
+  })();
+  </script>
 </body>
 </html>
