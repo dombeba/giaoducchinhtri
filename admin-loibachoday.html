@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin • Lời Bác Hồ dạy (Đăng ảnh)</title>
+  <link rel="stylesheet" href="css/admin-loibachoday.css">
+</head>
+<body>
+  <div class="wrap">
+    <div class="card head">
+      <h2>ADMIN • Lời Bác Hồ dạy (Đăng ảnh)</h2>
+      <div class="muted">Chọn ngày → (Upload ảnh) hoặc (Dán link Drive). Caption tự sinh.</div>
+    </div>
+
+    <div class="card">
+      <label>Mật khẩu</label>
+      <input id="pass" type="password" placeholder="Nhập mật khẩu...">
+
+      <div class="grid3">
+        <div>
+          <label>Năm</label>
+          <input id="year" type="number" value="2026">
+        </div>
+        <div>
+          <label>Tháng</label>
+          <input id="month" type="number" min="1" max="12" value="1">
+        </div>
+        <div>
+          <label>Ngày</label>
+          <input id="day" type="number" min="1" max="31" value="1">
+        </div>
+      </div>
+
+      <div class="split">
+        <div class="box">
+          <div class="box-title">Cách A — Upload ảnh từ máy</div>
+          <input id="file" type="file" accept="image/*">
+          <div class="muted small">* Không cần share Drive.</div>
+        </div>
+
+        <div class="box">
+          <div class="box-title">Cách B — Dán link ảnh Google Drive</div>
+          <input id="driveLink" type="url" placeholder="Dán link share Drive...">
+          <div class="muted small">* File phải thuộc Drive của chủ tướng để Script set public.</div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button id="btnUpload" class="btn primary">⬆️ Đăng / Cập nhật</button>
+        <button id="btnDelete" class="btn danger">🗑️ Xoá ngày này</button>
+        <button id="btnLoad" class="btn">↻ Xem danh sách tháng</button>
+      </div>
+
+      <div id="msg" class="msg"></div>
+    </div>
+
+    <div class="card">
+      <h3 style="margin:0 0 10px;">Xem trước</h3>
+
+      <div class="preview">
+        <img id="previewImg" alt="preview" style="display:none;">
+        <div>
+          <div class="ptitle">Lời Bác Hồ dạy ngày này năm xưa</div>
+          <div id="pMeta" class="pmeta">—</div>
+          <div id="pCap" class="pquote"></div>
+        </div>
+      </div>
+
+      <div id="list" class="list muted" style="margin-top:10px;"></div>
+    </div>
+  </div>
+
+  <script src="javascrip/admin-loibachoday.js"></script>
+</body>
+</html>

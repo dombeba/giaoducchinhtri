@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Lời Bác Hồ dạy • Ngày này năm xưa</title>
+  <link rel="stylesheet" href="css/loibachoday.css" />
+</head>
+
+<body>
+  <header class="top">
+    <div class="top-inner">
+      <div class="brand">
+        <div class="logo">🌸</div>
+        <div class="brand-text">
+          <div class="brand-sub">HẢI ĐỘI 211</div>
+          <h1 class="brand-title">LỜI BÁC HỒ DẠY • NGÀY NÀY NĂM XƯA</h1>
+          <div class="brand-note">Chọn tháng/ngày để xem ảnh • Click để mở ảnh chính thức</div>
+        </div>
+      </div>
+
+      <div class="nav">
+        <a class="nav-btn" href="index.html">🏠 Trang chủ</a>
+        <a class="nav-btn" href="tonghop.html">⬅ Tổng hợp</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="tools">
+      <div>
+        <label class="lbl">Chọn năm</label>
+        <select id="yearSel" class="select"></select>
+      </div>
+      <div>
+        <label class="lbl">Chọn tháng</label>
+        <select id="monthSel" class="select"></select>
+      </div>
+      <div>
+        <label class="lbl">Chọn ngày (tuỳ chọn)</label>
+        <select id="daySel" class="select">
+          <option value="">Tất cả ngày trong tháng</option>
+        </select>
+      </div>
+
+      <div class="right">
+        <div class="stat" id="stat">—</div>
+        <button id="btnReload" class="btn">↻ Tải lại</button>
+      </div>
+    </section>
+
+    <section id="list" class="list"></section>
+    <div id="empty" class="empty" style="display:none;">Tháng này chưa có ảnh.</div>
+  </main>
+
+  <!-- Lightbox -->
+  <div id="lightbox" class="lightbox" aria-hidden="true">
+    <div class="lightbox-backdrop"></div>
+    <div class="lightbox-inner">
+      <button id="lbClose" class="lb-close" title="Đóng">✕</button>
+      <img id="lbImg" alt="Ảnh Lời Bác" />
+      <div id="lbCap" class="lb-cap"></div>
+    </div>
+  </div>
+
+  <script src="javascrip/loibachoday.js"></script>
+</body>
+</html>
