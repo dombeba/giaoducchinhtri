@@ -1,9 +1,20 @@
-
-
-
 /***************** CONFIG *****************/
 const API_URL = "https://script.google.com/macros/s/AKfycbwgaMvuwQK7ISGsXRWjr0z0SfpIppM9NtXyg7Ch2Gk-dy7pXMmiHPMR9CFry1_NbwWw/exec";
 const CATEGORY = "NHANTHUC"; // tách kho tài liệu
+
+/***************** LOADING *****************/
+function showLoading(text = "Đang tải dữ liệu...") {
+  const el = document.getElementById("loading");
+  if (!el) return;
+  const t = el.querySelector(".loading-text");
+  if (t) t.textContent = text;
+  el.classList.remove("hidden");
+}
+function hideLoading() {
+  const el = document.getElementById("loading");
+  if (!el) return;
+  el.classList.add("hidden");
+}
 
 /***************** DOM *****************/
 const listEl = document.getElementById("docList");
@@ -33,16 +44,23 @@ function fmtTime(iso) {
 
 /***************** API *****************/
 async function loadDocs() {
-  const res = await fetch(`${API_URL}?action=list&type=all&cat=${encodeURIComponent(CATEGORY)}`);
-  const data = await res.json();
+  try {
+    showLoading("Đang tải dữ liệu...");
+    const res = await fetch(`${API_URL}?action=list&type=all&cat=${encodeURIComponent(CATEGORY)}`);
+    const data = await res.json();
 
-  if (!data.ok) {
-    listEl.innerHTML = `<p class="empty">❌ Không tải được dữ liệu</p>`;
-    return;
+    if (!data.ok) {
+      listEl.innerHTML = `<p class="empty">❌ Không tải được dữ liệu</p>`;
+      return;
+    }
+
+    allDocs = data.items || [];
+    render();
+  } catch (e) {
+    listEl.innerHTML = `<p class="empty">❌ Lỗi mạng / không gọi được API</p>`;
+  } finally {
+    hideLoading();
   }
-
-  allDocs = data.items || [];
-  render();
 }
 
 /***************** RENDER *****************/

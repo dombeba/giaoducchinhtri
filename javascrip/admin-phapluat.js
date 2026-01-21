@@ -1,6 +1,20 @@
 /***************** CONFIG *****************/
-// ✅ DÁN URL WEB APP (APPS SCRIPT RIÊNG) CỦA PHÁP LUẬT TẠI ĐÂY
+// ✅ giữ nguyên API_URL của chủ tướng
 const API_URL = "https://script.google.com/macros/s/AKfycbxVvVxsllW-UjCs3xHwjt6o0KfuNVSWbYuxIdivt6r8JEH3ILsGvGhQsySt17ZDfBJyfQ/exec";
+
+/***************** LOADING *****************/
+function showLoading(text="Đang tải dữ liệu..."){
+  const el = document.getElementById("loading");
+  if(!el) return;
+  const t = el.querySelector(".loading-text");
+  if(t) t.textContent = text;
+  el.classList.remove("hidden");
+}
+function hideLoading(){
+  const el = document.getElementById("loading");
+  if(!el) return;
+  el.classList.add("hidden");
+}
 
 /***************** DOM *****************/
 const $ = (id)=>document.getElementById(id);
@@ -118,23 +132,40 @@ function applyFilterAndSearch(){
       if(!pass) return setStatus("Thiếu mật khẩu Admin.", false);
       if(!confirm("Xóa tài liệu này? (File trên Drive sẽ chuyển vào thùng rác)")) return;
 
-      setStatus("Đang xóa...", true);
-      const r = await apiDelete(pass, id);
-      if(!r.ok) return setStatus(`Xóa thất bại: ${r.error || "unknown"}`, false);
+      try{
+        showLoading("Đang xóa dữ liệu...");
+        setStatus("Đang xóa...", true);
 
-      setStatus("Đã xóa.", true);
-      await refreshList();
+        const r = await apiDelete(pass, id);
+        if(!r.ok) return setStatus(`Xóa thất bại: ${r.error || "unknown"}`, false);
+
+        setStatus("Đã xóa.", true);
+        await refreshList();
+      } catch(e){
+        setStatus("Lỗi mạng / không gọi được API", false);
+      } finally {
+        hideLoading();
+      }
     });
   });
 }
 
 async function refreshList(){
-  setStatus("Đang tải danh sách...", true);
-  const r = await apiList();
-  if(!r.ok) return setStatus(`Không tải được: ${r.error || "unknown"}`, false);
-  allItems = r.items || [];
-  setStatus(`OK • Đã tải ${allItems.length} tài liệu`, true);
-  applyFilterAndSearch();
+  try{
+    showLoading("Đang tải dữ liệu...");
+    setStatus("Đang tải danh sách...", true);
+
+    const r = await apiList();
+    if(!r.ok) return setStatus(`Không tải được: ${r.error || "unknown"}`, false);
+
+    allItems = r.items || [];
+    setStatus(`OK • Đã tải ${allItems.length} tài liệu`, true);
+    applyFilterAndSearch();
+  } catch(e){
+    setStatus("Lỗi mạng / không gọi được API", false);
+  } finally {
+    hideLoading();
+  }
 }
 
 /***************** EVENTS *****************/
@@ -146,6 +177,7 @@ document.querySelectorAll("button[data-filter]").forEach(b=>{
 });
 
 qEl.addEventListener("input", applyFilterAndSearch);
+
 $("btnRefresh").addEventListener("click", refreshList);
 
 $("btnUpload").addEventListener("click", async ()=>{
@@ -159,28 +191,35 @@ $("btnUpload").addEventListener("click", async ()=>{
   if(!file) return setStatus("Chưa chọn file.", false);
   if(!extOk(type, file.name)) return setStatus("Sai định dạng file theo loại đã chọn.", false);
 
-  setStatus("Đang đọc file...", true);
-  let base64 = "";
-  try{ base64 = await fileToBase64(file); }
-  catch{ return setStatus("Không đọc được file.", false); }
+  try{
+    showLoading("Đang đọc file...");
+    setStatus("Đang đọc file...", true);
 
-  setStatus("Đang upload lên Google Drive...", true);
+    const base64 = await fileToBase64(file);
 
-  const payload = {
-    action: "upload",
-    pass, type, title,
-    filename: file.name,
-    mimeType: file.type || "",
-    base64
-  };
+    showLoading("Đang upload dữ liệu...");
+    setStatus("Đang upload lên Google Drive...", true);
 
-  const r = await apiUpload(payload);
-  if(!r.ok) return setStatus(`Upload thất bại: ${r.error || "unknown"}`, false);
+    const payload = {
+      action: "upload",
+      pass, type, title,
+      filename: file.name,
+      mimeType: file.type || "",
+      base64
+    };
 
-  titleEl.value = "";
-  fileEl.value = "";
-  setStatus("✅ Upload thành công!", true);
-  await refreshList();
+    const r = await apiUpload(payload);
+    if(!r.ok) return setStatus(`Upload thất bại: ${r.error || "unknown"}`, false);
+
+    titleEl.value = "";
+    fileEl.value = "";
+    setStatus("✅ Upload thành công!", true);
+    await refreshList();
+  } catch(e){
+    setStatus("Upload lỗi / mạng lỗi", false);
+  } finally {
+    hideLoading();
+  }
 });
 
 refreshList();

@@ -1,7 +1,20 @@
-
 /***************** CONFIG *****************/
-// ✅ DÁN URL WEB APP (APPS SCRIPT RIÊNG) CỦA PHÁP LUẬT TẠI ĐÂY
+// ✅ giữ nguyên API_URL của chủ tướng
 const API_URL = "https://script.google.com/macros/s/AKfycbxVvVxsllW-UjCs3xHwjt6o0KfuNVSWbYuxIdivt6r8JEH3ILsGvGhQsySt17ZDfBJyfQ/exec";
+
+/***************** LOADING *****************/
+function showLoading(text = "Đang tải dữ liệu..."){
+  const el = document.getElementById("loading");
+  if(!el) return;
+  const t = el.querySelector(".loading-text");
+  if(t) t.textContent = text;
+  el.classList.remove("hidden");
+}
+function hideLoading(){
+  const el = document.getElementById("loading");
+  if(!el) return;
+  el.classList.add("hidden");
+}
 
 /***************** DOM *****************/
 const listEl = document.getElementById("docList");
@@ -28,15 +41,22 @@ function fmtTime(iso){
 }
 
 async function loadDocs(){
-  const res = await fetch(`${API_URL}?action=list`);
-  const data = await res.json();
+  try{
+    showLoading("Đang tải dữ liệu...");
+    const res = await fetch(`${API_URL}?action=list`);
+    const data = await res.json();
 
-  if(!data.ok){
-    listEl.innerHTML = `<p class="empty">❌ Không tải được dữ liệu</p>`;
-    return;
+    if(!data.ok){
+      listEl.innerHTML = `<p class="empty">❌ Không tải được dữ liệu</p>`;
+      return;
+    }
+    allDocs = data.items || [];
+    render();
+  } catch(e){
+    listEl.innerHTML = `<p class="empty">❌ Lỗi mạng / không gọi được API</p>`;
+  } finally {
+    hideLoading();
   }
-  allDocs = data.items || [];
-  render();
 }
 
 function render(){

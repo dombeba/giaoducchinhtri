@@ -2,6 +2,20 @@
 const API_URL = "https://script.google.com/macros/s/AKfycbwgaMvuwQK7ISGsXRWjr0z0SfpIppM9NtXyg7Ch2Gk-dy7pXMmiHPMR9CFry1_NbwWw/exec";
 const CATEGORY = "NHANTHUC";
 
+/***************** LOADING *****************/
+function showLoading(text="Đang tải dữ liệu..."){
+  const el = document.getElementById("loading");
+  if(!el) return;
+  const t = el.querySelector(".loading-text");
+  if(t) t.textContent = text;
+  el.classList.remove("hidden");
+}
+function hideLoading(){
+  const el = document.getElementById("loading");
+  if(!el) return;
+  el.classList.add("hidden");
+}
+
 /***************** DOM *****************/
 const $ = (id)=>document.getElementById(id);
 
@@ -70,7 +84,6 @@ async function apiList(){
 async function apiUpload(payload){
   const res = await fetch(API_URL, {
     method:"POST",
-    // text/plain để tránh CORS preflight (Apps Script không handle OPTIONS)
     headers:{ "Content-Type":"text/plain;charset=utf-8" },
     body: JSON.stringify(payload)
   });
@@ -136,28 +149,45 @@ function applyFilterAndSearch(){
 
       if(!confirm("Xóa tài liệu này? (File trên Drive sẽ chuyển vào thùng rác)")) return;
 
-      setStatus("Đang xóa...", true);
-      const r = await apiDelete(pass, id);
-      if(!r.ok){
-        setStatus(`Xóa thất bại: ${r.error || "unknown"}`, false);
-        return;
+      try{
+        showLoading("Đang xóa dữ liệu...");
+        setStatus("Đang xóa...", true);
+
+        const r = await apiDelete(pass, id);
+        if(!r.ok){
+          setStatus(`Xóa thất bại: ${r.error || "unknown"}`, false);
+          return;
+        }
+
+        setStatus("Đã xóa.", true);
+        await refreshList();
+      } catch(e){
+        setStatus("Lỗi mạng / không gọi được API", false);
+      } finally {
+        hideLoading();
       }
-      setStatus("Đã xóa.", true);
-      await refreshList();
     });
   });
 }
 
 async function refreshList(){
-  setStatus("Đang tải danh sách...", true);
-  const r = await apiList();
-  if(!r.ok){
-    setStatus(`Không tải được: ${r.error || "unknown"}`, false);
-    return;
+  try{
+    showLoading("Đang tải dữ liệu...");
+    setStatus("Đang tải danh sách...", true);
+
+    const r = await apiList();
+    if(!r.ok){
+      setStatus(`Không tải được: ${r.error || "unknown"}`, false);
+      return;
+    }
+    allItems = r.items || [];
+    setStatus(`OK • Đã tải ${allItems.length} tài liệu`, true);
+    applyFilterAndSearch();
+  } catch(e){
+    setStatus("Lỗi mạng / không gọi được API", false);
+  } finally {
+    hideLoading();
   }
-  allItems = r.items || [];
-  setStatus(`OK • Đã tải ${allItems.length} tài liệu`, true);
-  applyFilterAndSearch();
 }
 
 /***************** EVENTS *****************/
@@ -183,38 +213,41 @@ $("btnUpload").addEventListener("click", async ()=>{
   if(!file) return setStatus("Chưa chọn file.", false);
   if(!extOk(type, file.name)) return setStatus("Sai định dạng file theo loại đã chọn.", false);
 
-  setStatus("Đang đọc file...", true);
-  let base64 = "";
   try{
-    base64 = await fileToBase64(file);
-  }catch(e){
-    return setStatus("Không đọc được file.", false);
+    showLoading("Đang đọc file...");
+    setStatus("Đang đọc file...", true);
+
+    const base64 = await fileToBase64(file);
+
+    showLoading("Đang upload dữ liệu...");
+    setStatus("Đang upload lên Google Drive...", true);
+
+    const payload = {
+      action: "upload",
+      pass,
+      type,
+      title,
+      filename: file.name,
+      mimeType: file.type || "",
+      base64,
+      cat: CATEGORY
+    };
+
+    const r = await apiUpload(payload);
+    if(!r.ok){
+      setStatus(`Upload thất bại: ${r.error || "unknown"}`, false);
+      return;
+    }
+
+    titleEl.value = "";
+    fileEl.value = "";
+    setStatus("✅ Upload thành công!", true);
+    await refreshList();
+  } catch(e){
+    setStatus("Upload lỗi / mạng lỗi", false);
+  } finally {
+    hideLoading();
   }
-
-  setStatus("Đang upload lên Google Drive...", true);
-
-  const payload = {
-    action: "upload",
-    pass,
-    type,
-    title,
-    filename: file.name,
-    mimeType: file.type || "",
-    base64,
-    cat: CATEGORY
-  };
-
-  const r = await apiUpload(payload);
-  if(!r.ok){
-    setStatus(`Upload thất bại: ${r.error || "unknown"}`, false);
-    return;
-  }
-
-  // reset
-  titleEl.value = "";
-  fileEl.value = "";
-  setStatus("✅ Upload thành công!", true);
-  await refreshList();
 });
 
 /***************** INIT *****************/
