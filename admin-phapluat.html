@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Admin • Upload Word/PDF (Pháp luật)</title>
+
+  <!-- dùng CSS chung nếu chủ tướng đang có -->
+  <link rel="stylesheet" href="css/kienthuc.css"/>
+
+  <style>
+    .wrap{ max-width:1100px; margin:14px auto 40px; padding:0 14px; }
+    .grid{ display:grid; grid-template-columns: 420px 1fr; gap:12px; }
+    @media (max-width: 980px){ .grid{ grid-template-columns:1fr; } }
+    .box{ background:#fff; border:1px solid var(--line,#ddd); border-radius:12px; overflow:hidden; }
+    .box h2{ margin:0; padding:10px 12px; font-size:16px; border-bottom:1px solid var(--line,#ddd); background:#fafafa; }
+    .pad{ padding:12px; }
+    .row{ display:grid; gap:8px; margin-bottom:10px; }
+    .row label{ font-weight:900; font-size:12px; color:var(--muted,#444); }
+    .btnline{ display:flex; gap:8px; flex-wrap:wrap; }
+    .list{ display:flex; flex-direction:column; }
+    .item{ padding:12px; border-bottom:1px solid var(--line,#ddd); display:flex; gap:10px; align-items:flex-start; }
+    .item:last-child{ border-bottom:none; }
+    .meta{ color:var(--muted,#444); font-weight:700; font-size:13px; }
+    .title{ font-weight:900; margin:0 0 6px; }
+    .actions{ margin-left:auto; display:flex; gap:8px; flex-wrap:wrap; }
+    .pill{ font-size:12px; font-weight:900; padding:4px 8px; border:1px solid var(--line,#ddd); border-radius:999px; background:#fafafa; }
+    .status{ margin-top:8px; font-weight:900; }
+    .ok{ color:#157a3a; }
+    .bad{ color:#c62522; }
+    .k-input{ width:100%; padding:10px; font-size:15px; }
+    .k-btn{ padding:10px 12px; font-weight:900; cursor:pointer; }
+    .k-btn-primary{ background:#0b3d2e; color:#fff; border:none; }
+    .k-chip{ padding:6px 10px; border:1px solid var(--line,#ddd); border-radius:999px; font-weight:900; }
+    .k-hint{ font-size:12px; color:#666; margin-top:6px; }
+    .k-note{ padding:12px; color:#666; text-align:center; }
+  </style>
+</head>
+<body>
+
+<header style="background:#0b3d2e;color:#fff;padding:14px 12px;text-align:center;">
+  <div style="font-weight:900;letter-spacing:1px;">HẢI ĐOÀN 21 – CẢNH SÁT BIỂN • HẢI ĐỘI 211</div>
+  <h1 style="margin:10px 0 2px;">ADMIN • KIẾN THỨC PHÁP LUẬT</h1>
+  <div style="opacity:.9;">Upload Word/PDF • Danh sách • Xóa</div>
+  <div style="margin-top:10px; display:flex; gap:8px; justify-content:center; flex-wrap:wrap;">
+    <a class="k-btn" href="index.html" style="background:#fff;">🏠 Trang chủ</a>
+    <a class="k-btn" href="phapluat.html" style="background:#fff;">👁️ Mở trang Pháp luật</a>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="grid">
+
+    <div class="box">
+      <h2>⬆️ Upload tài liệu</h2>
+      <div class="pad">
+        <div class="row">
+          <label>Mật khẩu Admin</label>
+          <input id="pass" class="k-input" type="password" placeholder="Nhập mật khẩu..." />
+        </div>
+
+        <div class="row">
+          <label>Loại tài liệu</label>
+          <select id="type" class="k-input">
+            <option value="word">WORD (.doc/.docx)</option>
+            <option value="pdf">PDF (.pdf)</option>
+          </select>
+        </div>
+
+        <div class="row">
+          <label>Tiêu đề hiển thị</label>
+          <input id="title" class="k-input" type="text" placeholder="Ví dụ: Luật CSBVN – Chuyên đề tháng 02/2026" />
+        </div>
+
+        <div class="row">
+          <label>Chọn file từ máy</label>
+          <input id="file" class="k-input" type="file" />
+          <div class="k-hint">File sẽ được upload lên Google Drive (folder Word/PDF tách riêng).</div>
+        </div>
+
+        <div class="btnline">
+          <button id="btnUpload" class="k-btn k-btn-primary" type="button">⬆️ Upload</button>
+          <button id="btnRefresh" class="k-btn" type="button">🔄 Tải lại danh sách</button>
+        </div>
+
+        <div id="status" class="status"></div>
+      </div>
+    </div>
+
+    <div class="box">
+      <h2>📚 Danh sách tài liệu</h2>
+      <div class="pad">
+        <div class="row">
+          <label>Tìm kiếm</label>
+          <input id="q" class="k-input" type="search" placeholder="Nhập từ khóa tiêu đề..." />
+        </div>
+
+        <div class="btnline" style="margin-bottom:10px;">
+          <button class="k-btn" data-filter="all">📂 Tất cả</button>
+          <button class="k-btn" data-filter="word">📄 Word</button>
+          <button class="k-btn" data-filter="pdf">📕 PDF</button>
+          <div style="margin-left:auto" class="k-chip" id="count">0 tài liệu</div>
+        </div>
+
+        <div id="list" class="list"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="javascrip/admin-phapluat.js"></script>
+</body>
+</html>

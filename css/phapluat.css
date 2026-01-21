@@ -1,0 +1,41 @@
+body{margin:0;font-family:"Times New Roman",serif;background:#f4f6f8;color:#111}
+.ctv-header{background:#0b3d2e;color:#fff;padding:18px 14px;text-align:center}
+.ctv-unit .unit-main{font-weight:bold;letter-spacing:1px}
+.ctv-unit .unit-sub{font-size:14px;opacity:.9}
+.ctv-title{margin:12px 0 4px;font-size:26px}
+.ctv-sub{font-size:14px;opacity:.9}
+
+.ctv-tabs{display:flex;gap:6px;padding:10px;background:#e8ecef;justify-content:center;flex-wrap:wrap}
+.ctv-tabs .tab{border:1px solid #ccc;background:#fff;padding:8px 14px;cursor:pointer;font-weight:bold}
+.ctv-tabs .tab.active{background:#0b3d2e;color:#fff;border-color:#0b3d2e}
+
+.ctv-search{padding:12px;background:#fff;border-bottom:1px solid #ddd}
+.ctv-search input{width:100%;padding:10px;font-size:15px}
+.count{margin-top:6px;font-size:13px;color:#555}
+
+.ctv-list{max-width:1000px;margin:0 auto;padding:14px}
+.doc-item{display:flex;gap:12px;background:#fff;padding:12px;margin-bottom:10px;border-left:4px solid #0b3d2e;align-items:center}
+.doc-type{min-width:70px;text-align:center;font-weight:bold;font-size:13px;padding:6px 0;border-radius:4px;color:#fff}
+.doc-type.word{background:#2b579a}
+.doc-type.pdf{background:#c62828}
+.doc-main{flex:1}
+.doc-title{margin:0 0 4px;font-size:17px}
+.doc-meta{font-size:13px;color:#555}
+.doc-actions{display:flex;flex-direction:column;gap:6px}
+.doc-actions a{text-decoration:none;font-size:14px;font-weight:bold;color:#0b3d2e}
+.empty{text-align:center;padding:40px 10px;color:#666}
+.ctv-footer{text-align:center;padding:16px;font-size:14px}
+.ctv-footer a{text-decoration:none;color:#0b3d2e;font-weight:bold}
+@media (max-width:600px){
+  .doc-item{flex-direction:column;align-items:flex-start}
+  .doc-actions{flex-direction:row}
+}
+
+/* LOCK */
+.lock-screen{position:fixed;inset:0;background:linear-gradient(135deg,#0b3d2e,#123f34);display:flex;align-items:center;justify-content:center;z-index:9999}
+.lock-box{background:#fff;padding:30px 24px;border-radius:12px;width:90%;max-width:360px;text-align:center}
+.lock-box h2{margin-bottom:10px;color:#0b3d2e}
+.lock-box p{margin-bottom:14px;font-size:14px}
+.lock-box input{width:100%;padding:10px;margin-bottom:12px;font-size:15px}
+.lock-box button{width:100%;padding:10px;font-weight:bold;background:#0b3d2e;color:#fff;border:none;cursor:pointer}
+.lock-msg{margin-top:10px;color:#c62828;font-weight:bold}
