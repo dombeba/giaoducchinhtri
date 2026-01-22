@@ -1,0 +1,63 @@
+*{ box-sizing:border-box; font-family:"Times New Roman", Times, serif; }
+body{ margin:0; background:#f2f2f2; color:#222; }
+.wrap{ max-width:980px; margin:14px auto 28px; padding:0 14px; }
+
+.head{
+  display:flex; gap:12px; align-items:flex-end; justify-content:space-between;
+  flex-wrap:wrap; margin-bottom:12px;
+}
+h1{ margin:0; font-size:20px; font-weight:900; }
+.sub{ margin:6px 0 0; color:#555; font-weight:700; font-size:13px; }
+.head-actions{ display:flex; gap:8px; flex-wrap:wrap; }
+
+.card{
+  background:#fff; border:1px solid #e6e6e6; border-radius:12px;
+  padding:12px; margin-bottom:12px;
+}
+.card h2{ margin:0 0 10px; font-size:16px; font-weight:900; }
+
+.grid{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.full{ grid-column:1 / -1; }
+
+label{ display:block; font-weight:900; font-size:13px; }
+input, select{
+  width:100%; padding:10px; border:1px solid #ddd; border-radius:10px;
+  font-size:15px; outline:none; background:#fff;
+}
+input:focus, select:focus{ border-color:#1f45a8; }
+
+.hint{ font-size:12px; color:#666; margin-top:6px; font-weight:700; }
+
+.actions{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+.btn{
+  display:inline-flex; align-items:center; justify-content:center;
+  padding:10px 12px; border-radius:10px; border:1px solid #ddd;
+  background:#fff; cursor:pointer; font-weight:900;
+}
+.btn:hover{ background:#fafafa; }
+.btn.primary{ background:#1f45a8; border-color:#1f45a8; color:#fff; }
+
+.status{ font-weight:900; color:#1f45a8; }
+.status.bad{ color:#c62522; }
+.status.ok{ color:#157a3a; }
+
+.preview{
+  margin-top:12px; padding:10px; border:1px dashed #ddd; border-radius:12px;
+}
+.p-title{ font-weight:900; margin-bottom:8px; }
+#previewImg{
+  width:200px; height:200px; object-fit:contain;
+  border:1px solid #eee; border-radius:12px; background:#fff;
+}
+
+.current{
+  border:1px solid #eee; border-radius:12px; padding:10px;
+  font-weight:700; color:#333;
+}
+.current .row{ margin:6px 0; }
+.current .k{ font-weight:900; }
+.current a{ word-break:break-word; }
+
+@media (max-width:820px){
+  .grid{ grid-template-columns:1fr; }
+}

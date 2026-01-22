@@ -7,6 +7,8 @@
 
   <!-- CSS -->
   <link rel="stylesheet" href="css/home.css">
+
+  <!-- Font -->
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -32,86 +34,55 @@
     <div>
       <ul class="bullets">
 
-        <!-- TIN TỨC -->
         <li class="item-qr item-qr-toggle">
-          <a href="tintuc.html" target="_blank" rel="noopener">
-            Tin tức đơn vị
-          </a>
-
+          <a href="tintuc.html" target="_blank" data-target-key="tintuc">Tin tức đơn vị</a>
           <button class="qr-btn" type="button">HIỆN QR</button>
-
-          <img class="mini-qr" src="css/maqr/maqrtintuc.png" alt="QR Tin tức">
+          <img class="mini-qr" data-qr-key="tintuc" src="css/maqr/maqrtintuc.png">
         </li>
 
-        <!-- CHÍNH TRỊ -->
         <li class="item-qr item-qr-toggle">
-          <a href="tonghop.html" target="_blank" rel="noopener">
-            Kiến thức Chính trị
-          </a>
-
+          <a href="tonghop.html" target="_blank" data-target-key="chinhtri">Kiến thức Chính trị</a>
           <button class="qr-btn" type="button">HIỆN QR</button>
-
-          <img class="mini-qr" src="css/maqr/maqrktct.png" alt="QR Chính trị">
+          <img class="mini-qr" data-qr-key="chinhtri" src="css/maqr/maqrktct.png">
         </li>
 
-      
-        <!-- QUÂN SỰ -->
         <li class="item-qr item-qr-toggle">
-          <a href="kienthuc-quansu-list.html" target="_blank" rel="noopener">
-            Kiến thức Quân sự
-          </a>
-
+          <a href="kienthuc-quansu-list.html" target="_blank" data-target-key="quansu">Kiến thức Quân sự</a>
           <button class="qr-btn" type="button">HIỆN QR</button>
-
-          <img class="mini-qr" src="css/maqr/maqrktquansu.png" alt="QR Quân sự">
+          <img class="mini-qr" data-qr-key="quansu" src="css/maqr/maqrktquansu.png">
         </li>
 
-        <!-- HẬU CẦN -->
         <li class="item-qr item-qr-toggle">
-          <a href="kienthuc-haucan-list.html" target="_blank" rel="noopener">
-            Kiến thức Hậu cần - Kỹ thuật
-          </a>
-
+          <a href="kienthuc-haucan-list.html" target="_blank" data-target-key="haucan">Kiến thức Hậu cần - Kỹ thuật</a>
           <button class="qr-btn" type="button">HIỆN QR</button>
-
-          <img class="mini-qr" src="css/maqr/maqrhckt.png" alt="QR Hậu cần">
+          <img class="mini-qr" data-qr-key="haucan" src="css/maqr/maqrhckt.png">
         </li>
 
-        <!-- NHẬN THỨC -->
         <li class="item-qr item-qr-toggle">
-          <a href="nhanthuc.html" target="_blank" rel="noopener">
-            Nhận thức chính trị - xã hội
-          </a>
-
+          <a href="nhanthuc.html" target="_blank" data-target-key="nhanthuc">Nhận thức chính trị - xã hội</a>
           <button class="qr-btn" type="button">HIỆN QR</button>
-
-          <img class="mini-qr" src="css/maqr/maqrhckt.png" alt="QR Nhận thức">
+          <img class="mini-qr" data-qr-key="nhanthuc" src="css/maqr/maqrhckt.png">
         </li>
 
-        <!-- PHÁP LUẬT -->
         <li class="item-qr item-qr-toggle">
-          <a href="phapluat.html" target="_blank" rel="noopener">
-            Kiến thức Pháp luật
-          </a>
-
+          <a href="phapluat.html" target="_blank" data-target-key="phapluat">Kiến thức Pháp luật</a>
           <button class="qr-btn" type="button">HIỆN QR</button>
-
-          <img class="mini-qr" src="css/maqr/maqrhckt.png" alt="QR Pháp luật">
+          <img class="mini-qr" data-qr-key="phapluat" src="css/maqr/maqrhckt.png">
         </li>
 
       </ul>
     </div>
 
     <!-- CỘT PHẢI -->
-    <div>
+    <div class="right-col">
       <div class="right-head">THI KIỂM TRA NHẬN THỨC CHÍNH TRỊ</div>
 
-      <a href="./kienthucquannhan.html" target="_blank" class="quiz-link">
+      <a href="./kienthucquannhan.html" target="_blank" class="quiz-link" data-target-key="quiz">
         ▶ BẤM VÀO ĐÂY ĐỂ LÀM BÀI TRẮC NGHIỆM
       </a>
 
       <div class="qr-area">
-        <img src="./css/anh/maqrtong.png" class="qr-img" alt="QR Trắc nghiệm">
+        <img class="qr-img" data-qr-key="quiz" src="./css/anh/maqrtong.png">
         <div class="qr-note">Quét mã QR để vào trang</div>
       </div>
     </div>
@@ -119,24 +90,66 @@
   </section>
 </main>
 
-<!-- JS HIỆN / ẨN QR -->
+<!-- ======================= JS ======================= -->
 <script>
+/* ===== 1) HIỆN / ẨN QR MINI ===== */
 document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll(".item-qr-toggle").forEach(item => {
     const btn = item.querySelector(".qr-btn");
-
-    btn.addEventListener("click", (e) => {
+    btn.onclick = (e) => {
       e.stopPropagation();
-
-      // đóng QR khác
       document.querySelectorAll(".item-qr-toggle.open")
-        .forEach(x => { if (x !== item) x.classList.remove("open"); });
-
-      // toggle QR hiện tại
+        .forEach(x => x !== item && x.classList.remove("open"));
       item.classList.toggle("open");
-    });
+    };
   });
 });
+
+/* ===== 2) CONFIG ===== */
+const QR_API_URL =
+  "https://script.google.com/macros/s/AKfycbx2Gqi5q08EAcSHiMeWncN4EyHuhmpjioB2N64jmDfoEW9xmqVYCvNyIcqXk_9-l3LD9g/exec";
+
+/* ===== 3) DRIVE LINK → IMG ===== */
+function extractDriveId(url){
+  if (!url) return "";
+  let m;
+  if (m = url.match(/\/d\/([a-zA-Z0-9_-]+)/)) return m[1];
+  if (m = url.match(/[?&]id=([a-zA-Z0-9_-]+)/)) return m[1];
+  return "";
+}
+function driveImg(url){
+  const id = extractDriveId(url);
+  return id ? `https://drive.google.com/thumbnail?id=${id}&sz=w1000` : url;
+}
+
+/* ===== 4) LOAD QR TỪ SHEET ===== */
+async function loadQrConfig(){
+  try{
+    console.log("🔄 Đang tải QR từ Sheet...");
+    const res = await fetch(QR_API_URL + "?action=list", { cache:"no-store" });
+    const data = await res.json();
+    if (!data.ok) throw "API lỗi";
+
+    const map = {};
+    data.items.forEach(i => map[i.key] = i);
+
+    document.querySelectorAll("[data-qr-key]").forEach(img => {
+      const k = img.dataset.qrKey;
+      if (map[k]?.qr) img.src = driveImg(map[k].qr);
+    });
+
+    document.querySelectorAll("[data-target-key]").forEach(a => {
+      const k = a.dataset.targetKey;
+      if (map[k]?.target) a.href = map[k].target;
+    });
+
+    console.log("✅ QR đã cập nhật xong");
+  }catch(err){
+    console.error("❌ Không tải được QR:", err);
+  }
+}
+
+document.addEventListener("DOMContentLoaded", loadQrConfig);
 </script>
 
 </body>

@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin • Đổi QR Trang chủ</title>
+  <link rel="stylesheet" href="css/admin-qrindex.css" />
+</head>
+<body>
+  <main class="wrap">
+    <header class="head">
+      <div>
+        <h1>🔧 Admin — Thay ảnh QR ở Trang chủ</h1>
+        <p class="sub">Chọn mục → dán link ảnh QR → Lưu.</p>
+      </div>
+      <div class="head-actions">
+        <a class="btn" href="index.html">🏠 Trang chủ</a>
+        <a class="btn" href="admintong.html">🛠 Tổng Admin</a>
+      </div>
+    </header>
+
+    <section class="card">
+      <h2>1) Đăng nhập</h2>
+      <div class="grid">
+        <label class="full">
+          Mật khẩu Admin
+          <input id="pass" type="password" placeholder="Nhập mật khẩu..." />
+          <div class="hint">Mật khẩu phải trùng trong Apps Script.</div>
+        </label>
+
+        <div class="full actions">
+          <button class="btn" id="btnLoad" type="button">🔄 Tải QR hiện tại</button>
+          <span class="status" id="status" aria-live="polite"></span>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>2) Chọn mục cần thay QR</h2>
+
+      <div class="grid">
+        <label class="full">
+          Chọn mục
+          <select id="selKey">
+            <option value="tintuc">Tin tức đơn vị</option>
+            <option value="chinhtri">Kiến thức chính trị</option>
+            <option value="quansu">Kiến thức quân sự</option>
+            <option value="haucan">Kiến thức hậu cần - kỹ thuật</option>
+            <option value="nhanthuc">Kiến thức chính trị - xã hội</option>
+            <option value="phapluat">Kiến thức pháp luật</option>
+            <option value="quiz">QR lớn (Quét mã QR để vào trang)</option>
+          </select>
+        </label>
+
+        <label class="full">
+          Dán link ảnh QR (có thể là link Google Drive)
+          <input id="qrUrl" type="url" placeholder="https://.../qr.png hoặc link Drive" />
+          <div class="hint">Nếu là link Drive dạng /file/d/... thì admin tự đổi sang link ảnh UC.</div>
+        </label>
+
+        <div class="full actions">
+          <button class="btn primary" id="btnSave" type="button">✅ Lưu thay đổi</button>
+          <button class="btn" id="btnPreview" type="button">👁️ Xem trước</button>
+        </div>
+      </div>
+
+      <div class="preview">
+        <div class="p-title">Xem trước QR</div>
+        <img id="previewImg" alt="preview" />
+        <div class="hint" id="previewHint">—</div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>3) QR hiện tại của mục</h2>
+      <div id="currentBox" class="current"></div>
+    </section>
+  </main>
+
+  <script src="javascrip/admin-qrindex.js"></script>
+</body>
+</html>
