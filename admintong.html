@@ -3,488 +3,143 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Tổng trang Admin</title>
+  <title>Tổng Admin • Hệ thống quản trị</title>
 
-  <style>
-    :root{
-      --bg:#f2f2f2;
-      --card:#fff;
-      --text:#1f1f1f;
-      --muted:#666;
-      --line:#e6e6e6;
-
-      /* Navy/CSB vibe */
-      --navy:#0b3d2e;
-      --navy2:#123f77;
-      --pill:#eef4ff;
-      --danger:#b42318;
-      --ok:#157a3a;
-
-      --r:14px;
-      --shadow: 0 8px 24px rgba(0,0,0,.06);
-    }
-
-    *{ box-sizing:border-box; font-family:"Times New Roman", Times, serif; }
-    body{ margin:0; background:var(--bg); color:var(--text); }
-
-    header{
-      background: linear-gradient(135deg, var(--navy) 0%, var(--navy2) 100%);
-      color:#fff;
-      padding:14px 16px;
-      position: sticky;
-      top:0;
-      z-index: 50;
-      box-shadow: 0 6px 18px rgba(0,0,0,.12);
-    }
-    header .wrap{
-      max-width:1100px;
-      margin:0 auto;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      flex-wrap:wrap;
-    }
-    .brand h1{ margin:0; font-size:20px; font-weight:900; letter-spacing:.4px; }
-    .brand p{ margin:6px 0 0; opacity:.92; font-size:13px; font-weight:700; }
-
-    .btn{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      gap:8px;
-      padding:10px 12px;
-      border-radius:12px;
-      text-decoration:none;
-      font-weight:900;
-      color:#fff;
-      background:rgba(255,255,255,.14);
-      border:1px solid rgba(255,255,255,.22);
-      cursor:pointer;
-      user-select:none;
-      white-space:nowrap;
-    }
-    .btn:hover{ background:rgba(255,255,255,.22); }
-
-    main{
-      max-width:1100px;
-      margin:14px auto 24px;
-      padding:0 16px;
-    }
-
-    .topbar{
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px;
-      align-items:center;
-      justify-content:space-between;
-      margin: 10px 0 12px;
-    }
-
-    .search{
-      flex: 1;
-      min-width: 240px;
-      display:flex;
-      align-items:center;
-      gap:10px;
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      padding: 10px 14px;
-      box-shadow: var(--shadow);
-    }
-    .search input{
-      width:100%;
-      border:none;
-      outline:none;
-      font-size:15px;
-      background:transparent;
-    }
-    .meta{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      align-items:center;
-      justify-content:flex-end;
-    }
-    .chip{
-      display:inline-flex;
-      gap:8px;
-      align-items:center;
-      padding:8px 12px;
-      border:1px solid var(--line);
-      background: var(--card);
-      border-radius:999px;
-      font-weight:900;
-      font-size:13px;
-      box-shadow: var(--shadow);
-    }
-
-    .filters{
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px;
-      margin: 10px 0 12px;
-    }
-    .pill{
-      border:1px solid var(--line);
-      background: var(--card);
-      border-radius:999px;
-      padding:10px 14px;
-      cursor:pointer;
-      font-weight:900;
-      color: var(--navy2);
-      user-select:none;
-      transition: .15s ease;
-    }
-    .pill:hover{ background:#fafafa; }
-    .pill.active{
-      background: var(--pill);
-      border-color: #cfe0ff;
-    }
-
-    .grid{
-      display:grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap:12px;
-    }
-    @media (max-width: 980px){ .grid{ grid-template-columns: repeat(2, 1fr);} }
-    @media (max-width: 620px){ .grid{ grid-template-columns: 1fr;} }
-
-    .card{
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: var(--r);
-      box-shadow: var(--shadow);
-      padding: 12px;
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-      min-height: 120px;
-    }
-    .card .row1{
-      display:flex;
-      gap:10px;
-      align-items:flex-start;
-      justify-content:space-between;
-    }
-    .title{
-      margin:0;
-      font-size:16px;
-      font-weight:900;
-      line-height:1.25;
-    }
-    .desc{
-      margin:0;
-      color:var(--muted);
-      font-size:13px;
-      font-weight:700;
-      line-height:1.45;
-    }
-    .tagline{
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-      align-items:center;
-      justify-content:flex-start;
-      margin-top:auto;
-    }
-    .tag{
-      font-size:12px;
-      font-weight:900;
-      padding:5px 10px;
-      border-radius:999px;
-      border:1px solid var(--line);
-      background:#fafafa;
-    }
-
-    .go{
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-      align-items:center;
-      justify-content:flex-end;
-    }
-    .go a{
-      text-decoration:none;
-      font-weight:900;
-      padding:9px 12px;
-      border-radius:12px;
-      border:1px solid #dbe6ff;
-      background:#f4f8ff;
-      color:#123f77;
-      cursor:pointer;
-    }
-    .go a:hover{ background:#eaf2ff; }
-
-    .note{
-      margin-top:12px;
-      background:#fff;
-      border:1px dashed #cfd7e6;
-      border-radius:12px;
-      padding:12px;
-      color:#555;
-      font-size:13px;
-      font-weight:700;
-      line-height:1.55;
-    }
-
-    /* ===== Loading overlay (cho cảm giác “đang tải” khi điều hướng) ===== */
-    .loading{
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,.35);
-      display:none;
-      align-items:center;
-      justify-content:center;
-      z-index: 9999;
-    }
-    .loading.show{ display:flex; }
-    .loading-box{
-      background:#fff;
-      border-radius:12px;
-      padding:16px 18px;
-      min-width: 220px;
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      gap:10px;
-      font-weight:900;
-      box-shadow: 0 18px 40px rgba(0,0,0,.18);
-    }
-    .spinner{
-      width:28px;height:28px;
-      border-radius:50%;
-      border: 4px solid #ddd;
-      border-top-color: var(--navy);
-      animation: spin .9s linear infinite;
-    }
-    @keyframes spin{ to{ transform: rotate(360deg);} }
-
-  </style>
-
-  <!-- 🔐 BẢO VỆ TRANG TỔNG ADMIN (1 lần / phiên trình duyệt) -->
-  <script>
-    const ADMIN_TONG_PASSWORD = "haidoi211@"; // 🔴 ĐỔI MẬT KHẨU TẠI ĐÂY
-    const KEY = "ADMIN_TONG_OK_V1";
-
-    try{
-      const ok = sessionStorage.getItem(KEY) === "1";
-      if(!ok){
-        const input = prompt("🔐 Nhập mật khẩu Tổng Admin:");
-        if (input !== ADMIN_TONG_PASSWORD) {
-          alert("❌ Sai mật khẩu. Không có quyền truy cập.");
-          window.location.href = "index.html";
-        } else {
-          sessionStorage.setItem(KEY, "1");
-        }
-      }
-    }catch(e){
-      // Nếu trình duyệt chặn sessionStorage, vẫn dùng prompt như thường
-      const input = prompt("🔐 Nhập mật khẩu Tổng Admin:");
-      if (input !== ADMIN_TONG_PASSWORD) {
-        alert("❌ Sai mật khẩu. Không có quyền truy cập.");
-        window.location.href = "index.html";
-      }
-    }
-  </script>
+  <link rel="stylesheet" href="css/admin-tong.css" />
 </head>
 <body>
 
-  <div id="loading" class="loading" aria-live="polite">
-    <div class="loading-box">
-      <div class="spinner"></div>
-      <div>Đang mở trang...</div>
-    </div>
-  </div>
+<main class="wrap">
+  <header class="head">
+    <h1>🛠️ TỔNG TRANG QUẢN TRỊ</h1>
+    <p class="sub">Quản lý toàn bộ nội dung – tài liệu – QR – bài kiểm tra</p>
 
-  <header>
-    <div class="wrap">
-      <div class="brand">
-        <h1>🛠 TỔNG TRANG ADMIN</h1>
-        <p>Click để vào từng trang quản trị • Có tìm kiếm + lọc theo nhóm</p>
-      </div>
-      <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
-        <a class="btn" href="index.html">🏠 Trang chủ</a>
-        <button class="btn" id="btnLogout" type="button">🚪 Thoát Admin</button>
-      </div>
-    </div>
+    <input id="searchBox" type="search" placeholder="🔍 Tìm nhanh (qr, tin tức, pháp luật, ktqn…)" />
   </header>
 
-  <main>
-    <div class="topbar">
-      <div class="search" title="Tìm theo tên trang / mô tả / nhóm">
-        🔎
-        <input id="q" type="search" placeholder="Tìm: tin tức, pháp luật, nhận thức, ktqn, đổi link..." />
-      </div>
-      <div class="meta">
-        <div class="chip" id="countChip">📌 0 trang</div>
-        <div class="chip" id="lastChip">🕘 Lần mở gần nhất: —</div>
-      </div>
-    </div>
+  <section id="list"></section>
+</main>
 
-    <div class="filters" id="filters"></div>
+<script>
+/* ================== DANH SÁCH TRANG ADMIN ================== */
+const PAGES = [
 
-    <div class="grid" id="grid"></div>
+  /* ===== TRANG CHỦ ===== */
+  {
+    group: "Trang chủ",
+    title: "🔳 Admin QR Trang chủ",
+    href: "admin-qrindex.html",
+    desc: "Thay ảnh QR cho các mục ở trang chủ (Tin tức, Chính trị, Quân sự, Pháp luật, QR lớn…).",
+    tags: ["qr", "trang chủ", "drive"]
+  },
 
-    <div class="note">
-      <b>Lưu ý:</b> Nếu bấm vào 1 trang mà báo 404 thì nghĩa là file đó chưa có trong repo (ví dụ: <i>admindangkytkqn.html</i>).
-      Khi muốn đổi mật khẩu Tổng Admin: sửa biến <b>ADMIN_TONG_PASSWORD</b> trong file này.
-    </div>
-  </main>
+  /* ===== TIN TỨC & MEDIA ===== */
+  {
+    group: "Tin tức & Media",
+    title: "📰 Admin Tin tức",
+    href: "admin-tintuc.html",
+    desc: "Đăng/sửa bài viết, chèn ảnh giữa bài, quản lý nội dung tin tức.",
+    tags: ["tin tức", "bài viết", "ảnh"]
+  },
+  {
+    group: "Tin tức & Media",
+    title: "🔗 Đổi link ảnh Drive → Web",
+    href: "admin-doi-link-anh.html",
+    desc: "Chuyển link Google Drive sang link ảnh web chuẩn (UC/Thumbnail).",
+    tags: ["drive", "ảnh", "link"]
+  },
+  {
+    group: "Tin tức & Media",
+    title: "📁 Admin Lời Bác Hồ dạy",
+    href: "admin-loibachoday.html",
+    desc: "Đăng ảnh Lời Bác theo ngày, quản lý nội dung ngày này năm xưa.",
+    tags: ["lời bác", "ảnh", "ngày"]
+  },
 
-  <script>
-    const loading = document.getElementById("loading");
-    const grid = document.getElementById("grid");
-    const q = document.getElementById("q");
-    const filters = document.getElementById("filters");
-    const countChip = document.getElementById("countChip");
-    const lastChip = document.getElementById("lastChip");
-    const btnLogout = document.getElementById("btnLogout");
+  /* ===== TÀI LIỆU – HỌC TẬP ===== */
+  {
+    group: "Tài liệu",
+    title: "🗂️ Admin Văn bản Chính trị viên",
+    href: "admin-ctv-docs.html",
+    desc: "Upload Word/PDF, tìm kiếm, xóa tài liệu.",
+    tags: ["word", "pdf", "ctv"]
+  },
+  {
+    group: "Tài liệu",
+    title: "🧠 Admin Nhận thức CT-XH",
+    href: "admin-nhanthuc.html",
+    desc: "Upload Word/PDF, danh sách tài liệu nhận thức CT-XH.",
+    tags: ["nhận thức", "word", "pdf"]
+  },
+  {
+    group: "Tài liệu",
+    title: "⚖️ Admin Pháp luật",
+    href: "admin-phapluat.html",
+    desc: "Upload Word/PDF, quản lý nội dung pháp luật.",
+    tags: ["pháp luật", "word", "pdf"]
+  },
 
-    const LAST_KEY = "ADMIN_TONG_LAST_OPEN_V1";
-    const OK_KEY = "ADMIN_TONG_OK_V1";
+  /* ===== KIẾN THỨC – TRẮC NGHIỆM ===== */
+  {
+    group: "KTQN",
+    title: "🧩 Admin Tạo bài thi KTQN",
+    href: "admin-ktqn-quiz.html",
+    desc: "Tạo, sửa bài thi trắc nghiệm kiến thức quân nhân.",
+    tags: ["ktqn", "quiz", "bài thi"]
+  },
+  {
+    group: "KTQN",
+    title: "📊 Admin Kết quả KTQN",
+    href: "admin-ktqn-ketqua.html",
+    desc: "Xem, lọc, xuất CSV và xóa kết quả bài thi.",
+    tags: ["ktqn", "kết quả", "csv"]
+  }
+];
 
-    // Danh sách trang admin (đúng theo các file chủ tướng đã có)
-    const PAGES = [
-      // Tin tức / media
-      { group:"Tin tức & Media", title:"📰 Admin Tin tức", href:"admin-tintuc.html", desc:"Đăng/sửa bài + upload ảnh + chèn ảnh giữa bài.", tags:["tin tức","bài viết","ảnh"] },
-      { group:"Tin tức & Media", title:"🔗 Đổi link ảnh Drive → Web", href:"admin-doi-link-anh.html", desc:"Dán link Drive → xuất link UC/Thumbnail chuẩn để dán lên web.", tags:["drive","ảnh","link"] },
-      { group:"Tin tức & Media", title:"📁 Admin Lời Bác Hồ dạy", href:"admin-loibachoday.html", desc:"Chọn ngày → upload ảnh hoặc dán link Drive → cập nhật.", tags:["lời bác","ảnh","ngày"] },
+/* ================== RENDER ================== */
+const listEl = document.getElementById("list");
+const searchBox = document.getElementById("searchBox");
 
-      // Tài liệu / học tập
-      { group:"Tài liệu", title:"🗂️ Admin Văn bản Chính trị viên", href:"admin-ctv-docs.html", desc:"Upload Word/PDF • tìm kiếm • xóa tài liệu.", tags:["word","pdf","ctv"] },
-      { group:"Tài liệu", title:"🧠 Admin Nhận thức CT-XH", href:"admin-nhanthuc.html", desc:"Upload Word/PDF • danh sách • có overlay “Đang tải dữ liệu…”.", tags:["nhận thức","word","pdf"] },
-      { group:"Tài liệu", title:"⚖️ Admin Pháp luật", href:"admin-phapluat.html", desc:"Upload Word/PDF • danh sách • có overlay “Đang tải dữ liệu…”.", tags:["pháp luật","word","pdf"] },
+function render(filter=""){
+  listEl.innerHTML = "";
+  const groups = {};
 
-      // KTQN
-      { group:"KTQN", title:"🧩 Admin Tạo bài thi KTQN", href:"admin-ktqn-quiz.html", desc:"Tạo/sửa bài theo mục + theo tuần.", tags:["ktqn","quiz","tuần"] },
-      { group:"KTQN", title:"📊 Admin Kết quả KTQN", href:"admin-ktqn-ketqua.html", desc:"Lọc, xuất CSV, xóa kết quả.", tags:["ktqn","kết quả","csv"] },
-    ];
+  PAGES.forEach(p => {
+    const text = (p.title + " " + p.desc + " " + p.tags.join(" ")).toLowerCase();
+    if (filter && !text.includes(filter)) return;
 
-    const GROUPS = ["Tất cả", ...Array.from(new Set(PAGES.map(p => p.group)))];
+    if (!groups[p.group]) groups[p.group] = [];
+    groups[p.group].push(p);
+  });
 
-    function setLastOpened(title){
-      const v = new Date().toLocaleString("vi-VN");
-      localStorage.setItem(LAST_KEY, JSON.stringify({ title, time:v }));
-      renderLast();
-    }
+  Object.keys(groups).forEach(group => {
+    const sec = document.createElement("section");
+    sec.className = "group";
 
-    function renderLast(){
-      try{
-        const data = JSON.parse(localStorage.getItem(LAST_KEY) || "null");
-        if(!data){ lastChip.textContent = "🕘 Lần mở gần nhất: —"; return; }
-        lastChip.textContent = `🕘 Lần mở gần nhất: ${data.title} • ${data.time}`;
-      }catch(e){
-        lastChip.textContent = "🕘 Lần mở gần nhất: —";
-      }
-    }
+    sec.innerHTML = `<h2>${group}</h2>`;
 
-    let state = { group:"Tất cả", query:"" };
-
-    function makeFilterPills(){
-      filters.innerHTML = "";
-      GROUPS.forEach(g=>{
-        const b = document.createElement("button");
-        b.className = "pill" + (g === state.group ? " active" : "");
-        b.type = "button";
-        b.textContent = g;
-        b.onclick = () => {
-          state.group = g;
-          makeFilterPills();
-          render();
-        };
-        filters.appendChild(b);
-      });
-    }
-
-    function matchPage(p){
-      const byGroup = (state.group === "Tất cả") || (p.group === state.group);
-      if(!byGroup) return false;
-
-      const s = (state.query || "").trim().toLowerCase();
-      if(!s) return true;
-
-      const hay = (p.title + " " + p.desc + " " + p.group + " " + (p.tags||[]).join(" ")).toLowerCase();
-      return hay.includes(s);
-    }
-
-    function openPage(p){
-      loading.classList.add("show");
-      setLastOpened(p.title);
-      // Trễ nhẹ để overlay kịp hiện
-      setTimeout(()=>{ window.location.href = p.href; }, 80);
-    }
-
-    function render(){
-      const items = PAGES.filter(matchPage);
-
-      countChip.textContent = `📌 ${items.length} trang`;
-      grid.innerHTML = "";
-
-      items.forEach(p=>{
-        const el = document.createElement("div");
-        el.className = "card";
-
-        el.innerHTML = `
-          <div class="row1">
-            <div>
-              <p class="desc" style="margin:0 0 6px;"><b>${p.group}</b></p>
-              <h3 class="title">${p.title}</h3>
-            </div>
-            <div class="go">
-              <a href="${p.href}" data-href="${p.href}" aria-label="Mở ${p.title}">Mở ↗</a>
-            </div>
-          </div>
-          <p class="desc">${p.desc}</p>
-          <div class="tagline">
-            ${(p.tags||[]).slice(0,4).map(t=>`<span class="tag">${t}</span>`).join("")}
-          </div>
-        `;
-
-        // Click cả card để mở
-        el.addEventListener("click", (e)=>{
-          // Nếu user bấm đúng vào link <a> thì để handler dưới xử lý
-          if(e.target && e.target.tagName === "A") return;
-          openPage(p);
-        });
-
-        // Bấm link cũng hiện overlay
-        el.querySelector("a").addEventListener("click", (e)=>{
-          e.preventDefault();
-          openPage(p);
-        });
-
-        grid.appendChild(el);
-      });
-
-      if(items.length === 0){
-        const empty = document.createElement("div");
-        empty.className = "card";
-        empty.innerHTML = `
-          <h3 class="title">Không tìm thấy trang phù hợp</h3>
-          <p class="desc">Thử xóa từ khóa hoặc đổi bộ lọc.</p>
-        `;
-        grid.appendChild(empty);
-      }
-    }
-
-    q.addEventListener("input", ()=>{
-      state.query = q.value || "";
-      render();
+    groups[group].forEach(p => {
+      const a = document.createElement("a");
+      a.href = p.href;
+      a.className = "card";
+      a.innerHTML = `
+        <div class="title">${p.title}</div>
+        <div class="desc">${p.desc}</div>
+      `;
+      sec.appendChild(a);
     });
 
-    btnLogout.addEventListener("click", ()=>{
-      try{ sessionStorage.removeItem(OK_KEY); }catch(e){}
-      alert("Đã thoát Tổng Admin. Mở lại trang sẽ yêu cầu mật khẩu.");
-      window.location.href = "index.html";
-    });
+    listEl.appendChild(sec);
+  });
+}
 
-    // Init
-    renderLast();
-    makeFilterPills();
-    render();
-  </script>
+render();
+
+/* ================== SEARCH ================== */
+searchBox.addEventListener("input", e => {
+  render(e.target.value.toLowerCase().trim());
+});
+</script>
 
 </body>
 </html>
