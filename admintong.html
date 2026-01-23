@@ -3,143 +3,166 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Tổng Admin • Hệ thống quản trị</title>
+  <title>Tổng trang Admin</title>
 
+  <!-- ✅ CSS tổng admin -->
   <link rel="stylesheet" href="css/admin-tong.css" />
+
+  <!-- 🔐 BẢO VỆ TRANG TỔNG ADMIN (1 lần / phiên trình duyệt) -->
+  <script>
+    const ADMIN_TONG_PASSWORD = "haidoi211@"; // 🔴 ĐỔI MẬT KHẨU TẠI ĐÂY
+    const OK_KEY = "ADMIN_TONG_OK_V2";
+
+    try{
+      const ok = sessionStorage.getItem(OK_KEY) === "1";
+      if(!ok){
+        const input = prompt("🔐 Nhập mật khẩu Tổng Admin:");
+        if (input !== ADMIN_TONG_PASSWORD) {
+          alert("❌ Sai mật khẩu. Không có quyền truy cập.");
+          window.location.href = "index.html";
+        } else {
+          sessionStorage.setItem(OK_KEY, "1");
+        }
+      }
+    }catch(e){
+      const input = prompt("🔐 Nhập mật khẩu Tổng Admin:");
+      if (input !== ADMIN_TONG_PASSWORD) {
+        alert("❌ Sai mật khẩu. Không có quyền truy cập.");
+        window.location.href = "index.html";
+      }
+    }
+  </script>
 </head>
+
 <body>
+  <main class="wrap">
+    <header class="head">
+      <h1>🛠️ TỔNG TRANG QUẢN TRỊ</h1>
+      <p class="sub">Quản lý toàn bộ nội dung – tài liệu – QR – bài kiểm tra</p>
 
-<main class="wrap">
-  <header class="head">
-    <h1>🛠️ TỔNG TRANG QUẢN TRỊ</h1>
-    <p class="sub">Quản lý toàn bộ nội dung – tài liệu – QR – bài kiểm tra</p>
+      <input id="searchBox" type="search" placeholder="🔍 Tìm nhanh (qr, tin tức, pháp luật, ktqn…)" />
+    </header>
 
-    <input id="searchBox" type="search" placeholder="🔍 Tìm nhanh (qr, tin tức, pháp luật, ktqn…)" />
-  </header>
+    <section id="list"></section>
+  </main>
 
-  <section id="list"></section>
-</main>
+  <script>
+    /* ================== DANH SÁCH TRANG ADMIN ================== */
+    const PAGES = [
 
-<script>
-/* ================== DANH SÁCH TRANG ADMIN ================== */
-const PAGES = [
+      /* ===== TRANG CHỦ ===== */
+      {
+        group: "Trang chủ",
+        title: "🔳 Admin QR Trang chủ",
+        href: "admin-qrindex.html",
+        desc: "Thay ảnh QR cho các mục ở trang chủ (Tin tức, Chính trị, Quân sự, Pháp luật, QR lớn…).",
+        tags: ["qr", "trang chủ", "drive"]
+      },
 
-  /* ===== TRANG CHỦ ===== */
-  {
-    group: "Trang chủ",
-    title: "🔳 Admin QR Trang chủ",
-    href: "admin-qrindex.html",
-    desc: "Thay ảnh QR cho các mục ở trang chủ (Tin tức, Chính trị, Quân sự, Pháp luật, QR lớn…).",
-    tags: ["qr", "trang chủ", "drive"]
-  },
+      /* ===== TIN TỨC & MEDIA ===== */
+      {
+        group: "Tin tức & Media",
+        title: "📰 Admin Tin tức",
+        href: "admin-tintuc.html",
+        desc: "Đăng/sửa bài viết, chèn ảnh giữa bài, quản lý nội dung tin tức.",
+        tags: ["tin tức", "bài viết", "ảnh"]
+      },
+      {
+        group: "Tin tức & Media",
+        title: "🔗 Đổi link ảnh Drive → Web",
+        href: "admin-doi-link-anh.html",
+        desc: "Chuyển link Google Drive sang link ảnh web chuẩn (UC/Thumbnail).",
+        tags: ["drive", "ảnh", "link"]
+      },
+      {
+        group: "Tin tức & Media",
+        title: "📁 Admin Lời Bác Hồ dạy",
+        href: "admin-loibachoday.html",
+        desc: "Đăng ảnh Lời Bác theo ngày, quản lý nội dung ngày này năm xưa.",
+        tags: ["lời bác", "ảnh", "ngày"]
+      },
 
-  /* ===== TIN TỨC & MEDIA ===== */
-  {
-    group: "Tin tức & Media",
-    title: "📰 Admin Tin tức",
-    href: "admin-tintuc.html",
-    desc: "Đăng/sửa bài viết, chèn ảnh giữa bài, quản lý nội dung tin tức.",
-    tags: ["tin tức", "bài viết", "ảnh"]
-  },
-  {
-    group: "Tin tức & Media",
-    title: "🔗 Đổi link ảnh Drive → Web",
-    href: "admin-doi-link-anh.html",
-    desc: "Chuyển link Google Drive sang link ảnh web chuẩn (UC/Thumbnail).",
-    tags: ["drive", "ảnh", "link"]
-  },
-  {
-    group: "Tin tức & Media",
-    title: "📁 Admin Lời Bác Hồ dạy",
-    href: "admin-loibachoday.html",
-    desc: "Đăng ảnh Lời Bác theo ngày, quản lý nội dung ngày này năm xưa.",
-    tags: ["lời bác", "ảnh", "ngày"]
-  },
+      /* ===== TÀI LIỆU – HỌC TẬP ===== */
+      {
+        group: "Tài liệu",
+        title: "🗂️ Admin Văn bản Chính trị viên",
+        href: "admin-ctv-docs.html",
+        desc: "Upload Word/PDF, tìm kiếm, xóa tài liệu.",
+        tags: ["word", "pdf", "ctv"]
+      },
+      {
+        group: "Tài liệu",
+        title: "🧠 Admin Nhận thức CT-XH",
+        href: "admin-nhanthuc.html",
+        desc: "Upload Word/PDF, danh sách tài liệu nhận thức CT-XH.",
+        tags: ["nhận thức", "word", "pdf"]
+      },
+      {
+        group: "Tài liệu",
+        title: "⚖️ Admin Pháp luật",
+        href: "admin-phapluat.html",
+        desc: "Upload Word/PDF, quản lý nội dung pháp luật.",
+        tags: ["pháp luật", "word", "pdf"]
+      },
 
-  /* ===== TÀI LIỆU – HỌC TẬP ===== */
-  {
-    group: "Tài liệu",
-    title: "🗂️ Admin Văn bản Chính trị viên",
-    href: "admin-ctv-docs.html",
-    desc: "Upload Word/PDF, tìm kiếm, xóa tài liệu.",
-    tags: ["word", "pdf", "ctv"]
-  },
-  {
-    group: "Tài liệu",
-    title: "🧠 Admin Nhận thức CT-XH",
-    href: "admin-nhanthuc.html",
-    desc: "Upload Word/PDF, danh sách tài liệu nhận thức CT-XH.",
-    tags: ["nhận thức", "word", "pdf"]
-  },
-  {
-    group: "Tài liệu",
-    title: "⚖️ Admin Pháp luật",
-    href: "admin-phapluat.html",
-    desc: "Upload Word/PDF, quản lý nội dung pháp luật.",
-    tags: ["pháp luật", "word", "pdf"]
-  },
+      /* ===== KIẾN THỨC – TRẮC NGHIỆM ===== */
+      {
+        group: "KTQN",
+        title: "🧩 Admin Tạo bài thi KTQN",
+        href: "admin-ktqn-quiz.html",
+        desc: "Tạo, sửa bài thi trắc nghiệm kiến thức quân nhân.",
+        tags: ["ktqn", "quiz", "bài thi"]
+      },
+      {
+        group: "KTQN",
+        title: "📊 Admin Kết quả KTQN",
+        href: "admin-ktqn-ketqua.html",
+        desc: "Xem, lọc, xuất CSV và xóa kết quả bài thi.",
+        tags: ["ktqn", "kết quả", "csv"]
+      }
+    ];
 
-  /* ===== KIẾN THỨC – TRẮC NGHIỆM ===== */
-  {
-    group: "KTQN",
-    title: "🧩 Admin Tạo bài thi KTQN",
-    href: "admin-ktqn-quiz.html",
-    desc: "Tạo, sửa bài thi trắc nghiệm kiến thức quân nhân.",
-    tags: ["ktqn", "quiz", "bài thi"]
-  },
-  {
-    group: "KTQN",
-    title: "📊 Admin Kết quả KTQN",
-    href: "admin-ktqn-ketqua.html",
-    desc: "Xem, lọc, xuất CSV và xóa kết quả bài thi.",
-    tags: ["ktqn", "kết quả", "csv"]
-  }
-];
+    /* ================== RENDER ================== */
+    const listEl = document.getElementById("list");
+    const searchBox = document.getElementById("searchBox");
 
-/* ================== RENDER ================== */
-const listEl = document.getElementById("list");
-const searchBox = document.getElementById("searchBox");
+    function render(filter=""){
+      listEl.innerHTML = "";
+      const groups = {};
 
-function render(filter=""){
-  listEl.innerHTML = "";
-  const groups = {};
+      PAGES.forEach(p => {
+        const text = (p.title + " " + p.desc + " " + p.group + " " + (p.tags||[]).join(" ")).toLowerCase();
+        if (filter && !text.includes(filter)) return;
 
-  PAGES.forEach(p => {
-    const text = (p.title + " " + p.desc + " " + p.tags.join(" ")).toLowerCase();
-    if (filter && !text.includes(filter)) return;
+        if (!groups[p.group]) groups[p.group] = [];
+        groups[p.group].push(p);
+      });
 
-    if (!groups[p.group]) groups[p.group] = [];
-    groups[p.group].push(p);
-  });
+      Object.keys(groups).forEach(group => {
+        const sec = document.createElement("section");
+        sec.className = "group";
+        sec.innerHTML = `<h2>${group}</h2>`;
 
-  Object.keys(groups).forEach(group => {
-    const sec = document.createElement("section");
-    sec.className = "group";
+        groups[group].forEach(p => {
+          const a = document.createElement("a");
+          a.href = p.href;
+          a.className = "card";
+          a.innerHTML = `
+            <div class="title">${p.title}</div>
+            <div class="desc">${p.desc}</div>
+          `;
+          sec.appendChild(a);
+        });
 
-    sec.innerHTML = `<h2>${group}</h2>`;
+        listEl.appendChild(sec);
+      });
+    }
 
-    groups[group].forEach(p => {
-      const a = document.createElement("a");
-      a.href = p.href;
-      a.className = "card";
-      a.innerHTML = `
-        <div class="title">${p.title}</div>
-        <div class="desc">${p.desc}</div>
-      `;
-      sec.appendChild(a);
+    render();
+
+    searchBox.addEventListener("input", e => {
+      render((e.target.value || "").toLowerCase().trim());
     });
-
-    listEl.appendChild(sec);
-  });
-}
-
-render();
-
-/* ================== SEARCH ================== */
-searchBox.addEventListener("input", e => {
-  render(e.target.value.toLowerCase().trim());
-});
-</script>
-
+  </script>
 </body>
 </html>
