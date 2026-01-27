@@ -117,7 +117,7 @@ function postNoCors(payload){
     // tăng view
     postNoCors({ action:"bumpNewsView", id });
 
-    const hero = post.hero || post.thumb || "";
+    const hero = post.hero || "";
     const gallery = Array.isArray(post.gallery) ? post.gallery : [];
 
     const metaParts = [];
