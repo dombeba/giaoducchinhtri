@@ -413,8 +413,8 @@ body{
 }
 
 .bullets .item-qr a{
-  flex:1;
-  min-width:0;
+  display: inline-flex;
+  align-items: center;
 }
 
 /* QR nhỏ gọn */
@@ -496,4 +496,137 @@ body{
   text-shadow:
     0 3px 8px rgba(0,0,0,1),
     0 0 3px rgba(0,0,0,1);
+}
+/* ================== CONTENT 2 CỘT ================== */
+.content {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+/* CỘT TRÁI */
+.content > div:first-child {
+  flex: 3;                 /* chiếm nhiều diện tích hơn */
+  padding-left: 14px;      /* đẩy vào trong bên trái */
+}
+
+/* CỘT PHẢI */
+.right-col {
+  flex: 1;                 /* thu nhỏ lại */
+  max-width: 320px;        /* khóa cứng cho gọn */
+}
+@media (max-width: 768px) {
+  .content {
+    flex-direction: column;
+  }
+
+  .content > div:first-child {
+    padding-left: 0;
+  }
+
+  .right-col {
+    max-width: 100%;
+  }
+}
+/* ===== CỘT TRÁI TRÁNH ĐÈ LÁ CỜ ===== */
+.content > div:first-child {
+  margin-left: 120px;   /* chỉnh 100–140px tùy mắt nhìn */
+}
+/* Mỗi dòng chữ + QR */
+.item {
+  display: flex;
+  align-items: center;
+  gap: 10px;              /* khoảng cách chữ ↔ QR */
+  margin: 10px 0;
+}
+
+/* Chữ */
+.item .text {
+  font-size: 18px;
+  font-weight: bold;
+  white-space: nowrap;   /* không cho chữ xuống dòng */
+}
+
+/* Nút QR */
+.qr-btn {
+  padding: 4px 10px;
+  font-size: 12px;
+  border: 1px solid red;
+  background: #fff;
+  color: red;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.qr-btn:hover {
+  background: red;
+  color: #fff;
+}
+/* Khối menu trái */
+.left-menu {
+  padding-left: 20px;
+}
+
+/* Bỏ style mặc định */
+.menu-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* MỖI DÒNG: chữ + QR */
+.menu-item {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;                 /* QR sát chữ */
+  margin: 10px 0;
+}
+
+/* CHỮ – THU NGẮN VÙNG HOVER */
+.menu-item a {
+  display: inline-flex;     /* ❗ then chốt */
+  width: auto;              /* ❗ không cho chiếm ngang */
+  padding: 4px 6px;
+  font-size: 18px;
+  font-weight: bold;
+  color: #111;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.menu-item a:hover {
+  text-decoration: underline;
+}
+
+/* NÚT QR */
+.qr-btn {
+  padding: 3px 10px;
+  font-size: 11px;
+  border-radius: 14px;
+  border: 1px solid red;
+  background: #fff;
+  color: red;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.qr-btn:hover {
+  background: red;
+  color: #fff;
+}
+/* ===== FIX CỘT TRÁI TRÊN ĐIỆN THOẠI ===== */
+@media (max-width: 768px) {
+  .content > div:first-child {
+    margin-left: 0 !important;   /* ❗ kéo cột trái về thẳng */
+    padding-left: 0;
+  }
+
+  .bullets {
+    padding-left: 0;
+  }
+
+  .bullets li {
+    justify-content: flex-start;
+  }
 }
